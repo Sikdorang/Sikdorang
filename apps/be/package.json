@@ -1,0 +1,11 @@
+{
+    "name": "be",
+    "version": "1.0.0",
+    "scripts": {
+        "prebuild": "go mod tidy",
+        "build": "go build -o app",
+        "start": "go run main.go",
+        "dev": "nodemon --exec go run main.go"
+    },
+    "dependencies": {}
+}

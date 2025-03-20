@@ -1,0 +1,13 @@
+{
+    "name": "sikdorang",
+    "private": true,
+    "packageManager": "pnpm@8.9.0",
+    "scripts": {
+        "dev": "turbo run dev",
+        "build": "turbo run build",
+        "start": "turbo run start"
+    },
+    "devDependencies": {
+        "turbo": "^2.4.4"
+    }
+}
