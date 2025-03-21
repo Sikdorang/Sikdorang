@@ -1,13 +1,13 @@
-"use client"; // 클라이언트 컴포넌트로 선언 필수 (Next.js 13 이상부터)
+'use client'; // 클라이언트 컴포넌트로 선언 필수 (Next.js 13 이상부터)
 
-import { useRouter } from "next/navigation";
+import { useRouter } from 'next/navigation';
 
 export default function Home() {
   const router = useRouter();
 
   const handleLogin = () => {
     // 로그인 로직을 여기에 추가 가능 (예: 인증 API 호출)
-    router.push("/category"); // 로그인 성공 후 /category로 이동
+    router.push('/category'); // 로그인 성공 후 /category로 이동
   };
 
   return (
@@ -48,10 +48,7 @@ export default function Home() {
                 >
                   로그인
                 </button>
-                <a
-                  className="inline-block align-baseline font-bold text-sm text-blue-500 hover:text-blue-800"
-                  href="#"
-                >
+                <a className="inline-block align-baseline font-bold text-sm text-blue-500 hover:text-blue-800" href="#">
                   비밀번호 찾기
                 </a>
               </div>
@@ -60,6 +57,5 @@ export default function Home() {
         </div>
       </div>
     </>
-
   );
 }

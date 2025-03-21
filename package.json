@@ -1,12 +1,15 @@
 {
-    "name": "sikdorang",
-    "version": "0.0.0",
-    "private": true,
-    "packageManager": "pnpm@8.6.0",
-    "scripts": {
-        "start": "turbo run dev"
-    },
-    "devDependencies": {
-        "turbo": "^2.4.4"
-    }
+  "name": "sikdorang",
+  "version": "0.0.0",
+  "private": true,
+  "packageManager": "pnpm@8.6.0",
+  "scripts": {
+    "format": "prettier --write . && (cd apps/be && goimports -w .)",
+    "setup": "pnpm install && pnpm setup:go",
+    "start": "turbo run dev"
+  },
+  "devDependencies": {
+    "prettier": "^3.5.3",
+    "turbo": "^2.4.4"
+  }
 }
