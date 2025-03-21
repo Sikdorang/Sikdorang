@@ -1,7 +1,7 @@
-"use client";
+'use client';
 
-import React, { useState } from "react";
-import TopNav from "../../components/layout/Header/TopNav";
+import React, { useState } from 'react';
+import TopNav from '../../components/layout/Header/TopNav';
 
 interface MenuItem {
   id: number;
@@ -14,10 +14,26 @@ interface MenuItem {
 }
 
 export default function MenuPage() {
-  const [categories, setCategories] = useState(["안주", "증류주", "탁주", "음료"]);
+  const [categories, setCategories] = useState(['안주', '증류주', '탁주', '음료']);
   const [menuItems, setMenuItems] = useState<MenuItem[]>([
-    { id: 1, name: "스테이크", description: "맛있는 스테이크", price: "21,000", category: "안주", status: "판매중", isEditing: false },
-    { id: 2, name: "파스타", description: "크림 파스타", price: "15,800", category: "음료", status: "판매중", isEditing: false },
+    {
+      id: 1,
+      name: '스테이크',
+      description: '맛있는 스테이크',
+      price: '21,000',
+      category: '안주',
+      status: '판매중',
+      isEditing: false,
+    },
+    {
+      id: 2,
+      name: '파스타',
+      description: '크림 파스타',
+      price: '15,800',
+      category: '음료',
+      status: '판매중',
+      isEditing: false,
+    },
   ]);
 
   const addMenuItem = () => {
@@ -25,11 +41,11 @@ export default function MenuPage() {
       ...prev,
       {
         id: prev.length + 1,
-        name: "",
-        description: "",
-        price: "",
+        name: '',
+        description: '',
+        price: '',
         category: categories[0],
-        status: "판매중",
+        status: '판매중',
         isEditing: true, // 새로 추가된 항목은 바로 수정 가능 상태로 설정
       },
     ]);
@@ -40,20 +56,18 @@ export default function MenuPage() {
   };
 
   const updateMenuItem = (id: number, field: keyof MenuItem, value: string | boolean) => {
-    setMenuItems((prev) =>
-      prev.map((item) => (item.id === id ? { ...item, [field]: value } : item))
-    );
+    setMenuItems((prev) => prev.map((item) => (item.id === id ? { ...item, [field]: value } : item)));
   };
 
   const handleCategoryChange = (id: number, value: string) => {
-    if (value === "직접입력") {
-      const newCategory = prompt("새 카테고리를 입력하세요:");
+    if (value === '직접입력') {
+      const newCategory = prompt('새 카테고리를 입력하세요:');
       if (newCategory && newCategory.trim()) {
         setCategories((prev) => [...prev, newCategory.trim()]);
-        updateMenuItem(id, "category", newCategory.trim());
+        updateMenuItem(id, 'category', newCategory.trim());
       }
     } else {
-      updateMenuItem(id, "category", value);
+      updateMenuItem(id, 'category', value);
     }
   };
 
@@ -72,10 +86,7 @@ export default function MenuPage() {
 
         <div className="flex justify-between items-center mb-4">
           <h2 className="text-xl font-semibold">메뉴 목록</h2>
-          <button
-            onClick={addMenuItem}
-            className="bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded"
-          >
+          <button onClick={addMenuItem} className="bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded">
             + 메뉴 추가
           </button>
         </div>
@@ -113,9 +124,8 @@ export default function MenuPage() {
                     value={item.name}
                     placeholder="메뉴명"
                     disabled={!item.isEditing} // 수정 가능 여부에 따라 비활성화
-                    onChange={(e) => updateMenuItem(item.id, "name", e.target.value)}
-                    className={`w-full p-1 rounded text-right ${item.isEditing ? "bg-white" : "bg-gray-100"
-                      }`}
+                    onChange={(e) => updateMenuItem(item.id, 'name', e.target.value)}
+                    className={`w-full p-1 rounded text-right ${item.isEditing ? 'bg-white' : 'bg-gray-100'}`}
                   />
                 </td>
 
@@ -126,9 +136,8 @@ export default function MenuPage() {
                     value={item.description}
                     placeholder="메뉴 설명"
                     disabled={!item.isEditing} // 수정 가능 여부에 따라 비활성화
-                    onChange={(e) => updateMenuItem(item.id, "description", e.target.value)}
-                    className={`w-full p-1 rounded text-right ${item.isEditing ? "bg-white" : "bg-gray-100"
-                      }`}
+                    onChange={(e) => updateMenuItem(item.id, 'description', e.target.value)}
+                    className={`w-full p-1 rounded text-right ${item.isEditing ? 'bg-white' : 'bg-gray-100'}`}
                   />
                 </td>
 
@@ -139,9 +148,8 @@ export default function MenuPage() {
                     value={item.price}
                     placeholder="가격"
                     disabled={!item.isEditing} // 수정 가능 여부에 따라 비활성화
-                    onChange={(e) => updateMenuItem(item.id, "price", e.target.value)}
-                    className={`w-full p-1 rounded text-right ${item.isEditing ? "bg-white" : "bg-gray-100"
-                      }`}
+                    onChange={(e) => updateMenuItem(item.id, 'price', e.target.value)}
+                    className={`w-full p-1 rounded text-right ${item.isEditing ? 'bg-white' : 'bg-gray-100'}`}
                   />
                 </td>
 
@@ -151,8 +159,7 @@ export default function MenuPage() {
                     value={item.category}
                     disabled={!item.isEditing} // 수정 가능 여부에 따라 비활성화
                     onChange={(e) => handleCategoryChange(item.id, e.target.value)}
-                    className={`w-full p-1 rounded text-right ${item.isEditing ? "" : "bg-gray-100"
-                      }`}
+                    className={`w-full p-1 rounded text-right ${item.isEditing ? '' : 'bg-gray-100'}`}
                   >
                     {categories.map((cat) => (
                       <option key={cat} value={cat}>
@@ -168,11 +175,10 @@ export default function MenuPage() {
                   <select
                     value={item.status}
                     disabled={!item.isEditing} // 수정 가능 여부에 따라 비활성화
-                    onChange={(e) => updateMenuItem(item.id, "status", e.target.value)}
-                    className={`w-full p-1 rounded text-right ${item.isEditing ? "" : "bg-gray-100"
-                      }`}
+                    onChange={(e) => updateMenuItem(item.id, 'status', e.target.value)}
+                    className={`w-full p-1 rounded text-right ${item.isEditing ? '' : 'bg-gray-100'}`}
                   >
-                    {["판매중", "품절", "숨김"].map((status) => (
+                    {['판매중', '품절', '숨김'].map((status) => (
                       <option key={status} value={status}>
                         {status}
                       </option>
@@ -184,15 +190,12 @@ export default function MenuPage() {
                 <td className="border text-center space-x-1">
                   {/* 수정/완료 버튼 */}
                   <button
-                    onClick={() =>
-                      updateMenuItem(item.id, "isEditing", !item.isEditing)
-                    }
-                    className={`${item.isEditing
-                        ? "bg-green-500 hover:bg-green-600"
-                        : "bg-blue-500 hover:bg-blue-600"
-                      } text-white px-2 py-1 rounded text-sm`}
+                    onClick={() => updateMenuItem(item.id, 'isEditing', !item.isEditing)}
+                    className={`${
+                      item.isEditing ? 'bg-green-500 hover:bg-green-600' : 'bg-blue-500 hover:bg-blue-600'
+                    } text-white px-2 py-1 rounded text-sm`}
                   >
-                    {item.isEditing ? "완료" : "수정"}
+                    {item.isEditing ? '완료' : '수정'}
                   </button>
 
                   {/* 삭제 버튼 */}

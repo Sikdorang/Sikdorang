@@ -1,7 +1,7 @@
-"use client";
+'use client';
 
-import React, { useRef, useState } from "react";
-import Sortable from "sortablejs";
+import React, { useRef, useState } from 'react';
+import Sortable from 'sortablejs';
 
 interface MenuItem {
   id: number;
@@ -45,15 +45,11 @@ export default function MenuGrid({ menuItems, onSortEnd }: MenuGridProps) {
         <div
           key={item.id}
           className="border rounded-lg shadow-sm overflow-hidden bg-white"
-          style={{ height: "400px" }} // Fixed height for each cell
+          style={{ height: '400px' }} // Fixed height for each cell
         >
           {/* Image Container */}
           <div className="relative w-full h-2/3 overflow-hidden">
-            <img
-              src={item.image || "/placeholder.jpg"}
-              alt={item.name}
-              className="object-cover w-full h-full"
-            />
+            <img src={item.image || '/placeholder.jpg'} alt={item.name} className="object-cover w-full h-full" />
           </div>
 
           {/* Text Container */}
