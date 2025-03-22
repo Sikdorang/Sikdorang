@@ -51,7 +51,7 @@ export default function MenuPage() {
         <div className="flex justify-between items-center mb-4">
           <h2 className="text-xl font-semibold">카테고리 목록</h2>
           <button onClick={addCategoryItems} className="bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded">
-            + 메뉴 추가
+            + 카테고리 추가
           </button>
         </div>
 
@@ -59,7 +59,7 @@ export default function MenuPage() {
           <thead className="bg-gray-100">
             <tr>
               <th className="border px-2 py-2 w-[5%]">#</th>
-              <th className="border px-2 py-2 w-[25%]">메뉴명</th>
+              <th className="border px-2 py-2 w-[25%]">카테고리명</th>
               <th className="border px-2 py-2 w-[10%]">관리</th>
             </tr>
           </thead>
@@ -69,12 +69,12 @@ export default function MenuPage() {
               <tr key={item.id}>
                 <td className="border text-center">{idx + 1}</td>
 
-                {/* 메뉴명 입력 */}
+                {/* 카테고리명 입력 */}
                 <td className="border text-center">
                   <input
                     type="text"
                     value={item.name}
-                    placeholder="메뉴명"
+                    placeholder="카테고리명"
                     disabled={!item.isEditing} // 수정 가능 여부에 따라 비활성화
                     onChange={(e) => updateMenuItem(item.id, 'name', e.target.value)}
                     className={`w-full p-1 text-right ${item.isEditing ? 'bg-white' : 'bg-gray-100'}`}
