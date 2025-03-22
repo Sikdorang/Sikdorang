@@ -97,7 +97,6 @@ export default function MenuPage() {
               <th className="border px-2 py-2 w-[5%]">#</th>
               <th className="border px-2 py-2 w-[10%]">이미지</th>
               <th className="border px-2 py-2 w-[15%]">메뉴명</th>
-              <th className="border px-2 py-2 w-[15%]">설명</th>
               <th className="border px-2 py-2 w-[15%]">가격</th>
               <th className="border px-2 py-2 w-[15%]">카테고리</th>
               <th className="border px-2 py-2 w-[10%]">상태</th>
@@ -125,18 +124,6 @@ export default function MenuPage() {
                     placeholder="메뉴명"
                     disabled={!item.isEditing} // 수정 가능 여부에 따라 비활성화
                     onChange={(e) => updateMenuItem(item.id, 'name', e.target.value)}
-                    className={`w-full p-1 rounded text-right ${item.isEditing ? 'bg-white' : 'bg-gray-100'}`}
-                  />
-                </td>
-
-                {/* 설명 입력 */}
-                <td className="border text-center">
-                  <input
-                    type="text"
-                    value={item.description}
-                    placeholder="메뉴 설명"
-                    disabled={!item.isEditing} // 수정 가능 여부에 따라 비활성화
-                    onChange={(e) => updateMenuItem(item.id, 'description', e.target.value)}
                     className={`w-full p-1 rounded text-right ${item.isEditing ? 'bg-white' : 'bg-gray-100'}`}
                   />
                 </td>
