@@ -6,7 +6,7 @@ import Sortable from 'sortablejs';
 import Sidebar from '../../components/layout/Sidebar/PreviewSidebar';
 import MenuGrid from '../../components/features/menuBoard/MenuGrid';
 import TopNav from '@/components/layout/Header/TopNav';
-import Modal from '../../components/common/modal/Modal';
+import Modal from '../../components/common/modal/MenuModal';
 
 interface MenuItem {
   id: number;
@@ -800,13 +800,18 @@ export default function MenuPage() {
   ]);
   const [selectedCategory, setSelectedCategory] = useState('시즌 메뉴');
   const [filteredMenuItems, setFilteredMenuItems] = useState<MenuItem[]>([]);
-
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [selectedItem, setSelectedItem] = useState(null);
+  const [selectedItem, setSelectedItem] = useState<MenuItem | null>(null);
 
-  const openModal = (item) => {
-    setSelectedItem(item);
-    setIsModalOpen(true);
+  // 편집 모드 상태 관리
+  const [isEditing, setIsEditing] = useState(false);
+
+  // 모달 열기/닫기 함수
+  const openModal = (item: MenuItem) => {
+    if (!isEditing) {
+      setSelectedItem(item);
+      setIsModalOpen(true);
+    }
   };
 
   const closeModal = () => {
@@ -820,46 +825,29 @@ export default function MenuPage() {
     setFilteredMenuItems(filtered);
   }, [selectedCategory, menuItems]);
 
+  // 드래그 앤 드롭 설정
   useEffect(() => {
-    if (menuItems.length === 0) {
-      console.error('menuItems 배열이 비어 있습니다.');
-    }
-  }, [menuItems]);
-
-  // 편집 모드 상태 관리
-  const [isEditing, setIsEditing] = useState(false);
-
-  const toggleEditingMode = () => {
-    setIsEditing((prev) => !prev); // 상태를 토글
-  };
-
-  // 드래그 앤 드롭 정렬
-  useEffect(() => {
-    const gridElement: any = document.querySelector('.menu-grid');
-    if (gridElement) {
+    const gridElement = document.querySelector('.menu-grid');
+    if (gridElement && isEditing) {
       Sortable.create(gridElement, {
         animation: 150,
         onEnd(evt) {
           const newFilteredItems = [...filteredMenuItems];
-          console.log('newFilteredItems1: ', newFilteredItems);
           const [movedItem] = newFilteredItems.splice(evt.oldIndex!, 1);
-          console.log('newFilteredItems2 ', newFilteredItems);
           newFilteredItems.splice(evt.newIndex!, 0, movedItem);
 
           // 필터링된 메뉴 아이템 업데이트
           setFilteredMenuItems(newFilteredItems);
 
-          console.log('newFilteredItems3: ', newFilteredItems);
-
           // 전체 메뉴 아이템 업데이트
           const updatedMenuItems = menuItems.map(
             (item) => newFilteredItems.find((newItem) => newItem.id === item.id) || item,
           );
-          setFilteredMenuItems(updatedMenuItems);
+          setMenuItems(updatedMenuItems);
         },
       });
     }
-  }, [filteredMenuItems]);
+  }, [filteredMenuItems, isEditing]);
 
   return (
     <>
@@ -875,10 +863,10 @@ export default function MenuPage() {
               <div
                 key={item.id}
                 className={`relative border rounded-lg shadow-sm overflow-hidden bg-white ${
-                  !item.status ? 'cursor-not-allowed opacity-50' : 'cursor-pointer'
+                  !item.status ? 'cursor-not-allowed opacity-50' : isEditing ? 'cursor-grab' : 'cursor-pointer'
                 }`}
                 style={{ height: '400px' }}
-                onClick={() => item.status && openModal(item)}
+                onClick={() => openModal(item)} // 클릭 이벤트 조건부 처리
               >
                 {/* 이미지 및 텍스트 컨테이너 */}
                 <div className="relative w-full h-full">
@@ -908,14 +896,17 @@ export default function MenuPage() {
 
           {/* 편집 모드 버튼 */}
           <button
-            className={`fixed bottom-15 right-15 text-black font-bold py-2 px-4 w-25 h-25 rounded-full shadow-lg focus:outline-none
-                        ${isEditing ? 'bg-green-300 hover:bg-green-400' : 'bg-white hover:bg-gray-100'}`}
-            onClick={toggleEditingMode}
+            className={`fixed bottom-15 right-15 text-black font-bold py-2 px-4 w-25 h-25 rounded-full shadow-lg focus:outline-none ${
+              isEditing ? 'bg-green-300 hover:bg-green-400' : 'bg-white hover:bg-gray-100'
+            }`}
+            onClick={() => setIsEditing((prev) => !prev)}
           >
             {isEditing ? '편집 완료' : '편집 모드'}
           </button>
         </div>
-        <Modal isOpen={isModalOpen} onClose={closeModal} item={selectedItem} />
+
+        {/* 모달 컴포넌트 */}
+        {isModalOpen && <Modal isOpen={isModalOpen} onClose={closeModal} item={selectedItem} />}
       </div>
     </>
   );
