@@ -12,7 +12,8 @@
     "next": "15.2.3",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
-    "sortablejs": "^1.15.6"
+    "sortablejs": "^1.15.6",
+    "swiper": "^11.2.6"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",

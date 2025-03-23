@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react';
 import TopNav from '../../components/layout/Header/TopNav';
+import Modal from '@/components/common/modal/ImageManageModal';
 
 interface MenuItem {
   id: number;
@@ -71,6 +72,19 @@ export default function MenuPage() {
     }
   };
 
+  const [isModalOpen, setIsModalOpen] = React.useState(false);
+  const [selectedItem, setSelectedItem] = React.useState(null);
+
+  const openModal = (item) => {
+    setSelectedItem(item);
+    setIsModalOpen(true);
+  };
+
+  const closeModal = () => {
+    setSelectedItem(null);
+    setIsModalOpen(false);
+  };
+
   return (
     <>
       <TopNav />
@@ -95,7 +109,7 @@ export default function MenuPage() {
           <thead className="bg-gray-100">
             <tr>
               <th className="border px-2 py-2 w-[5%]">#</th>
-              <th className="border px-2 py-2 w-[10%]">이미지</th>
+              <th className="border px-2 py-2 w-[10%]">이미지 및 설명</th>
               <th className="border px-2 py-2 w-[15%]">메뉴명</th>
               <th className="border px-2 py-2 w-[15%]">가격</th>
               <th className="border px-2 py-2 w-[15%]">카테고리</th>
@@ -109,10 +123,13 @@ export default function MenuPage() {
               <tr key={item.id}>
                 <td className="border text-center">{idx + 1}</td>
 
-                {/* 이미지 업로드 버튼 */}
+                {/* 이미지 및 설명 관리 버튼 */}
                 <td className="border text-center">
-                  <button className="text-sm bg-orange-200 hover:bg-orange-300 rounded px-2 py-1">
-                    이미지 업로드 및 설명
+                  <button
+                    onClick={() => openModal(item)} // 모달 열기
+                    className="text-sm bg-orange-200 hover:bg-orange-300 rounded px-2 py-1"
+                  >
+                    이미지 및 설명 관리
                   </button>
                 </td>
 
@@ -197,6 +214,8 @@ export default function MenuPage() {
             ))}
           </tbody>
         </table>
+
+        <Modal isOpen={isModalOpen} onClose={closeModal} item={selectedItem} />
       </div>
     </>
   );
