@@ -4,18 +4,27 @@ import (
 	"log"
 
 	"github.com/gofiber/fiber/v2"
+
+	"be/config"
+	"be/internal/models"
 )
 
 func main() {
+	// DB 초기화 (.env 기반)
+	config.InitDB()
+
+	// 모델 자동 마이그레이션
+	config.DB.AutoMigrate(
+		&models.Store{},
+		&models.Category{},
+		&models.Menu{},
+		&models.Image{},
+	)	
+	// Fiber 인스턴스 생성
 	app := fiber.New()
 
-	// 기본 라우트 설정
-	app.Get("/", func(c *fiber.Ctx) error {
-		return c.SendString("🚀 Fiber server is running!")
-	})
-
 	// 서버 실행
-	port := ":3000"
+	port := ":4000"
 	log.Println("🚀 Server running on port", port)
 	log.Fatal(app.Listen(port))
 }
