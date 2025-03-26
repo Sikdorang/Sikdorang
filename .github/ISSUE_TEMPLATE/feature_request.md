@@ -1,9 +1,10 @@
 ---
 name: Feature request
 about: Suggest an idea for this project
-title: ''
+title: 'fear: write issue title'
 labels: ''
 assignees: ''
+
 ---
 
 ## 개요
