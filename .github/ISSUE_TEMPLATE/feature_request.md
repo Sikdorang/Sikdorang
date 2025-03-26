@@ -1,7 +1,7 @@
 ---
 name: Feature request
 about: Suggest an idea for this project
-title: 'fear: write issue title'
+title: 'feat: write issue title'
 labels: ''
 assignees: ''
 
