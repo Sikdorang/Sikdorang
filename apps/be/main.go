@@ -22,6 +22,7 @@ func main() {
 		&models.RecommandKeyword{},
 		&models.RecommandQuestion{},
 		&models.RecommandMenu{},
+		&models.Tag{},
 	)	
 	// Fiber 인스턴스 생성
 	app := fiber.New()
