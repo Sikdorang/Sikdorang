@@ -19,6 +19,9 @@ func main() {
 		&models.Category{},
 		&models.Menu{},
 		&models.Image{},
+		&models.RecommandKeyword{},
+		&models.RecommandQuestion{},
+		&models.RecommandMenu{},
 	)	
 	// Fiber 인스턴스 생성
 	app := fiber.New()

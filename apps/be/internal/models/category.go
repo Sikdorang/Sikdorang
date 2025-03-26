@@ -1,10 +1,10 @@
 package models
 
 type Category struct {
-	ID       uint   `gorm:"primaryKey" json:"id"`
-	Category string 
-	StoreID  uint   
+    ID      uint   `gorm:"primaryKey"`
+    Name    string
+    StoreID uint
+    Store   Store
 
-	Store    Store  
-	Menus    []Menu 
+    Menus   []Menu
 }
