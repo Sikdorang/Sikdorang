@@ -6,6 +6,31 @@
   --transparent-black: rgba(0, 0, 0, 0.6);
 }
 
+@theme {
+  /* gray color platte */
+  --color-gray-100: #f9fafb;
+  --color-gray-200: #e5f0f8;
+  --color-gray-300: #cdd9e4;
+  --color-gray-400: #afc1d6;
+  --color-gray-500: #90a2b6;
+  --color-gray-600: #768797;
+  --color-gray-700: #56687a;
+  --color-gray-800: #41505b;
+  --color-gray-900: #10161a;
+
+  /* blue color platte */
+  --color-blue-100: #f9fbff;
+  --color-blue-200: #edf9ff;
+  --color-blue-300: #cfe4ff;
+  --color-blue-400: #93c2ff;
+  --color-blue-500: #3e84ff;
+
+  /* red color platte */
+  --color-red-100: #fffafa;
+  --color-red-200: #fff4f4;
+  --color-red-500: #fe5353;
+}
+
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
@@ -26,4 +51,50 @@ body {
   background: var(--background);
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif, Pretendard;
+}
+
+@layer utilities {
+  .text-title-xl {
+    @apply text-[2rem] leading-[100%] font-bold;
+  }
+
+  .text-title-md {
+    @apply text-2xl leading-[150%] font-bold;
+  }
+
+  .text-title-sm {
+    @apply text-xl leading-[150%] font-bold;
+  }
+
+  .text-body-xl {
+    @apply text-2xl leading-[160%] font-semibold;
+  }
+
+  .text-body-md {
+    @apply text-base leading-[160%] font-medium;
+  }
+
+  .text-body-xs {
+    @apply text-xs leading-[160%] font-medium;
+  }
+
+  .text-label-md {
+    @apply text-base leading-[100%] font-bold;
+  }
+
+  .text-label-sm-sb {
+    @apply text-sm leading-[100%] font-semibold;
+  }
+
+  .text-label-sm-m {
+    @apply text-sm leading-[100%] font-medium;
+  }
+
+  .text-label-xs-b {
+    @apply text-xs leading-[100%] font-bold;
+  }
+
+  .text-label-xs-m {
+    @apply text-xs leading-[100%] font-medium;
+  }
 }
