@@ -1,0 +1,25 @@
+package category
+
+import (
+	"github.com/gofiber/fiber/v2"
+	"gorm.io/gorm"
+
+	"be/internal/category/controller"
+	"be/internal/category/service"
+	"be/internal/category/repository"
+)
+
+func InitCategoryRoutes(router fiber.Router, db *gorm.DB) {
+	repo := repository.NewCategoryRepository(db)
+	svc := service.NewCategoryService(repo)
+	ctrl := controller.NewCategoryController(svc)
+
+	group := router.Group("/categories")
+
+	// ✅ 여기에 API들 등록
+	group.Get("/", ctrl.GetCategories)        // GET /api/categories
+	//group.Post("/", ctrl.CreateCategory)      // POST /api/categories
+	//group.Get("/:id", ctrl.GetCategoryByID)   // GET /api/categories/:id
+	//group.Put("/:id", ctrl.UpdateCategory)    // PUT /api/categories/:id
+	//group.Delete("/:id", ctrl.DeleteCategory) // DELETE /api/categories/:id
+}

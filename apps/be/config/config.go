@@ -10,15 +10,9 @@ import (
 	"gorm.io/gorm"
 )
 
-var DB *gorm.DB
+func InitDB() *gorm.DB {
+	_ = godotenv.Load()
 
-func InitDB() {
-	err := godotenv.Load()
-	if err != nil {
-		log.Fatal(".env 로딩 실패 :", err)
-	}
-
-// DSN 구성
 	dsn := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?charset=utf8mb4&parseTime=True&loc=Local",
 		os.Getenv("DB_USER"),
 		os.Getenv("DB_PASSWORD"),
@@ -32,6 +26,5 @@ func InitDB() {
 		log.Fatal("DB 연결 실패:", err)
 	}
 
-	DB = db
-	fmt.Println("DB 연결 성공")
+	return db
 }
