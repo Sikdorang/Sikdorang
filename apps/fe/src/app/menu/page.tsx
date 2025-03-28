@@ -1,8 +1,8 @@
 'use client';
 
 import React, { useState } from 'react';
-import TopNav from '../../components/layout/Header/TopNav';
-import Modal from '@/components/common/modal/ImageManageModal';
+import TopNav from '../../components/layout/headers/TopNav';
+import Modal from '@/components/features/modal/ImageManageModal';
 
 interface MenuItem {
   id: number;

@@ -3,10 +3,10 @@
 import React, { useState, useEffect } from 'react';
 import Sortable from 'sortablejs';
 
-import Sidebar from '../../components/layout/Sidebar/PreviewSidebar';
+import Sidebar from '../../components/layout/sidebars/PreviewSidebar';
 import MenuGrid from '../../components/features/menuBoard/MenuGrid';
-import TopNav from '@/components/layout/Header/TopNav';
-import Modal from '../../components/common/modal/MenuModal';
+import TopNav from '@/components/layout/headers/TopNav';
+import Modal from '../../components/features/modal/MenuModal';
 
 interface MenuItem {
   id: number;
