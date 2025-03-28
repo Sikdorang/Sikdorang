@@ -3,6 +3,8 @@
 import React, { useState } from 'react';
 
 import TopNav from '../../components/layout/headers/TopNav';
+import ProductTag from '@/components/common/labels/ProductTag';
+import TextInput from '@/components/common/inputs/TextInput';
 
 interface CategorieItem {
   id: number;
