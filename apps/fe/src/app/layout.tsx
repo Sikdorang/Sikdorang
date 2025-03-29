@@ -1,6 +1,7 @@
 import TopNav from '@/components/layout/Header/TopNav';
 import type { Metadata } from 'next';
 import localFont from 'next/font/local';
+import { MSWProvider } from './provider';
 import '../styles/globals.css';
 
 const pretendard = localFont({
@@ -20,10 +21,12 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`${pretendard.className} antialiased`}>
-        <TopNav />
-        {children}
-      </body>
+      <MSWProvider>
+        <body className={`${pretendard.className} antialiased`}>
+          <TopNav />
+          {children}
+        </body>
+      </MSWProvider>
     </html>
   );
 }
