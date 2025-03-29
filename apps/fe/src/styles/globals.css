@@ -57,12 +57,12 @@ body {
     @apply text-[2rem] leading-[100%] font-bold;
   }
 
-  .text-title-md {
-    @apply text-2xl leading-[150%] font-bold;
+  .text-title-sm {
+    @apply text-xl leading-[150%] font-semibold;
   }
 
-  .text-title-sm {
-    @apply text-xl leading-[150%] font-bold;
+  .text-title-xs {
+    @apply text-lg leading-[150%] font-medium;
   }
 
   .text-body-xl {
@@ -71,6 +71,10 @@ body {
 
   .text-body-md {
     @apply text-base leading-[160%] font-medium;
+  }
+
+  .text-body-sm {
+    @apply text-sm leading-[160%] font-medium;
   }
 
   .text-body-xs {
@@ -95,5 +99,17 @@ body {
 
   .text-label-xs-m {
     @apply text-xs leading-[100%] font-medium;
+  }
+
+  .wrapper {
+    @apply max-w-[1272px] px-4;
+  }
+
+  .scroll-hide {
+    -ms-overflow-style: none; /* IE and Edge */
+    scrollbar-width: none; /* Firefox */
+  }
+  .scroll-hide::-webkit-scrollbar {
+    display: none; /* Chrome, Safari, Opera*/
   }
 }

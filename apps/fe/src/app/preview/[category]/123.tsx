@@ -1,25 +1,15 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import Sortable from 'sortablejs';
 
-import Sidebar from '../../components/layout/Sidebar/PreviewSidebar';
-import MenuGrid from '../../components/features/menuBoard/MenuGrid';
+import Sidebar from '../../components/preview/Sidebar';
 import TopNav from '@/components/layout/Header/TopNav';
-import Modal from '../../components/common/modal/MenuModal';
-
-interface MenuItem {
-  id: number;
-  name: string;
-  description: string;
-  price: string;
-  category: string;
-  status: boolean;
-  image?: string; // 이미지 URL 추가 가능
-}
+import EditButton from '@/components/preview/EditButton';
+import { IMenu } from '@/types/model/menu';
+import Menu from '@/components/preview/Menu';
 
 export default function MenuPage() {
-  const [menuItems, setMenuItems] = useState<MenuItem[]>([
+  const [menuItems, setMenuItems] = useState<IMenu[]>([
     {
       id: 1,
       name: '주전자 어묵탕 ',
@@ -799,114 +789,18 @@ export default function MenuPage() {
     '추가 메뉴',
   ]);
   const [selectedCategory, setSelectedCategory] = useState('시즌 메뉴');
-  const [filteredMenuItems, setFilteredMenuItems] = useState<MenuItem[]>([]);
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [selectedItem, setSelectedItem] = useState<MenuItem | null>(null);
-
-  // 편집 모드 상태 관리
-  const [isEditing, setIsEditing] = useState(false);
-
-  // 모달 열기/닫기 함수
-  const openModal = (item: MenuItem) => {
-    if (!isEditing) {
-      setSelectedItem(item);
-      setIsModalOpen(true);
-    }
-  };
-
-  const closeModal = () => {
-    setSelectedItem(null);
-    setIsModalOpen(false);
-  };
-
-  // 카테고리 변경 시 필터링
-  useEffect(() => {
-    const filtered = menuItems.filter((item) => item.category === selectedCategory);
-    setFilteredMenuItems(filtered);
-  }, [selectedCategory, menuItems]);
-
-  // 드래그 앤 드롭 설정
-  useEffect(() => {
-    const gridElement = document.querySelector('.menu-grid');
-    if (gridElement && isEditing) {
-      Sortable.create(gridElement, {
-        animation: 150,
-        onEnd(evt) {
-          const newFilteredItems = [...filteredMenuItems];
-          const [movedItem] = newFilteredItems.splice(evt.oldIndex!, 1);
-          newFilteredItems.splice(evt.newIndex!, 0, movedItem);
-
-          // 필터링된 메뉴 아이템 업데이트
-          setFilteredMenuItems(newFilteredItems);
-
-          // 전체 메뉴 아이템 업데이트
-          const updatedMenuItems = menuItems.map(
-            (item) => newFilteredItems.find((newItem) => newItem.id === item.id) || item,
-          );
-          setMenuItems(updatedMenuItems);
-        },
-      });
-    }
-  }, [filteredMenuItems, isEditing]);
 
   return (
     <>
       <TopNav />
-      <div className="relative">
-        <div className="pt-[64px] flex min-h-screen bg-gray-100">
-          {/* 사이드바 */}
-          <Sidebar categories={categories} selectedCategory={selectedCategory} onSelectCategory={setSelectedCategory} />
+      <div className="wrapper mx-auto flex flex-col sm:flex-row gap-16 mt-12">
+        <Sidebar categories={categories} selectedCategory={selectedCategory} onSelectCategory={setSelectedCategory} />
 
-          {/* 메뉴 그리드 */}
-          <div className="menu-grid w-4/5 p-4 grid grid-cols-3 gap-4">
-            {filteredMenuItems.map((item) => (
-              <div
-                key={item.id}
-                className={`relative border rounded-lg shadow-sm overflow-hidden bg-white ${
-                  !item.status ? 'cursor-not-allowed opacity-50' : isEditing ? 'cursor-grab' : 'cursor-pointer'
-                }`}
-                style={{ height: '400px' }}
-                onClick={() => openModal(item)} // 클릭 이벤트 조건부 처리
-              >
-                {/* 이미지 및 텍스트 컨테이너 */}
-                <div className="relative w-full h-full">
-                  {/* 이미지 */}
-                  <img src={item.image || '/placeholder.jpg'} alt={item.name} className="object-cover w-full h-2/3" />
-
-                  {/* 텍스트 컨테이너 */}
-                  <div className="p-4 h-1/3 flex flex-col justify-between bg-white">
-                    <h3 className="text-lg font-semibold">{item.name}</h3>
-                    <p className="text-gray-400">{item.description}</p>
-                    <p className="text-gray-800 font-bold text-right">{item.price}원</p>
-                  </div>
-
-                  {/* 품절 오버레이 */}
-                  {!item.status && (
-                    <div
-                      className="absolute inset-0 flex items-center justify-center"
-                      style={{ backgroundColor: 'rgba(0, 0, 0, 0.6)' }}
-                    >
-                      <span className="text-white text-2xl font-bold">품절</span>
-                    </div>
-                  )}
-                </div>
-              </div>
-            ))}
-          </div>
-
-          {/* 편집 모드 버튼 */}
-          <button
-            className={`fixed bottom-15 right-15 text-black font-bold py-2 px-4 w-25 h-25 rounded-full shadow-lg focus:outline-none ${
-              isEditing ? 'bg-green-300 hover:bg-green-400' : 'bg-white hover:bg-gray-100'
-            }`}
-            onClick={() => setIsEditing((prev) => !prev)}
-          >
-            {isEditing ? '편집 완료' : '편집 모드'}
-          </button>
+        <div className=" grid md:grid-cols-2 lg:grid-cols-3 grid-cols-1 gap-10 flex-1">
+          {filteredMenuItems.map((item: IMenu) => (
+            <Menu key={item.id} item={item} />
+          ))}
         </div>
-
-        {/* 모달 컴포넌트 */}
-        {isModalOpen && <Modal isOpen={isModalOpen} onClose={closeModal} item={selectedItem} />}
       </div>
     </>
   );
