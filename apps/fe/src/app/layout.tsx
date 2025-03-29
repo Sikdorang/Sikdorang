@@ -1,3 +1,4 @@
+import TopNav from '@/components/layout/Header/TopNav';
 import type { Metadata } from 'next';
 import localFont from 'next/font/local';
 import '../styles/globals.css';
@@ -19,7 +20,10 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`${pretendard.className} antialiased`}>{children}</body>
+      <body className={`${pretendard.className} antialiased`}>
+        <TopNav />
+        {children}
+      </body>
     </html>
   );
 }

@@ -69,7 +69,11 @@ body {
     @apply text-2xl leading-[160%] font-semibold;
   }
 
-  .text-body-md {
+  .text-body-md-sm {
+    @apply text-base leading-[160%] font-semibold;
+  }
+
+  .text-body-md-m {
     @apply text-base leading-[160%] font-medium;
   }
 

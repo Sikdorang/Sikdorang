@@ -1,9 +1,9 @@
-export interface IMenu {
+export interface IMenuItem {
   id: number;
   name: string;
   description: string;
-  price: string;
-  category: string;
-  status: string;
-  image?: string;
+  price: number;
+  status: boolean;
+  images: string[];
+  tags?: string[];
 }
