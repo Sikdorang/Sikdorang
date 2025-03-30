@@ -1,8 +1,8 @@
-import TopNav from '@/components/layout/Header/TopNav';
 import type { Metadata } from 'next';
 import localFont from 'next/font/local';
 import { MSWProvider } from './provider';
 import '../styles/globals.css';
+import TopNav from '@/components/layout/headers/TopNav';
 
 const pretendard = localFont({
   src: '../../public/fonts/PretendardVariable.woff2',
