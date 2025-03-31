@@ -1,7 +1,10 @@
 'use client';
 
 import React, { useState } from 'react';
-import TopNav from '../../components/layout/Header/TopNav';
+
+import TopNav from '../../components/layout/headers/TopNav';
+import ProductTag from '@/components/common/labels/ProductTag';
+import TextInput from '@/components/common/inputs/TextInput';
 
 interface CategorieItem {
   id: number;
@@ -39,6 +42,7 @@ export default function MenuPage() {
   return (
     <>
       <TopNav />
+
       <div className="pt-[70px] container mx-auto p-6">
         <header className="mb-6">
           <h1 className="text-3xl font-bold">카테고리 등록</h1>
