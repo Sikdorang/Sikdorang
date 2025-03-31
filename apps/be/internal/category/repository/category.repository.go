@@ -1,11 +1,13 @@
 package repository
 
 import (
-	"gorm.io/gorm"
 	"be/internal/models"
+	"gorm.io/gorm"
 )
+
 type CategoryRepository interface {
-	FindAll() ([]models.Category, error)
+	Save(category models.Category) error
+	FindByStoreID(storeID uint) ([]models.Category, error)
 }
 
 type categoryRepository struct {
@@ -16,8 +18,14 @@ func NewCategoryRepository(db *gorm.DB) CategoryRepository {
 	return &categoryRepository{db: db}
 }
 
-func (r *categoryRepository) FindAll() ([]models.Category, error) {
+func (r *categoryRepository) Save(category models.Category) error {
+	return r.db.Create(&category).Error
+}
+
+func (r *categoryRepository) FindByStoreID(storeID uint) ([]models.Category, error) {
 	var categories []models.Category
-	err := r.db.Preload("Menus").Find(&categories).Error
-	return categories, err
+	if err := r.db.Where("store_id = ?", storeID).Find(&categories).Error; err != nil {
+		return nil, err
+	}
+	return categories, nil
 }

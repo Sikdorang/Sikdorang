@@ -7,6 +7,7 @@ import (
 	"be/internal/category/controller"
 	"be/internal/category/service"
 	"be/internal/category/repository"
+	"be/internal/middleware"
 )
 
 func InitCategoryRoutes(router fiber.Router, db *gorm.DB) {
@@ -14,11 +15,11 @@ func InitCategoryRoutes(router fiber.Router, db *gorm.DB) {
 	svc := service.NewCategoryService(repo)
 	ctrl := controller.NewCategoryController(svc)
 
-	group := router.Group("/categories")
+	group := router.Group("/categories", middleware.JWTProtected())
 
 	// ✅ 여기에 API들 등록
 	group.Get("/", ctrl.GetCategories)        // GET /api/categories
-	//group.Post("/", ctrl.CreateCategory)      // POST /api/categories
+	group.Post("/", ctrl.CreateCategory)      // POST /api/categories
 	//group.Get("/:id", ctrl.GetCategoryByID)   // GET /api/categories/:id
 	//group.Put("/:id", ctrl.UpdateCategory)    // PUT /api/categories/:id
 	//group.Delete("/:id", ctrl.DeleteCategory) // DELETE /api/categories/:id
