@@ -11,6 +11,7 @@ type Store struct {
     PhoneNumber  string
     Approved     bool
     Paid         bool
+    RefreshToken string `json:"-"`
 
     Categories   []Category
     Menus        []Menu

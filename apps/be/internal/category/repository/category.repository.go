@@ -24,7 +24,7 @@ func (r *categoryRepository) Save(category models.Category) error {
 
 func (r *categoryRepository) FindByStoreID(storeID uint) ([]models.Category, error) {
 	var categories []models.Category
-	if err := r.db.Where("store_id = ?", storeID).Find(&categories).Error; err != nil {
+	if err := r.db.Preload("Menus").Where("store_id = ?", storeID).Find(&categories).Error; err != nil {
 		return nil, err
 	}
 	return categories, nil
