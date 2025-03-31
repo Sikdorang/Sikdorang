@@ -2,7 +2,7 @@ package models
 
 type Menu struct {
     ID          uint   `gorm:"primaryKey"`
-    Name        string
+    Menu        string
     Preview     string
     Details     string
     Price       int
@@ -11,6 +11,7 @@ type Menu struct {
     StoreID     uint
     Store       Store
     SoldOut     bool
+    order       int
 
     Images         []Image
     RecommandMenus []RecommandMenu

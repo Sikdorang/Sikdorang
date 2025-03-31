@@ -2,9 +2,9 @@ package models
 
 type Category struct {
     ID      uint   `gorm:"primaryKey"`
-    Name    string
+    Category    string
     StoreID uint
-    Store   Store
+    Store   Store `gorm:"foreignKey:StoreID" json:"-"`
 
     Menus   []Menu
 }
