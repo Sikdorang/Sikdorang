@@ -1,5 +1,13 @@
-import LoginForm from '@/components/features/login/loginForm';
+import TopNav from '@/components/layout/headers/TopNav';
+import LoginForm from '@/components/pages/login/LoginForm';
 
 export default function Home() {
-  return <LoginForm />;
+  return (
+    <div className="min-h-screen bg-gray-100 flex flex-col items-center">
+      <TopNav />
+      <div className="flex items-center justify-center h-full flex-1 wrapper w-full">
+        <LoginForm />
+      </div>
+    </div>
+  );
 }
