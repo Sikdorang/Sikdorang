@@ -98,7 +98,13 @@ export default function MenuPage() {
         </header>
 
         <header className="flex flex-row w-full mb-6">
-          <MainControlButton text="사용 설명 보기" className="flex-none w-fit" />
+          <MainControlButton
+            text="사용 설명 보기"
+            className="flex-none w-fit"
+            onClick={() =>
+              window.open('https://www.notion.so/1c8e4c6f133f8008881ffda5240479ea', '_blank', 'noopener noreferrer')
+            }
+          />
           <div className="grow"></div>
           <CheckboxInput
             text="미입력 메뉴만 보기"
