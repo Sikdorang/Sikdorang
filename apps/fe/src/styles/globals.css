@@ -1,11 +1,5 @@
 @import 'tailwindcss';
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-  --transparent-black: rgba(0, 0, 0, 0.6);
-}
-
 @theme {
   /* gray color platte */
   --color-gray-100: #f9fafb;
@@ -36,26 +30,10 @@
   --color-purple-500: #9d53fe;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-/* 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+@layer base {
+  button {
+    @apply cursor-pointer;
   }
-} 
-*/
-
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif, Pretendard;
 }
 
 @layer utilities {
@@ -63,20 +41,28 @@ body {
     @apply text-[2rem] leading-[100%] font-bold;
   }
 
-  .text-title-md {
-    @apply text-2xl leading-[150%] font-bold;
+  .text-title-sm {
+    @apply text-xl leading-[150%] font-semibold;
   }
 
-  .text-title-sm {
-    @apply text-xl leading-[150%] font-bold;
+  .text-title-xs {
+    @apply text-lg leading-[150%] font-medium;
   }
 
   .text-body-xl {
     @apply text-2xl leading-[160%] font-semibold;
   }
 
-  .text-body-md {
+  .text-body-md-sm {
+    @apply text-base leading-[160%] font-semibold;
+  }
+
+  .text-body-md-m {
     @apply text-base leading-[160%] font-medium;
+  }
+
+  .text-body-sm {
+    @apply text-sm leading-[160%] font-medium;
   }
 
   .text-body-xs {
@@ -101,5 +87,17 @@ body {
 
   .text-label-xs-m {
     @apply text-xs leading-[100%] font-medium;
+  }
+
+  .wrapper {
+    @apply max-w-[1272px] px-4;
+  }
+
+  .scroll-hide {
+    -ms-overflow-style: none; /* IE and Edge */
+    scrollbar-width: none; /* Firefox */
+  }
+  .scroll-hide::-webkit-scrollbar {
+    display: none; /* Chrome, Safari, Opera*/
   }
 }
