@@ -2,10 +2,9 @@ import type { Metadata } from 'next';
 import localFont from 'next/font/local';
 
 import '../styles/globals.css';
-
-import TanstackProvider from './providers/tanstackProvider';
-import ToastProvider from './providers/toastProvider';
-import MSWProvider from './providers/mswProvider';
+import TanstackProvider from '@/providers/tanstackProvider';
+import ToastProvider from '@/providers/toastProvider';
+import MSWProvider from '@/providers/mswProvider';
 
 const pretendard = localFont({
   src: '../../public/fonts/PretendardVariable.woff2',
