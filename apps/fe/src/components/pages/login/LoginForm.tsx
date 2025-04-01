@@ -9,11 +9,11 @@ export default function LoginForm() {
       <h2 className="text-title-sm text-center mb-7 text-gray-800">로그인</h2>
       <form className="space-y-8">
         <div className="space-y-3">
-          <TextInput placeholder={'아이디를 입력하세요'} />
-          <TextInput placeholder={'비밀번호를 입력하세요'} />
+          <TextInput placeholder="아이디를 입력하세요" />
+          <TextInput placeholder="비밀번호를 입력하세요" />
         </div>
         <div className="space-y-4">
-          <BaseButton text={'로그인'} />
+          <BaseButton text="로그인" />
           <div className="flex justify-center items-center gap-2">
             <LinkButton>회원 신청하기</LinkButton>
             <span className="bg-gray-200 mx-2 w-[1.5px] h-4"></span>
