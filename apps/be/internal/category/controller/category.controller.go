@@ -1,10 +1,14 @@
 package controller
 
 import (
+	"errors"
+	"strconv"
+
 	"github.com/gofiber/fiber/v2"
+
 	"be/internal/category/service"
 	"be/internal/category/dto"
-	errorDto "be/internal/common/dto" // ErrorResponse 위치
+	errorDto "be/internal/common/dto"
 	"be/internal/middleware"
 )
 
@@ -79,4 +83,83 @@ func (c *CategoryController) GetCategories(ctx *fiber.Ctx) error {
 	return ctx.JSON(dto.GetCategoryResponseDTO{
 		Category: names,
 	})
+}
+
+// UpdateCategory godoc
+// @Summary      카테고리 수정
+// @Description  카테고리 ID와 storeID로 카테고리 이름을 수정합니다.
+// @Tags         category
+// @Accept       json
+// @Produce      json
+// @Param        categoryId path int true "카테고리 ID"
+// @Param        request body dto.UpdateCategoryRequestDTO true "수정할 카테고리 정보"
+// @Success      200 {object} dto.UpdateCategoryResponseDTO
+// @Failure      400 {object} errorDto.ErrorResponse "잘못된 요청"
+// @Failure      401 {object} errorDto.ErrorResponse "인증 실패"
+// @Failure      404 {object} errorDto.ErrorResponse "카테고리 없음"
+// @Failure      500 {object} errorDto.ErrorResponse "서버 에러"
+// @Router       /categories/{categoryId} [patch]
+func (c *CategoryController) UpdateCategory(ctx *fiber.Ctx) error {
+	storeID, err := middleware.ExtractStoreID(ctx)
+	if err != nil {
+		return ctx.Status(401).JSON(errorDto.ErrorResponse{Error: "unauthorized"})
+	}
+
+	categoryID, err := strconv.Atoi(ctx.Params("categoryId"))
+	if err != nil {
+		return ctx.Status(400).JSON(errorDto.ErrorResponse{Error: "invalid id"})
+	}
+
+	var body dto.UpdateCategoryRequestDTO
+	if err := ctx.BodyParser(&body); err != nil {
+		return ctx.Status(400).JSON(errorDto.ErrorResponse{Error: "invalid body"})
+	}
+
+	updated, err := c.service.Update(uint(categoryID), storeID, body.Category)
+	if err != nil {
+		if errors.Is(err, service.ErrCategoryNotFound) {
+			return ctx.Status(404).JSON(errorDto.ErrorResponse{Error: "category not found"})
+		}
+		return ctx.Status(500).JSON(errorDto.ErrorResponse{Error: "update failed"})
+	}
+
+	return ctx.JSON(dto.UpdateCategoryResponseDTO{
+		ID:       updated.ID,
+		Category: updated.Category,
+		StoreID:  updated.StoreID,
+	})
+}
+
+// DeleteCategory godoc
+// @Summary      카테고리 삭제
+// @Description  카테고리 ID와 storeID로 카테고리를 삭제합니다.
+// @Tags         category
+// @Produce      json
+// @Param        categoryId path int true "카테고리 ID"
+// @Success      200 {object} dto.DeleteCategoryResponseDTO "삭제 성공 메시지"
+// @Failure      400 {object} errorDto.ErrorResponse "잘못된 요청"
+// @Failure      401 {object} errorDto.ErrorResponse "인증 실패"
+// @Failure      404 {object} errorDto.ErrorResponse "카테고리 없음"
+// @Failure      500 {object} errorDto.ErrorResponse "서버 에러"
+// @Router       /categories/{categoryId} [delete]
+func (c *CategoryController) DeleteCategory(ctx *fiber.Ctx) error {
+	storeID, err := middleware.ExtractStoreID(ctx)
+	if err != nil {
+		return ctx.Status(401).JSON(errorDto.ErrorResponse{Error: "unauthorized"})
+	}
+
+	categoryID, err := strconv.Atoi(ctx.Params("categoryId"))
+	if err != nil {
+		return ctx.Status(400).JSON(errorDto.ErrorResponse{Error: "invalid id"})
+	}
+
+	err = c.service.Delete(uint(categoryID), storeID)
+	if err != nil {
+		if errors.Is(err, service.ErrCategoryNotFound) {
+			return ctx.Status(404).JSON(errorDto.ErrorResponse{Error: "category not found"})
+		}
+		return ctx.Status(500).JSON(errorDto.ErrorResponse{Error: "delete failed"})
+	}
+
+	return ctx.Status(200).JSON(dto.DeleteCategoryResponseDTO{Message: "category deleted successfully"})
 }

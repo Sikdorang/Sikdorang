@@ -8,6 +8,9 @@ import (
 type CategoryRepository interface {
 	Save(category models.Category) error
 	FindByStoreID(storeID uint) ([]models.Category, error)
+	FindByIDAndStoreID(id uint, storeID uint) (models.Category, error)
+	Update(category models.Category) error
+	Delete(categoryID uint, storeID uint) error
 }
 
 type categoryRepository struct {
@@ -28,4 +31,20 @@ func (r *categoryRepository) FindByStoreID(storeID uint) ([]models.Category, err
 		return nil, err
 	}
 	return categories, nil
+}
+
+func (r *categoryRepository) FindByIDAndStoreID(id uint, storeID uint) (models.Category, error) {
+	var category models.Category
+	err := r.db.Where("id = ? AND store_id = ?", id, storeID).
+		First(&category).Error
+	return category, err
+}
+
+func (r *categoryRepository) Update(category models.Category) error {
+	return r.db.Save(&category).Error
+}
+
+func (r *categoryRepository) Delete(categoryID uint, storeID uint) error {
+	return r.db.Where("id = ? AND store_id = ?", categoryID, storeID).
+		Delete(&models.Category{}).Error
 }
