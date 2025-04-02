@@ -6,7 +6,7 @@ import (
 )
 
 type CategoryService interface {
-	Create(input interface{}) (models.Category, error)
+	Create(category string, storeID uint) (models.Category, error)
 	GetAllByStoreID(storeID uint) ([]models.Category, error)
 }
 
@@ -18,15 +18,10 @@ func NewCategoryService(r repository.CategoryRepository) CategoryService {
 	return &categoryService{repo: r}
 }
 
-func (s *categoryService) Create(input interface{}) (models.Category, error) {
-	data := input.(struct {
-		Category string
-		StoreID  uint
-	})
-
+func (s *categoryService) Create(Category string, storeID uint) (models.Category, error) {
 	category := models.Category{
-		Category: data.Category,
-		StoreID:  data.StoreID,
+		Category: Category,
+		StoreID:  storeID,
 	}
 
 	if err := s.repo.Save(category); err != nil {

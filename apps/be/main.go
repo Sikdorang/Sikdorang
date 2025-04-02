@@ -1,5 +1,9 @@
 package main
-
+// @title My API
+// @version 1.0
+// @description API 문서
+// @host Localhost:4000
+// @BasePath /api
 import (
 	"log"
 	"github.com/gofiber/fiber/v2"
