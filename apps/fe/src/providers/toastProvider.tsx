@@ -26,7 +26,7 @@ export default function ToastProvider({ children }: { children: ReactNode }) {
         toastClassName={(context) =>
           contextClass[context?.type || 'default'] +
           ' ' +
-          'text-body-sm px-4 py-2 rounded-full border shadow-xs cursor-pointer'
+          'text-body-sm px-4 py-2 rounded-full border shadow-xs cursor-pointer my-1'
         }
       />
     </>
