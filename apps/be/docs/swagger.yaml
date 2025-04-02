@@ -20,6 +20,11 @@ definitions:
         example: 2
         type: integer
     type: object
+  dto.DeleteCategoryResponseDTO:
+    properties:
+      message:
+        type: string
+    type: object
   dto.ErrorResponse:
     properties:
       error:
@@ -62,6 +67,26 @@ definitions:
       accessToken:
         example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
         type: string
+    type: object
+  dto.UpdateCategoryRequestDTO:
+    properties:
+      category:
+        example: 증류주
+        type: string
+    required:
+    - category
+    type: object
+  dto.UpdateCategoryResponseDTO:
+    properties:
+      category:
+        example: 음료
+        type: string
+      id:
+        example: 1
+        type: integer
+      storeId:
+        example: 2
+        type: integer
     type: object
 host: Localhost:4000
 info:
@@ -190,6 +215,83 @@ paths:
           schema:
             $ref: '#/definitions/dto.ErrorResponse'
       summary: 카테고리 생성
+      tags:
+      - category
+  /categories/{categoryId}:
+    delete:
+      description: 카테고리 ID와 storeID로 카테고리를 삭제합니다.
+      parameters:
+      - description: 카테고리 ID
+        in: path
+        name: categoryId
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 삭제 성공 메시지
+          schema:
+            $ref: '#/definitions/dto.DeleteCategoryResponseDTO'
+        "400":
+          description: 잘못된 요청
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+        "401":
+          description: 인증 실패
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+        "404":
+          description: 카테고리 없음
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+        "500":
+          description: 서버 에러
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+      summary: 카테고리 삭제
+      tags:
+      - category
+    patch:
+      consumes:
+      - application/json
+      description: 카테고리 ID와 storeID로 카테고리 이름을 수정합니다.
+      parameters:
+      - description: 카테고리 ID
+        in: path
+        name: categoryId
+        required: true
+        type: integer
+      - description: 수정할 카테고리 정보
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/dto.UpdateCategoryRequestDTO'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.UpdateCategoryResponseDTO'
+        "400":
+          description: 잘못된 요청
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+        "401":
+          description: 인증 실패
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+        "404":
+          description: 카테고리 없음
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+        "500":
+          description: 서버 에러
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+      summary: 카테고리 수정
       tags:
       - category
 swagger: "2.0"

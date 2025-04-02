@@ -200,6 +200,122 @@ const docTemplate = `{
                     }
                 }
             }
+        },
+        "/categories/{categoryId}": {
+            "delete": {
+                "description": "카테고리 ID와 storeID로 카테고리를 삭제합니다.",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "category"
+                ],
+                "summary": "카테고리 삭제",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "카테고리 ID",
+                        "name": "categoryId",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "삭제 성공 메시지",
+                        "schema": {
+                            "$ref": "#/definitions/dto.DeleteCategoryResponseDTO"
+                        }
+                    },
+                    "400": {
+                        "description": "잘못된 요청",
+                        "schema": {
+                            "$ref": "#/definitions/dto.ErrorResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "인증 실패",
+                        "schema": {
+                            "$ref": "#/definitions/dto.ErrorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "카테고리 없음",
+                        "schema": {
+                            "$ref": "#/definitions/dto.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "서버 에러",
+                        "schema": {
+                            "$ref": "#/definitions/dto.ErrorResponse"
+                        }
+                    }
+                }
+            },
+            "patch": {
+                "description": "카테고리 ID와 storeID로 카테고리 이름을 수정합니다.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "category"
+                ],
+                "summary": "카테고리 수정",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "카테고리 ID",
+                        "name": "categoryId",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "수정할 카테고리 정보",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.UpdateCategoryRequestDTO"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/dto.UpdateCategoryResponseDTO"
+                        }
+                    },
+                    "400": {
+                        "description": "잘못된 요청",
+                        "schema": {
+                            "$ref": "#/definitions/dto.ErrorResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "인증 실패",
+                        "schema": {
+                            "$ref": "#/definitions/dto.ErrorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "카테고리 없음",
+                        "schema": {
+                            "$ref": "#/definitions/dto.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "서버 에러",
+                        "schema": {
+                            "$ref": "#/definitions/dto.ErrorResponse"
+                        }
+                    }
+                }
+            }
         }
     },
     "definitions": {
@@ -229,6 +345,14 @@ const docTemplate = `{
                 "storeId": {
                     "type": "integer",
                     "example": 2
+                }
+            }
+        },
+        "dto.DeleteCategoryResponseDTO": {
+            "type": "object",
+            "properties": {
+                "message": {
+                    "type": "string"
                 }
             }
         },
@@ -293,6 +417,35 @@ const docTemplate = `{
                 "accessToken": {
                     "type": "string",
                     "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+                }
+            }
+        },
+        "dto.UpdateCategoryRequestDTO": {
+            "type": "object",
+            "required": [
+                "category"
+            ],
+            "properties": {
+                "category": {
+                    "type": "string",
+                    "example": "증류주"
+                }
+            }
+        },
+        "dto.UpdateCategoryResponseDTO": {
+            "type": "object",
+            "properties": {
+                "category": {
+                    "type": "string",
+                    "example": "음료"
+                },
+                "id": {
+                    "type": "integer",
+                    "example": 1
+                },
+                "storeId": {
+                    "type": "integer",
+                    "example": 2
                 }
             }
         }

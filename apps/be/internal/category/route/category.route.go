@@ -20,7 +20,6 @@ func InitCategoryRoutes(router fiber.Router, db *gorm.DB) {
 	// ✅ 여기에 API들 등록
 	group.Get("/", ctrl.GetCategories)        // GET /api/categories
 	group.Post("/", ctrl.CreateCategory)      // POST /api/categories
-	//group.Get("/:id", ctrl.GetCategoryByID)   // GET /api/categories/:id
-	//group.Put("/:id", ctrl.UpdateCategory)    // PUT /api/categories/:id
-	//group.Delete("/:id", ctrl.DeleteCategory) // DELETE /api/categories/:id
+	group.Patch("/:categoryId", ctrl.UpdateCategory)    // PUT /api/categories/:id
+	group.Delete("/:categoryId", ctrl.DeleteCategory) // DELETE /api/categories/:id
 }
