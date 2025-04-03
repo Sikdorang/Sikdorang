@@ -1,8 +1,8 @@
 'use client';
 
-import { ReactNode, useEffect } from 'react';
+import { useEffect } from 'react';
 
-export function MSWProvider({ children }: { children: ReactNode }) {
+export default function MSWProvider() {
   useEffect(() => {
     async function enableMocking() {
       if (typeof window !== 'undefined' && process.env.NEXT_PUBLIC_API_MOCKING === 'enable') {
@@ -14,5 +14,5 @@ export function MSWProvider({ children }: { children: ReactNode }) {
     enableMocking();
   }, []);
 
-  return <>{children}</>;
+  return null;
 }

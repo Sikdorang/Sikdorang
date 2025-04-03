@@ -1,7 +1,10 @@
 import type { Metadata } from 'next';
 import localFont from 'next/font/local';
-import { MSWProvider } from './provider';
+
 import '../styles/globals.css';
+import TanstackProvider from '@/providers/tanstackProvider';
+import ToastProvider from '@/providers/toastProvider';
+import MSWProvider from '@/providers/mswProvider';
 
 const pretendard = localFont({
   src: '../../public/fonts/PretendardVariable.woff2',
@@ -20,9 +23,14 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <MSWProvider>
-        <body className={`${pretendard.className} antialiased`}>{children}</body>
-      </MSWProvider>
+      <body className={`${pretendard.className} antialiased`}>
+        <TanstackProvider>
+          <ToastProvider>
+            {children}
+            <MSWProvider />
+          </ToastProvider>
+        </TanstackProvider>
+      </body>
     </html>
   );
 }
