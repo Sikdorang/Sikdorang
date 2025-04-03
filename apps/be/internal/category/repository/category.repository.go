@@ -6,7 +6,7 @@ import (
 )
 
 type CategoryRepository interface {
-	Save(category models.Category) error
+	Save(category *models.Category) error
 	FindByStoreID(storeID uint) ([]models.Category, error)
 	FindByIDAndStoreID(id uint, storeID uint) (models.Category, error)
 	Update(category models.Category) error
@@ -21,8 +21,8 @@ func NewCategoryRepository(db *gorm.DB) CategoryRepository {
 	return &categoryRepository{db: db}
 }
 
-func (r *categoryRepository) Save(category models.Category) error {
-	return r.db.Create(&category).Error
+func (r *categoryRepository) Save(category *models.Category) error {
+	return r.db.Create(category).Error
 }
 
 func (r *categoryRepository) FindByStoreID(storeID uint) ([]models.Category, error) {
