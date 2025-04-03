@@ -1,0 +1,82 @@
+import React, { useState, useRef, useEffect } from 'react';
+import Image from 'next/image';
+
+import MenuElementLabel from './MenuElementLabel';
+
+import checkedIcon from '@public/icons/ic_check.svg';
+
+interface MenuManageSelectProps {
+  options: string[];
+  selectedOption: string;
+  isStatus?: boolean;
+  onChange: (value: string) => void;
+}
+
+export default function MenuManageSelect({
+  options,
+  selectedOption,
+  isStatus = false,
+  onChange,
+}: MenuManageSelectProps) {
+  const [isOpen, setIsOpen] = useState(false);
+  const selectRef = useRef<HTMLDivElement>(null);
+
+  // 외부 클릭 감지
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (selectRef.current && !selectRef.current.contains(event.target as Node)) {
+        setIsOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, []);
+
+  // 선택된 옵션의 텍스트 길이를 기준으로 left 값 계산
+  const calculateLeftPosition = (text: string) => {
+    const fontSize = 16; // 텍스트의 폰트 크기 (픽셀)
+    const averageCharacterWidth = fontSize * 1; // 문자당 평균 너비 계산
+    return (text.length / 2) * averageCharacterWidth + 4; // 글자 길이에 따른 left 값 계산 (+4px)
+  };
+
+  const leftPosition = calculateLeftPosition(selectedOption || '카테고리 선택'); // 기본값 포함
+
+  return (
+    <div className="relative inline-block w-full cursor-pointer" ref={selectRef}>
+      <MenuElementLabel
+        text={selectedOption || '카테고리 선택'}
+        variant={isStatus ? undefined : 'default'}
+        hover={true}
+        isStatus={isStatus}
+        onClick={() => setIsOpen((prev) => !prev)}
+      />
+
+      {isOpen && (
+        <div
+          className="absolute z-10 top-0 w-full bg-white border border-gray-200 rounded shadow-lg"
+          style={{ left: `calc(50% + ${leftPosition}px)` }} // 동적으로 계산된 left 값 적용
+        >
+          {options.map((option) => (
+            <div
+              key={option}
+              onClick={() => {
+                onChange(option);
+                setIsOpen(false);
+              }}
+              className={`flex items-center w-full px-4 py-2 cursor-pointer hover:bg-gray-100`}
+            >
+              {option === selectedOption ? (
+                <Image src={checkedIcon} alt="체크됨" className="w-3 h-3 mr-2" />
+              ) : (
+                <div className="w-3 h-3 mr-2"></div>
+              )}
+              <MenuElementLabel text={option} hover={false} isStatus={isStatus} />
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}

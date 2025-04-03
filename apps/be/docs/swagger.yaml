@@ -1,0 +1,297 @@
+basePath: /api
+definitions:
+  dto.CreateCategoryRequestDTO:
+    properties:
+      category:
+        example: 증류주
+        type: string
+    required:
+    - category
+    type: object
+  dto.CreateCategoryResponseDTO:
+    properties:
+      category:
+        example: 음료
+        type: string
+      id:
+        example: 1
+        type: integer
+      storeId:
+        example: 2
+        type: integer
+    type: object
+  dto.DeleteCategoryResponseDTO:
+    properties:
+      message:
+        type: string
+    type: object
+  dto.ErrorResponse:
+    properties:
+      error:
+        example: unauthorized
+        type: string
+    type: object
+  dto.GetCategoryResponseDTO:
+    properties:
+      category:
+        example:
+        - '["음료"'
+        - ' "디저트"]'
+        items:
+          type: string
+        type: array
+    type: object
+  dto.LoginRequestDTO:
+    properties:
+      password:
+        example: "1234"
+        type: string
+      userId:
+        example: admin123
+        type: string
+    type: object
+  dto.LoginResponseDTO:
+    properties:
+      accessToken:
+        example: eyJhbGciOiJIUzI1NiIsInR...
+        type: string
+    type: object
+  dto.LogoutResponseDTO:
+    properties:
+      message:
+        example: logout success
+        type: string
+    type: object
+  dto.RefreshTokenResponseDTO:
+    properties:
+      accessToken:
+        example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+        type: string
+    type: object
+  dto.UpdateCategoryRequestDTO:
+    properties:
+      category:
+        example: 증류주
+        type: string
+    required:
+    - category
+    type: object
+  dto.UpdateCategoryResponseDTO:
+    properties:
+      category:
+        example: 음료
+        type: string
+      id:
+        example: 1
+        type: integer
+      storeId:
+        example: 2
+        type: integer
+    type: object
+host: Localhost:4000
+info:
+  contact: {}
+  description: API 문서
+  title: My API
+  version: "1.0"
+paths:
+  /auth/login:
+    post:
+      consumes:
+      - application/json
+      description: 아이디와 비밀번호로 로그인하여 Access/Refresh Token 발급
+      parameters:
+      - description: 로그인 요청
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/dto.LoginRequestDTO'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.LoginResponseDTO'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+      summary: 로그인
+      tags:
+      - auth
+  /auth/logout:
+    post:
+      description: Refresh Token을 무효화하고 쿠키에서 제거합니다.
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 로그아웃 성공
+          schema:
+            $ref: '#/definitions/dto.LogoutResponseDTO'
+        "500":
+          description: 서버 에러
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+      summary: 로그아웃
+      tags:
+      - auth
+  /auth/refresh:
+    post:
+      description: Refresh Token을 사용하여 새로운 Access Token을 발급합니다.
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: accessToken 응답
+          schema:
+            $ref: '#/definitions/dto.RefreshTokenResponseDTO'
+        "401":
+          description: Refresh Token 누락 또는 유효하지 않음
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+      summary: Access Token 갱신
+      tags:
+      - auth
+  /categories:
+    get:
+      description: storeID에 해당하는 카테고리 이름 목록을 조회합니다.
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 카테고리 이름 배열
+          schema:
+            $ref: '#/definitions/dto.GetCategoryResponseDTO'
+        "401":
+          description: 인증 실패
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+        "500":
+          description: 조회 실패
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+      summary: 카테고리 목록 조회
+      tags:
+      - category
+    post:
+      consumes:
+      - application/json
+      description: storeID에 해당하는 카테고리를 추가합니다.
+      parameters:
+      - description: 카테고리 요청 데이터
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/dto.CreateCategoryRequestDTO'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: 생성된 카테고리 응답
+          schema:
+            $ref: '#/definitions/dto.CreateCategoryResponseDTO'
+        "400":
+          description: 잘못된 요청
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+        "401":
+          description: 인증 실패
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+        "500":
+          description: 서버 에러
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+      summary: 카테고리 생성
+      tags:
+      - category
+  /categories/{categoryId}:
+    delete:
+      description: 카테고리 ID와 storeID로 카테고리를 삭제합니다.
+      parameters:
+      - description: 카테고리 ID
+        in: path
+        name: categoryId
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 삭제 성공 메시지
+          schema:
+            $ref: '#/definitions/dto.DeleteCategoryResponseDTO'
+        "400":
+          description: 잘못된 요청
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+        "401":
+          description: 인증 실패
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+        "404":
+          description: 카테고리 없음
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+        "500":
+          description: 서버 에러
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+      summary: 카테고리 삭제
+      tags:
+      - category
+    patch:
+      consumes:
+      - application/json
+      description: 카테고리 ID와 storeID로 카테고리 이름을 수정합니다.
+      parameters:
+      - description: 카테고리 ID
+        in: path
+        name: categoryId
+        required: true
+        type: integer
+      - description: 수정할 카테고리 정보
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/dto.UpdateCategoryRequestDTO'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.UpdateCategoryResponseDTO'
+        "400":
+          description: 잘못된 요청
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+        "401":
+          description: 인증 실패
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+        "404":
+          description: 카테고리 없음
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+        "500":
+          description: 서버 에러
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+      summary: 카테고리 수정
+      tags:
+      - category
+swagger: "2.0"

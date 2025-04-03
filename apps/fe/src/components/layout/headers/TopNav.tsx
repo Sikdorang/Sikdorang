@@ -16,8 +16,8 @@ export default function TopNav() {
   const pathname = usePathname();
 
   return (
-    <nav className="bg-white fixed top-0 left-0 w-full z-1000 border border-gray-200">
-      <div className="container mx-auto px-4 py-3 flex items-center justify-between">
+    <nav className="bg-white sticky inset-0 w-full z-10 border-b border-gray-200">
+      <div className="wrapper mx-auto py-4 flex items-center justify-between">
         <div className="text-title-sm text-gray-800">
           <Link href="/">식도랑 관리자</Link>
         </div>
@@ -27,7 +27,7 @@ export default function TopNav() {
               <li key={item.path}>
                 <Link
                   href={item.path}
-                  className={`px-3 text-label-md focus:outline-none transition ${
+                  className={`px-3 text-label-md focus:outline-none transition-colors ${
                     pathname === item.path ? 'text-blue-500' : 'text-gray-700 hover:text-blue-400'
                   }`}
                 >
@@ -35,7 +35,7 @@ export default function TopNav() {
                 </Link>
               </li>
             ))}
-            <Image src={profileBackgroundImage} className="space-x-4 w-[29px] h-[29px]" alt={''} />
+            <Image src={profileBackgroundImage} className="space-x-4 w-7 h-7" alt={''} />
           </ul>
         </div>
       </div>
