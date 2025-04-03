@@ -11,7 +11,7 @@ type Menu struct {
     StoreID     uint
     Store       Store
     SoldOut     bool
-    order       int
+    Order       int
 
     Images         []Image
     RecommandMenus []RecommandMenu
