@@ -7,6 +7,7 @@ package main
 import (
 	"log"
 	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/fiber/v2/middleware/cors"
 	"be/config"
 	"be/internal/models"
 	"be/internal/routes"
@@ -30,6 +31,13 @@ func main() {
 
 	// Fiber 인스턴스 생성
 	app := fiber.New()
+
+	app.Use(cors.New(cors.Config{
+		AllowOrigins:     "http://localhost:3000", // 프론트 도메인
+		AllowMethods:     "GET,POST,PUT,DELETE,OPTIONS",
+		AllowHeaders:     "Origin, Content-Type, Accept, Authorization",
+		AllowCredentials: true,
+	}))
 
 	// 🎯 도메인별 라우터 한 줄로 등록
 	routes.SetupRoutes(app, db)

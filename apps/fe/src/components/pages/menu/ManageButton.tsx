@@ -1,20 +1,10 @@
-import React from 'react';
+import { ButtonHTMLAttributes, PropsWithChildren } from 'react';
 
-interface ManageButtonProps {
-  text: string;
-  disabled?: boolean;
+interface ManageButtonProps extends ButtonHTMLAttributes<HTMLButtonElement>, PropsWithChildren {
   variant?: 'default' | 'modify' | 'delete';
-  className?: string;
-  onClick?: () => void;
 }
 
-export default function ManageButton({
-  text,
-  disabled = false,
-  variant = 'default',
-  className,
-  onClick,
-}: ManageButtonProps) {
+export default function ManageButton({ children, variant = 'default' }: ManageButtonProps) {
   const baseClass = 'w-fit p-2 text-label-sm-sb rounded-md border border-gray-200 focus:outline-none transition';
 
   const variantClass =
@@ -26,9 +16,5 @@ export default function ManageButton({
           ? 'bg-gray-800 text-blue-100 hover:bg-gray-700 disabled:bg-blue-600'
           : '';
 
-  return (
-    <button className={`${baseClass} ${variantClass} ${className}`} disabled={disabled} onClick={onClick}>
-      {text}
-    </button>
-  );
+  return <button className={`${baseClass} ${variantClass}`}>{children}</button>;
 }
