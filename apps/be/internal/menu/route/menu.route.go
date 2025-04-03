@@ -19,6 +19,7 @@ func InitMenuRoutes(router fiber.Router, db *gorm.DB) {
 
 	// ✅ 여기에 API들 등록
 	group.Get("/", ctrl.GetMenus)        // GET /api/menus
+	group.Post("/", ctrl.SyncMenus)      // POST /api/menus/
 //	group.Post("/", ctrl.CreateMenus)      // POST /api/menus
 //	group.Patch("/:menuId", ctrl.UpdateMenus)    // PUT /api/menus/:id
 //	group.Delete("/:menuId", ctrl.DeleteMenus) // DELETE /api/menus/:id
