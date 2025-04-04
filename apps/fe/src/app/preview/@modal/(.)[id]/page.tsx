@@ -1,22 +1,26 @@
 'use client';
 
-import MenuModal from '@/components/preview/MenuModal';
+import MenuModal from '@/components/pages/preview/MenuModal';
+import ModalBackground from '@/components/pages/preview/ModalBackground';
 import { useRouter } from 'next/navigation';
+import { PropsWithChildren, useEffect } from 'react';
 
 interface ModalPageProps {
   params: { id: string };
 }
 
 export default function ModalPage({ params }: ModalPageProps) {
-  const router = useRouter();
   const menuId = params.id;
 
-  const handleClose = () => {
-    router.back();
-  };
+  useEffect(() => {
+    document.body.style.overflow = 'hidden';
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, []);
 
   return (
-    <div onClick={handleClose} className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center">
+    <ModalBackground>
       <MenuModal
         item={{
           id: 8,
@@ -27,8 +31,8 @@ export default function ModalPage({ params }: ModalPageProps) {
           price: 13000,
           status: false,
         }}
-        onClose={handleClose}
+        onClose={() => {}}
       />
-    </div>
+    </ModalBackground>
   );
 }

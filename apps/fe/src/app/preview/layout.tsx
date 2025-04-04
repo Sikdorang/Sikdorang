@@ -5,9 +5,9 @@ interface LayoutProps {
 
 export default function Layout({ children, modal }: LayoutProps) {
   return (
-    <>
+    <div className="relative">
       {children}
       {modal}
-    </>
+    </div>
   );
 }

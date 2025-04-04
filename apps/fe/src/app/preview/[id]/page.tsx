@@ -1,15 +1,15 @@
 'use client';
 
-import MenuModal from '@/components/preview/MenuModal';
+import MenuModal from '@/components/pages/preview/MenuModal';
 import { useRouter } from 'next/navigation';
 
 interface PageProps {
   params: { id: string };
 }
 
-export default function Page({ params }: PageProps) {
+export default function Page() {
   const router = useRouter();
-  const menuId = params.id;
+  //const menuId = params.id;
 
   const handleClose = () => {
     router.back();

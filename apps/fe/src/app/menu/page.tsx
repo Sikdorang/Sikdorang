@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import TopNav from '@/components/layout/headers/TopNav';
-import Modal from '@/components/features/modal/ImageManageModal';
+import Modal from '@/components/pages/menu/ImageManageModal';
 import MainControlButton from '@/components/pages/menu/MainControlButton';
 import ManageButton from '@/components/pages/menu/ManageButton';
 import MenuManageSelect from '@/components/pages/menu/MenuManageSelect';

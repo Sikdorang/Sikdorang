@@ -1,5 +1,5 @@
-import CategorySidebar from '@/components/preview/CategorySidebar';
-import MenuSection from '@/components/preview/MenuSection';
+import CategorySidebar from '@/components/pages/preview/CategorySidebar';
+import MenuSection from '@/components/pages/preview/MenuSection';
 
 export default function Page() {
   return (
