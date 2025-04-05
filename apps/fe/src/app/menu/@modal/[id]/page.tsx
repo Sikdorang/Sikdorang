@@ -1,27 +1,37 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
-import { useState } from 'react';
-import Image from 'next/image';
+import { useState, useEffect } from 'react';
 
 import TextInput from '@/components/common/inputs/TextInput';
 import BaseButton from '@/components/common/buttons/BaseButton';
 import ProductTag from '@/components/common/labels/ProductTag';
-
-import deleteIcon from '@public/icons/ic_x.svg';
-import addIcon from '@public/icons/ic_plus.svg';
+import ImageGallery from '@/components/pages/menu/MenuImageGallery';
 
 export default function MenuManageModal({ params }: { params: { id: string } }) {
   const router = useRouter();
+
   const [images, setImages] = useState<string[]>([]);
-  const [selectedImage, setSelectedImage] = useState<string | null>(null);
-  const MAX_IMAGES = 10;
+
+  const [shortDescription, setShortDescription] = useState('');
+
+  const [detailedDescription, setDetailedDescription] = useState('');
 
   const [isComposing, setIsComposing] = useState(false);
-  const [shortDescription, setShortDescription] = useState('');
-  const [detailedDescription, setDetailedDescription] = useState('');
   const [tags, setTags] = useState<string[]>([]);
   const [inputTagValue, setInputTagValue] = useState('');
+
+  useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        router.back();
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [router]);
 
   const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
     if (isComposing) return;
@@ -44,34 +54,6 @@ export default function MenuManageModal({ params }: { params: { id: string } }) 
     setTags((prevTags) => prevTags.filter((tag) => tag !== tagToDelete)); // 태그 삭제
   };
 
-  // 이미지 업로드 핸들러
-  const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const files = Array.from(event.target.files || []);
-    if (images.length + files.length > MAX_IMAGES) {
-      alert(`최대 ${MAX_IMAGES}개의 이미지만 업로드할 수 있습니다.`);
-      return;
-    }
-
-    const uploadedImages = files.map((file) => URL.createObjectURL(file));
-    setImages((prev) => [...prev, ...uploadedImages]);
-
-    // 첫 번째 이미지를 자동으로 선택
-    if (!selectedImage && uploadedImages.length > 0) {
-      setSelectedImage(uploadedImages[0]);
-    }
-  };
-
-  // 이미지 삭제 핸들러
-  const handleDeleteImage = (index: number) => {
-    const updatedImages = images.filter((_, i) => i !== index);
-    setImages(updatedImages);
-
-    // 선택된 이미지가 삭제된 경우 처리
-    if (selectedImage === images[index]) {
-      setSelectedImage(updatedImages[0] || null);
-    }
-  };
-
   const handleConfirm = () => {
     console.log('Selected ID:', params.id);
     console.log('Modal Data:', { images, shortDescription, detailedDescription });
@@ -83,46 +65,9 @@ export default function MenuManageModal({ params }: { params: { id: string } }) 
       <div className="bg-white p-6 rounded-lg shadow-lg w-[600px]">
         <div className="text-title-sm mb-4">이미지 및 설명 관리</div>
 
-        {/* 메인 이미지 미리보기 */}
-        <div className="w-full h-64 border border-blue-200 rounded-md flex items-center justify-center mb-4">
-          {selectedImage ? (
-            <img src={selectedImage} alt="선택된 이미지" className="w-full h-full object-cover rounded-md" />
-          ) : (
-            <p className="text-gray-400 text-body-xs">이미지를 업로드해 주세요</p>
-          )}
-        </div>
-
-        {/* 썸네일 목록 */}
-        <div className="flex items-center space-x-2 overflow-x-auto mb-3">
-          {images.map((image, index) => (
-            <div key={index} className="relative">
-              <img
-                src={image}
-                alt={`썸네일 ${index + 1}`}
-                className={`w-16 h-16 object-cover rounded-md cursor-pointer ${
-                  selectedImage === image ? 'border-2 border-blue-500' : 'border border-gray-200'
-                }`}
-                onClick={() => setSelectedImage(image)}
-              />
-              <button
-                onClick={() => handleDeleteImage(index)}
-                className="absolute top-0 right-0 bg-white text-white text-xs rounded-full w-4 h-4 flex items-center justify-center"
-              >
-                <Image src={deleteIcon} alt="" />
-              </button>
-            </div>
-          ))}
-
-          {/* 업로드 버튼 */}
-          {images.length < MAX_IMAGES && (
-            <label className="w-16 h-16 flex items-center justify-center bg-gray-100 hover:bg-gray-200 rounded-md cursor-pointer">
-              <Image src={addIcon} alt="" className="w-4 h-4" />
-              <input type="file" multiple accept="image/*" onChange={handleImageUpload} className="hidden" />
-            </label>
-          )}
-        </div>
-
         <div className="space-y-4">
+          <ImageGallery images={images} setImages={setImages} maxImages={10} />
+
           <TextInput
             label="한 줄 설명"
             placeholder="메뉴의 대표 설명을 한 줄 입력해 주세요"
