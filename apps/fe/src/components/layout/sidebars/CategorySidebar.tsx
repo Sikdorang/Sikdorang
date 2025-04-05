@@ -110,7 +110,7 @@ export default function CategorySidebar({ isOpen, onClose, categories, setCatego
               {categories.map((category, index) => (
                 <li key={index} className="flex justify-between items-center p-2 rounded-md">
                   <div className="flex items-center">
-                    <div className="text-gray-500 text-label-xs-m border border-gray-200 px-1 mr-2">
+                    <div className="text-gray-500 text-label-xs-m border border-gray-200 px-1 mr-2 select-none">
                       {(index + 1).toString().padStart(3, '0')}
                     </div>
 
@@ -127,7 +127,7 @@ export default function CategorySidebar({ isOpen, onClose, categories, setCatego
                     className="text-red-500 border border-red-200 bg-red-100 p-1 rounded-sm hover:bg-red-200 focus:outline-none"
                     onClick={() => handleDeleteCategory(index)}
                   >
-                    <Image className="w-3 h-3" src={trashcanIcon} alt="삭제" />
+                    <Image className="w-3 h-3" src={trashcanIcon} alt="삭제" draggable="false" />
                   </button>
                 </li>
               ))}

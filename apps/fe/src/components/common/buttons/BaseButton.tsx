@@ -14,7 +14,7 @@ export default function BaseButton({
   ...props
 }: BaseButtonProps) {
   const baseClass =
-    'w-full h-12 py-2 text-label-md rounded-sm focus:outline-none transition flex items-center justify-center';
+    'w-full h-12 py-2 text-label-md rounded-sm focus:outline-none transition flex items-center justify-center select-none';
   const variantClass =
     variant === 'cancel'
       ? 'bg-gray-100 text-gray-500 hover:bg-gray-200 disabled:bg-gray-200'

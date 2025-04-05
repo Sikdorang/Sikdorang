@@ -11,6 +11,8 @@ import CheckboxInput from '@/components/common/inputs/CheckboxInput';
 import CategorySidebar from '@/components/layout/sidebars/CategorySidebar';
 import MenuTextInput from '@/components/pages/menu/MenuTextInput';
 
+import { URLS } from '@/constants/urls';
+
 interface IMenuItem {
   id: number;
   name: string;
@@ -25,6 +27,9 @@ export default function MenuPage() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
   const toggleSidebar = () => setIsSidebarOpen((prev) => !prev);
+  const handleCheckboxChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setShowOnlyEmptyMenus(e.target.checked);
+  };
 
   const [menuItems, setMenuItems] = useState<IMenuItem[]>([
     {
@@ -83,18 +88,14 @@ export default function MenuPage() {
         <header className="flex flex-row w-full mb-6">
           <MainControlButton
             className="flex-none w-fit"
-            onClick={() =>
-              window.open('https://www.notion.so/1c8e4c6f133f8008881ffda5240479ea', '_blank', 'noopener noreferrer')
-            }
+            onClick={() => window.open(URLS.helpMenuManageUrl, '_blank', 'noopener noreferrer')}
           >
             사용 설명 보기
           </MainControlButton>
           <div className="grow"></div>
-          <CheckboxInput
-            text="미입력 메뉴만 보기"
-            checked={showOnlyEmptyMenus}
-            onChange={(checked) => setShowOnlyEmptyMenus(checked)}
-          ></CheckboxInput>
+          <CheckboxInput checked={showOnlyEmptyMenus} onChange={handleCheckboxChange}>
+            미입력 메뉴만 보기
+          </CheckboxInput>
           <MainControlButton variant="category" className="flex-none w-fit" onClick={toggleSidebar}>
             카테고리 편집
           </MainControlButton>

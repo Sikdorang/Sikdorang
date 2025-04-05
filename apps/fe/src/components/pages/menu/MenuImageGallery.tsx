@@ -16,7 +16,6 @@ export default function MenuImageGallery({ images, setImages, maxImages = 10 }: 
   const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(event.target.files || []);
     if (images.length + files.length > maxImages) {
-      alert(`최대 ${maxImages}개의 이미지만 업로드할 수 있습니다.`);
       return;
     }
     const uploadedImages = files.map((file) => URL.createObjectURL(file));
@@ -41,7 +40,7 @@ export default function MenuImageGallery({ images, setImages, maxImages = 10 }: 
         {selectedImage ? (
           <img src={selectedImage} alt="선택된 이미지" className="w-full h-full object-cover rounded-md" />
         ) : (
-          <p className="text-gray-400 text-body-xs">이미지를 업로드해 주세요</p>
+          <p className="text-gray-400 text-body-xs select-none">이미지를 업로드해 주세요</p>
         )}
       </div>
 
@@ -50,7 +49,7 @@ export default function MenuImageGallery({ images, setImages, maxImages = 10 }: 
           <div key={index} className="relative">
             <img
               src={image}
-              alt={`썸네일 ${index + 1}`}
+              alt={`${index + 1}`}
               className={`w-16 h-16 object-cover rounded-md cursor-pointer ${
                 selectedImage === image ? 'border-2 border-blue-500' : 'border border-gray-200'
               }`}
