@@ -4,6 +4,8 @@ import Image from 'next/image';
 import TextInput from '@/components/common/inputs/TextInput';
 import MenuTextInput from '@/components/pages/menu/MenuTextInput';
 
+import { MESSAGES } from '@/constants/messages';
+
 import trashcanIcon from '@public/icons/ic_trashcan.svg';
 
 interface CategorySidebarProps {
@@ -15,14 +17,15 @@ interface CategorySidebarProps {
 
 export default function CategorySidebar({ isOpen, onClose, categories, setCategories }: CategorySidebarProps) {
   const sidebarRef = useRef<HTMLDivElement>(null);
+
   const [isComposing, setIsComposing] = useState(false);
   const [newCategory, setNewCategory] = useState('');
+  const [categoryError, setCategoryError] = useState<string | null>(null);
 
-  // Detect clicks outside of the sidebar
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (sidebarRef.current && !sidebarRef.current.contains(event.target as Node)) {
-        onClose(); // Close the sidebar
+        onClose();
       }
     };
 
@@ -34,12 +37,10 @@ export default function CategorySidebar({ isOpen, onClose, categories, setCatego
       document.removeEventListener('mousedown', handleClickOutside);
     };
   }, [isOpen, onClose]);
-
   const handleDeleteCategory = (index: number) => {
     const updatedCategories = categories.filter((_, i) => i !== index);
     setCategories(updatedCategories);
   };
-
   const handleAddCategory = (event: React.KeyboardEvent<HTMLInputElement>) => {
     const inputValue = (event.target as HTMLInputElement).value.trim();
 
@@ -47,12 +48,23 @@ export default function CategorySidebar({ isOpen, onClose, categories, setCatego
 
     if (event.key === 'Enter' && inputValue) {
       event.preventDefault();
+
+      if (categories.length >= 999) {
+        setCategoryError(MESSAGES.maximumCategoryError);
+        return;
+      }
+
+      if (categories.includes(inputValue)) {
+        setCategoryError(MESSAGES.duplicatedCategoryError);
+        return;
+      }
+
       const updatedCategories = [...categories, inputValue];
       setCategories(updatedCategories);
+      setCategoryError('');
       setNewCategory('');
     }
   };
-
   const handleSaveEdit = (index: number, newText: string) => {
     if (newText.trim() === '') return;
     const updated = [...categories];
@@ -88,6 +100,7 @@ export default function CategorySidebar({ isOpen, onClose, categories, setCatego
             onChange={(e) => setNewCategory(e.target.value)}
             onKeyDown={handleAddCategory}
             maxLength={12}
+            errorMessage={categoryError ?? undefined}
           />
 
           <div className="text-label-xs-m text-gray-700 py-5">카테고리 목록</div>

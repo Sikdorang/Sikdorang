@@ -6,4 +6,7 @@ export const MESSAGES = {
   unexpectedError: '알 수 없는 오류가 발생했습니다.',
   serverError: '서버에 문제가 발생했습니다.',
   loginSuccess: '로그인에 성공했습니다.',
+  maximumTagError: '태그는 최대 10개까지만 입력할 수 있습니다.',
+  maximumCategoryError: '태그는 최대 999개까지만 입력할 수 있습니다.',
+  duplicatedCategoryError: '카테고리 이름은 중복될 수 없습니다.',
 };

@@ -8,10 +8,11 @@ import BaseButton from '@/components/common/buttons/BaseButton';
 import ProductTag from '@/components/common/labels/ProductTag';
 import ImageGallery from '@/components/pages/menu/MenuImageGallery';
 
+import { MESSAGES } from '@/constants/messages';
+
 export default function ManageMenuModal() {
   const router = useRouter();
   const searchParams = useSearchParams();
-
   const queryId = searchParams.get('id');
 
   const [images, setImages] = useState<string[]>([]);
@@ -20,9 +21,10 @@ export default function ManageMenuModal() {
 
   const [detailedDescription, setDetailedDescription] = useState('');
 
-  const [isComposing, setIsComposing] = useState(false);
   const [tags, setTags] = useState<string[]>([]);
+  const [isComposing, setIsComposing] = useState(false);
   const [inputTagValue, setInputTagValue] = useState('');
+  const [tagError, setTagError] = useState<string | null>(null);
 
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
@@ -43,12 +45,13 @@ export default function ManageMenuModal() {
       event.preventDefault();
 
       if (tags.length >= 10) {
-        alert('태그는 최대 10개까지 입력할 수 있습니다.');
+        setTagError(MESSAGES.maximumTagError);
         return;
       }
       if (!tags.includes(inputTagValue.trim())) {
         setTags((prevTags) => [...prevTags, inputTagValue.trim()]);
         setInputTagValue('');
+        setTagError('');
       }
     }
   };
@@ -95,6 +98,7 @@ export default function ManageMenuModal() {
             onCompositionEnd={() => setIsComposing(false)}
             onChange={(e) => setInputTagValue(e.target.value)}
             onKeyDown={handleKeyDown}
+            errorMessage={tagError ?? undefined}
             maxLength={10}
           />
           {tags && (

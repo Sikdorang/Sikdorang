@@ -1,7 +1,6 @@
 'use client';
 
 import React, { useState } from 'react';
-import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 
 import TopNav from '@/components/layout/headers/TopNav';
@@ -22,24 +21,11 @@ interface IMenuItem {
 }
 
 export default function MenuPage() {
-  const router = useRouter();
   const [showOnlyEmptyMenus, setShowOnlyEmptyMenus] = useState(false);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
-  const toggleSidebar = () => {
-    setIsSidebarOpen((prev) => !prev);
-  };
+  const toggleSidebar = () => setIsSidebarOpen((prev) => !prev);
 
-  const openDeleteModal = (id: string) => {
-    if (router.isReady) {
-      router.push(`/menu/delete/${id}`);
-    } else {
-      console.error('Router is not ready');
-    }
-  };
-
-  const [categories, setCategories] = useState(['안주', '증류주', '열두글자열두글자열두글자', '음료']);
-  const [status] = useState(['판매 중', '판매 중단', '판매 예정']);
   const [menuItems, setMenuItems] = useState<IMenuItem[]>([
     {
       id: 1,
@@ -58,7 +44,6 @@ export default function MenuPage() {
       status: '판매 중',
     },
   ]);
-
   const addMenuItem = () => {
     setMenuItems((prev) => [
       ...prev,
@@ -72,22 +57,15 @@ export default function MenuPage() {
       },
     ]);
   };
-
-  const deleteMenuItem = (id: number) => {
-    setMenuItems((prev) => prev.filter((item) => item.id !== id));
-  };
-
-  const updateMenuItem = (id: number, field: keyof IMenuItem, value: string | boolean) => {
+  const deleteMenuItem = (id: number) => setMenuItems((prev) => prev.filter((item) => item.id !== id));
+  const updateMenuItem = (id: number, field: keyof IMenuItem, value: string | boolean) =>
     setMenuItems((prev) => prev.map((item) => (item.id === id ? { ...item, [field]: value } : item)));
-  };
 
-  const handleCategoryChange = (id: number, value: string) => {
-    updateMenuItem(id, 'category', value);
-  };
+  const [categories, setCategories] = useState(['안주', '증류주', '열두글자열두글자열두글자', '음료']);
+  const handleCategoryChange = (id: number, value: string) => updateMenuItem(id, 'category', value);
 
-  const handleStatusChange = (id: number, value: string) => {
-    updateMenuItem(id, 'status', value);
-  };
+  const [status] = useState(['판매 중', '판매 중단', '판매 예정']);
+  const handleStatusChange = (id: number, value: string) => updateMenuItem(id, 'status', value);
 
   const filteredMenuItems = showOnlyEmptyMenus
     ? menuItems.filter((item) => !item.name || !item.price || !item.category)
@@ -97,7 +75,7 @@ export default function MenuPage() {
     <>
       <TopNav />
 
-      <div className="pt-30  mx-auto p-6 wrapper">
+      <div className="pt-30 mx-auto p-6 wrapper">
         <header className="mb-6">
           <h1 className="text-title-xl">메뉴 관리</h1>
         </header>
