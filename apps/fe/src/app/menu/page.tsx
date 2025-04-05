@@ -115,8 +115,8 @@ export default function MenuPage() {
         <table className="w-full table-auto border-none">
           <thead className="bg-gray-100 text-gray-800 text-label-sm-sb border-b border-b-gray-400">
             <tr>
-              <th className="px-5 py-5 w-[5%]">번호</th>
-              <th className="px-5 py-5 w-[40%] text-left">메뉴명</th>
+              <th className="px-5 py-5 w-[10%]">번호</th>
+              <th className="px-5 py-5 w-[35%] text-left">메뉴명</th>
               <th className="px-5 py-5 w-[10%]">가격</th>
               <th className="px-5 py-5 w-[15%]">카테고리</th>
               <th className="px-5 py-5 w-[10%]">상태</th>

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import Image from 'next/image';
 
 import TextInput from '@/components/common/inputs/TextInput';
@@ -14,7 +14,26 @@ interface CategorySidebarProps {
 }
 
 export default function CategorySidebar({ isOpen, onClose, categories, setCategories }: CategorySidebarProps) {
+  const sidebarRef = useRef<HTMLDivElement>(null);
+  const [isComposing, setIsComposing] = useState(false);
   const [newCategory, setNewCategory] = useState('');
+
+  // Detect clicks outside of the sidebar
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (sidebarRef.current && !sidebarRef.current.contains(event.target as Node)) {
+        onClose(); // Close the sidebar
+      }
+    };
+
+    if (isOpen) {
+      document.addEventListener('mousedown', handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [isOpen, onClose]);
 
   const handleDeleteCategory = (index: number) => {
     const updatedCategories = categories.filter((_, i) => i !== index);
@@ -23,6 +42,8 @@ export default function CategorySidebar({ isOpen, onClose, categories, setCatego
 
   const handleAddCategory = (event: React.KeyboardEvent<HTMLInputElement>) => {
     const inputValue = (event.target as HTMLInputElement).value.trim();
+
+    if (isComposing) return;
 
     if (event.key === 'Enter' && inputValue) {
       event.preventDefault();
@@ -41,6 +62,7 @@ export default function CategorySidebar({ isOpen, onClose, categories, setCatego
 
   return (
     <div
+      ref={sidebarRef}
       className={`fixed top-0 left-0 h-full w-[300px] bg-white shadow-lg transition-transform duration-300 ${
         isOpen ? 'translate-x-0' : '-translate-x-full'
       }`}
@@ -61,6 +83,8 @@ export default function CategorySidebar({ isOpen, onClose, categories, setCatego
             value={newCategory}
             placeholder="카테고리를 입력해 주세요"
             label="카테고리"
+            onCompositionStart={() => setIsComposing(true)}
+            onCompositionEnd={() => setIsComposing(false)}
             onChange={(e) => setNewCategory(e.target.value)}
             onKeyDown={handleAddCategory}
             maxLength={12}
