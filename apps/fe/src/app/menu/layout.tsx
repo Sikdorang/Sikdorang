@@ -1,8 +1,17 @@
-export default function MenuLayout({ children, modal }: { children: React.ReactNode; modal: React.ReactNode }) {
+export default function MenuLayout({
+  children,
+  modifyModal,
+  deleteModal,
+}: {
+  children: React.ReactNode;
+  modifyModal: React.ReactNode;
+  deleteModal: React.ReactNode;
+}) {
   return (
-    <>
-      {children}
-      {modal}
-    </>
+    <div className="relative">
+      {modifyModal}
+      {deleteModal}
+      <div>{children}</div>
+    </div>
   );
 }

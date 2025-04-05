@@ -1,6 +1,6 @@
 'use client';
 
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { useState, useEffect } from 'react';
 
 import TextInput from '@/components/common/inputs/TextInput';
@@ -8,8 +8,11 @@ import BaseButton from '@/components/common/buttons/BaseButton';
 import ProductTag from '@/components/common/labels/ProductTag';
 import ImageGallery from '@/components/pages/menu/MenuImageGallery';
 
-export default function MenuManageModal({ params }: { params: { id: string } }) {
+export default function ManageMenuModal() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+
+  const queryId = searchParams.get('id');
 
   const [images, setImages] = useState<string[]>([]);
 
@@ -44,18 +47,18 @@ export default function MenuManageModal({ params }: { params: { id: string } }) 
         return;
       }
       if (!tags.includes(inputTagValue.trim())) {
-        setTags((prevTags) => [...prevTags, inputTagValue.trim()]); // 태그 추가
-        setInputTagValue(''); // 입력 필드 초기화
+        setTags((prevTags) => [...prevTags, inputTagValue.trim()]);
+        setInputTagValue('');
       }
     }
   };
 
   const handleDeleteTag = (tagToDelete: string) => {
-    setTags((prevTags) => prevTags.filter((tag) => tag !== tagToDelete)); // 태그 삭제
+    setTags((prevTags) => prevTags.filter((tag) => tag !== tagToDelete));
   };
 
   const handleConfirm = () => {
-    console.log('Selected ID:', params.id);
+    console.log('Selected ID:', queryId);
     console.log('Modal Data:', { images, shortDescription, detailedDescription });
     router.back();
   };

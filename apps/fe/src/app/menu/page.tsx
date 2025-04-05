@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
+import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 
 import TopNav from '@/components/layout/headers/TopNav';
@@ -21,11 +22,20 @@ interface IMenuItem {
 }
 
 export default function MenuPage() {
+  const router = useRouter();
   const [showOnlyEmptyMenus, setShowOnlyEmptyMenus] = useState(false);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
   const toggleSidebar = () => {
     setIsSidebarOpen((prev) => !prev);
+  };
+
+  const openDeleteModal = (id: string) => {
+    if (router.isReady) {
+      router.push(`/menu/delete/${id}`);
+    } else {
+      console.error('Router is not ready');
+    }
   };
 
   const [categories, setCategories] = useState(['안주', '증류주', '열두글자열두글자열두글자', '음료']);
@@ -130,7 +140,6 @@ export default function MenuPage() {
               <tr key={item.id}>
                 <td className="text-center">{idx + 1}</td>
 
-                {/* 메뉴명 */}
                 <td className="items-center">
                   <MenuTextInput
                     variant="menu"
@@ -142,7 +151,6 @@ export default function MenuPage() {
                   />
                 </td>
 
-                {/* 가격 */}
                 <td className="text-center">
                   <MenuTextInput
                     variant="menu"
@@ -153,7 +161,6 @@ export default function MenuPage() {
                   />
                 </td>
 
-                {/* 카테고리 */}
                 <td className="text-center">
                   <MenuManageSelect
                     options={categories}
@@ -162,7 +169,6 @@ export default function MenuPage() {
                   />
                 </td>
 
-                {/* 상태 */}
                 <td className="text-center">
                   <MenuManageSelect
                     options={status}
@@ -172,18 +178,28 @@ export default function MenuPage() {
                   />
                 </td>
 
-                {/* 이미지 및 설명 */}
                 <td className="text-center">
-                  <Link href={`/menu/${item.id}`}>
+                  <Link
+                    href={{
+                      pathname: `/menu/modify`,
+                      query: {
+                        id: item.id,
+                      },
+                    }}
+                  >
                     <ManageButton variant="modify">편집하기</ManageButton>
                   </Link>
                 </td>
 
-                {/* 삭제 */}
-                <td className="text-center space-x-1">
-                  <ManageButton variant="delete" onClick={() => deleteMenuItem(item.id)}>
-                    삭제
-                  </ManageButton>
+                <td className="text-center">
+                  <Link
+                    href={{
+                      pathname: '/menu/delete',
+                      query: { id: item.id, name: item.name },
+                    }}
+                  >
+                    <ManageButton variant="delete">삭제</ManageButton>
+                  </Link>
                 </td>
               </tr>
             ))}
