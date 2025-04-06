@@ -1,5 +1,6 @@
 package dto
 
 type GetCategoryResponseDTO struct {
-	Category []string `json:"category" example:"[\"음료\", \"디저트\"]"`
+	ID		uint `json:"id" example:"1"`
+	Category string `json:"category" example:"음료"`
 }
