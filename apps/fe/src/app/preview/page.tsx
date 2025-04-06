@@ -4,9 +4,7 @@ import React, { useState, useEffect } from 'react';
 import Sortable from 'sortablejs';
 
 import Sidebar from '../../components/layout/sidebars/PreviewSidebar';
-import MenuGrid from '../../components/features/menuBoard/MenuGrid';
 import TopNav from '@/components/layout/headers/TopNav';
-import Modal from '../../components/features/modal/MenuModal';
 
 interface MenuItem {
   id: number;
@@ -904,9 +902,6 @@ export default function MenuPage() {
             {isEditing ? '편집 완료' : '편집 모드'}
           </button>
         </div>
-
-        {/* 모달 컴포넌트 */}
-        {isModalOpen && <Modal isOpen={isModalOpen} onClose={closeModal} item={selectedItem} />}
       </div>
     </>
   );

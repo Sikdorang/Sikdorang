@@ -1,37 +1,44 @@
 'use client';
 
 import React, { useState } from 'react';
+import Link from 'next/link';
+
 import TopNav from '@/components/layout/headers/TopNav';
-import Modal from '@/components/features/modal/ImageManageModal';
 import MainControlButton from '@/components/pages/menu/MainControlButton';
 import ManageButton from '@/components/pages/menu/ManageButton';
 import MenuManageSelect from '@/components/pages/menu/MenuManageSelect';
 import CheckboxInput from '@/components/common/inputs/CheckboxInput';
+import CategorySidebar from '@/components/layout/sidebars/CategorySidebar';
+import MenuTextInput from '@/components/pages/menu/MenuTextInput';
 
-interface MenuItem {
+import { URLS } from '@/constants/urls';
+
+interface IMenuItem {
   id: number;
   name: string;
   description: string;
   price: string;
   category: string;
   status: string;
-  isEditing: boolean; // 수정 상태 추가
 }
 
 export default function MenuPage() {
   const [showOnlyEmptyMenus, setShowOnlyEmptyMenus] = useState(false);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
-  const [categories, setCategories] = useState(['안주', '증류주', '저는여덟글자에요하하하하', '음료']);
-  const [status, setStatus] = useState(['판매 중', '판매 중단', '판매 예정']);
-  const [menuItems, setMenuItems] = useState<MenuItem[]>([
+  const toggleSidebar = () => setIsSidebarOpen((prev) => !prev);
+  const handleCheckboxChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setShowOnlyEmptyMenus(e.target.checked);
+  };
+
+  const [menuItems, setMenuItems] = useState<IMenuItem[]>([
     {
       id: 1,
-      name: '안녕하세요저는다섯개안녕하세요저는다섯개안녕하세요저는다섯개',
+      name: '이십글자임이십글자임이십글자임이십글자임',
       description: '맛있는 스테이크',
       price: '999,999,999',
-      category: '저는여덟글자에요하하하하',
+      category: '열두글자열두글자열두글자',
       status: '판매 중',
-      isEditing: false,
     },
     {
       id: 2,
@@ -40,10 +47,8 @@ export default function MenuPage() {
       price: '15,800',
       category: '음료',
       status: '판매 중',
-      isEditing: false,
     },
   ]);
-
   const addMenuItem = () => {
     setMenuItems((prev) => [
       ...prev,
@@ -54,71 +59,53 @@ export default function MenuPage() {
         price: '',
         category: '',
         status: '판매 예정',
-        isEditing: true, // 새로 추가된 항목은 바로 수정 가능 상태로 설정
       },
     ]);
   };
-
-  const deleteMenuItem = (id: number) => {
-    setMenuItems((prev) => prev.filter((item) => item.id !== id));
-  };
-
-  const updateMenuItem = (id: number, field: keyof MenuItem, value: string | boolean) => {
+  const deleteMenuItem = (id: number) => setMenuItems((prev) => prev.filter((item) => item.id !== id));
+  const updateMenuItem = (id: number, field: keyof IMenuItem, value: string | boolean) =>
     setMenuItems((prev) => prev.map((item) => (item.id === id ? { ...item, [field]: value } : item)));
-  };
 
-  const handleCategoryChange = (id: number, value: string) => {
-    updateMenuItem(id, 'category', value);
-  };
+  const [categories, setCategories] = useState(['안주', '증류주', '열두글자열두글자열두글자', '음료']);
+  const handleCategoryChange = (id: number, value: string) => updateMenuItem(id, 'category', value);
 
-  const handleStatusChange = (id: number, value: string) => {
-    updateMenuItem(id, 'status', value);
-  };
+  const [status] = useState(['판매 중', '판매 중단', '판매 예정']);
+  const handleStatusChange = (id: number, value: string) => updateMenuItem(id, 'status', value);
 
-  const [isModalOpen, setIsModalOpen] = React.useState(false);
-  const [selectedItem, setSelectedItem] = React.useState(null);
-
-  const openModal = (item) => {
-    setSelectedItem(item);
-    setIsModalOpen(true);
-  };
-
-  const closeModal = () => {
-    setSelectedItem(null);
-    setIsModalOpen(false);
-  };
+  const filteredMenuItems = showOnlyEmptyMenus
+    ? menuItems.filter((item) => !item.name || !item.price || !item.category)
+    : menuItems;
 
   return (
     <>
       <TopNav />
 
-      <div className="pt-30  mx-auto p-6">
+      <div className="pt-30 mx-auto p-6 wrapper">
         <header className="mb-6">
           <h1 className="text-title-xl">메뉴 관리</h1>
         </header>
 
         <header className="flex flex-row w-full mb-6">
           <MainControlButton
-            text="사용 설명 보기"
             className="flex-none w-fit"
-            onClick={() =>
-              window.open('https://www.notion.so/1c8e4c6f133f8008881ffda5240479ea', '_blank', 'noopener noreferrer')
-            }
-          />
+            onClick={() => window.open(URLS.helpMenuManageUrl, '_blank', 'noopener noreferrer')}
+          >
+            사용 설명 보기
+          </MainControlButton>
           <div className="grow"></div>
-          <CheckboxInput
-            text="미입력 메뉴만 보기"
-            checked={showOnlyEmptyMenus}
-            onChange={(checked) => setShowOnlyEmptyMenus(checked)}
-          />
-          <MainControlButton text="카테고리 편집" variant="category" className="flex-none w-fit" />
+          <CheckboxInput checked={showOnlyEmptyMenus} onChange={handleCheckboxChange}>
+            미입력 메뉴만 보기
+          </CheckboxInput>
+          <MainControlButton variant="category" className="flex-none w-fit" onClick={toggleSidebar}>
+            카테고리 편집
+          </MainControlButton>
         </header>
 
         <table className="w-full table-auto border-none">
           <thead className="bg-gray-100 text-gray-800 text-label-sm-sb border-b border-b-gray-400">
             <tr>
-              <th className="px-5 py-5 w-[5%]">번호</th>
-              <th className="px-5 py-5 w-[40%] text-left">메뉴명</th>
+              <th className="px-5 py-5 w-[10%]">번호</th>
+              <th className="px-5 py-5 w-[35%] text-left">메뉴명</th>
               <th className="px-5 py-5 w-[10%]">가격</th>
               <th className="px-5 py-5 w-[15%]">카테고리</th>
               <th className="px-5 py-5 w-[10%]">상태</th>
@@ -128,35 +115,31 @@ export default function MenuPage() {
           </thead>
 
           <tbody className="text-label-sm-m text-gray-700">
-            {menuItems.map((item, idx) => (
+            {filteredMenuItems.map((item, idx) => (
               <tr key={item.id}>
                 <td className="text-center">{idx + 1}</td>
 
-                {/* 메뉴명 */}
-                <td className="text-center items-center">
-                  <input
-                    type="text"
-                    value={item.name}
+                <td className="items-center">
+                  <MenuTextInput
+                    variant="menu"
+                    defaultValue={item.name}
                     placeholder="메뉴명"
-                    onChange={(e) => updateMenuItem(item.id, 'name', e.target.value)}
-                    maxLength={20}
+                    onSave={(value) => updateMenuItem(item.id, 'name', value)}
                     className={`w-full p-1 m-5 rounded text-left`}
+                    maxLength={20}
                   />
                 </td>
 
-                {/* 가격 */}
                 <td className="text-center">
-                  <input
-                    type="text"
-                    value={item.price}
+                  <MenuTextInput
+                    variant="menu"
+                    defaultValue={item.price}
                     placeholder="가격"
-                    onChange={(e) => updateMenuItem(item.id, 'price', e.target.value)}
+                    onSave={(value) => updateMenuItem(item.id, 'price', value)}
                     maxLength={11}
-                    className={`w-full p-1 rounded text-center`}
                   />
                 </td>
 
-                {/* 카테고리 */}
                 <td className="text-center">
                   <MenuManageSelect
                     options={categories}
@@ -165,7 +148,6 @@ export default function MenuPage() {
                   />
                 </td>
 
-                {/* 상태 */}
                 <td className="text-center">
                   <MenuManageSelect
                     options={status}
@@ -175,23 +157,44 @@ export default function MenuPage() {
                   />
                 </td>
 
-                {/* 이미지 및 설명 */}
                 <td className="text-center">
-                  <ManageButton text="편집하기" variant="modify" onClick={() => openModal(item)} />
+                  <Link
+                    href={{
+                      pathname: `/menu/modify`,
+                      query: {
+                        id: item.id,
+                      },
+                    }}
+                  >
+                    <ManageButton variant="modify">편집하기</ManageButton>
+                  </Link>
                 </td>
 
-                {/* 삭제 */}
-                <td className="text-center space-x-1">
-                  <ManageButton text="삭제" variant="delete" onClick={() => deleteMenuItem(item.id)} />
+                <td className="text-center">
+                  <Link
+                    href={{
+                      pathname: '/menu/delete',
+                      query: { id: item.id, name: item.name },
+                    }}
+                  >
+                    <ManageButton variant="delete">삭제</ManageButton>
+                  </Link>
                 </td>
               </tr>
             ))}
           </tbody>
         </table>
 
-        <MainControlButton text="새로운 메뉴 추가" className="w-full py-5" onClick={addMenuItem} />
+        <MainControlButton className="w-full py-5" onClick={addMenuItem}>
+          새로운 메뉴 추가
+        </MainControlButton>
 
-        <Modal isOpen={isModalOpen} onClose={closeModal} item={selectedItem} />
+        <CategorySidebar
+          isOpen={isSidebarOpen}
+          onClose={() => setIsSidebarOpen(false)}
+          categories={categories}
+          setCategories={setCategories}
+        />
       </div>
     </>
   );
