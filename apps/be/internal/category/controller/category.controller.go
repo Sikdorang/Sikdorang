@@ -66,7 +66,6 @@ func (c *CategoryController) CreateCategory(ctx *fiber.Ctx) error {
 // @Description   {"id": 1, "category": "음료"},
 // @Description   {"id": 2, "category": "디저트"}
 // @Description ]
-
 // @Failure      401 {object} errorDto.ErrorResponse "인증 실패"
 // @Failure      500 {object} errorDto.ErrorResponse "조회 실패"
 // @Router       /categories [get]
