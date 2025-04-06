@@ -37,7 +37,7 @@ export default function DeleteMenuModal() {
         <div className="flex justify-center gap-4">
           <button
             onClick={handleCancel}
-            className="flex-1 w-full px-4 py-2 bg-gray-100 text-label-md text-gray-500 rounded hover:bg-gray-200"
+            className="flex-1 w-full px-4 py-4 bg-gray-100 text-label-md text-gray-500 rounded hover:bg-gray-200"
           >
             취소
           </button>
