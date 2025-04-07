@@ -1,0 +1,102 @@
+import axios from 'axios';
+import { useState } from 'react';
+import { toast } from 'react-toastify';
+import { MESSAGES } from '@/constants/messages';
+import { CategoryAPI } from '@/services/category';
+import { handelError } from '@/services/handleError';
+
+export interface ICategory {
+  id: number;
+  category: string;
+}
+
+export const useCategory = () => {
+  const [categories, setCategories] = useState<ICategory[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const create = async (categoryName: string) => {
+    if (categories.some((cat) => cat.category === categoryName)) {
+      toast.error(MESSAGES.duplicatedCategoryError);
+      return;
+    }
+    try {
+      const newCategory = await CategoryAPI.addCategory(categoryName);
+      setCategories((prev) => [...prev, newCategory]);
+      toast.success(MESSAGES.createCategorySuccess);
+    } catch (error: any) {
+      if (axios.isAxiosError(error) && error.response?.status === 400) {
+        setError(MESSAGES.badRequestError);
+      } else if (error.response?.status === 401) {
+        setError(MESSAGES.authenticationError);
+      } else {
+        handelError(error);
+      }
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const fetch = async () => {
+    setIsLoading(true);
+    setError(null);
+    try {
+      const response = await CategoryAPI.getCategories();
+      setCategories(response);
+    } catch (error: any) {
+      if (axios.isAxiosError(error) && error.response?.status === 401) {
+        setError(MESSAGES.authenticationError);
+      } else {
+        handelError(error);
+      }
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const update = async (categoryId: number, updatedCategory: string) => {
+    try {
+      const updatedCategoryResponse = await CategoryAPI.updateCategory(categoryId, updatedCategory);
+      const updatedCategories = categories.map((category) =>
+        category.id === categoryId ? updatedCategoryResponse : category,
+      );
+      setCategories(updatedCategories);
+      toast.success(MESSAGES.updateCategorySuccess);
+    } catch (error: any) {
+      if (axios.isAxiosError(error) && error.response?.status === 400) {
+        setError(MESSAGES.badRequestError);
+      } else if (error.response?.status === 401) {
+        setError(MESSAGES.authenticationError);
+      } else if (error.response?.status === 404) {
+        setError(MESSAGES.unknownCategoryError);
+      } else {
+        handelError(error);
+      }
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const remove = async (categoryId: number) => {
+    try {
+      const responseMessage = await CategoryAPI.deleteCategory(categoryId);
+      const updatedCategories = categories.filter((category) => category.id !== categoryId);
+      setCategories(updatedCategories);
+      toast.success(MESSAGES.deleteCategorySuccess);
+    } catch (error: any) {
+      if (axios.isAxiosError(error) && error.response?.status === 400) {
+        setError(MESSAGES.badRequestError);
+      } else if (error.response?.status === 401) {
+        setError(MESSAGES.authenticationError);
+      } else if (error.response?.status === 404) {
+        setError(MESSAGES.unknownCategoryError);
+      } else {
+        handelError(error);
+      }
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  return { categories, isLoading, error, create, fetch, update, remove };
+};

@@ -1,26 +1,31 @@
 import React, { useState, useEffect, useRef } from 'react';
 import Image from 'next/image';
-
+import { toast } from 'react-toastify';
+import { MESSAGES } from '@/constants/messages';
 import TextInput from '@/components/common/inputs/TextInput';
 import MenuTextInput from '@/components/pages/menu/MenuTextInput';
-
-import { MESSAGES } from '@/constants/messages';
-
+import { useCategory, ICategory } from '@/hooks/useCategory';
 import trashcanIcon from '@public/icons/ic_trashcan.svg';
+import Spinner from '@/components/common/loadings/Spinner';
 
 interface CategorySidebarProps {
   isOpen: boolean;
   onClose: () => void;
-  categories: string[];
-  setCategories: (categories: string[]) => void;
 }
 
-export default function CategorySidebar({ isOpen, onClose, categories, setCategories }: CategorySidebarProps) {
+export default function CategorySidebar({ isOpen, onClose }: CategorySidebarProps) {
   const sidebarRef = useRef<HTMLDivElement>(null);
+  const { categories, isLoading, error, create, fetch, update, remove } = useCategory();
 
   const [isComposing, setIsComposing] = useState(false);
   const [newCategory, setNewCategory] = useState('');
   const [categoryError, setCategoryError] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (isOpen) {
+      fetch();
+    }
+  }, [isOpen]);
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -28,48 +33,53 @@ export default function CategorySidebar({ isOpen, onClose, categories, setCatego
         onClose();
       }
     };
-
     if (isOpen) {
       document.addEventListener('mousedown', handleClickOutside);
     }
-
     return () => {
       document.removeEventListener('mousedown', handleClickOutside);
     };
   }, [isOpen, onClose]);
-  const handleDeleteCategory = (index: number) => {
-    const updatedCategories = categories.filter((_, i) => i !== index);
-    setCategories(updatedCategories);
-  };
-  const handleAddCategory = (event: React.KeyboardEvent<HTMLInputElement>) => {
+
+  const handleAddCategory = async (event: React.KeyboardEvent<HTMLInputElement>) => {
     const inputValue = (event.target as HTMLInputElement).value.trim();
-
     if (isComposing) return;
-
     if (event.key === 'Enter' && inputValue) {
       event.preventDefault();
-
       if (categories.length >= 999) {
         setCategoryError(MESSAGES.maximumCategoryError);
         return;
       }
-
-      if (categories.includes(inputValue)) {
-        setCategoryError(MESSAGES.duplicatedCategoryError);
+      if (inputValue === '') {
+        setCategoryError(MESSAGES.emptyCategoryError);
         return;
       }
-
-      const updatedCategories = [...categories, inputValue];
-      setCategories(updatedCategories);
-      setCategoryError('');
+      await create(inputValue);
       setNewCategory('');
+      setCategoryError(null);
     }
   };
-  const handleSaveEdit = (index: number, newText: string) => {
-    if (newText.trim() === '') return;
-    const updated = [...categories];
-    updated[index] = newText;
-    setCategories(updated);
+
+  const handleDeleteCategory = async (categoryId: number) => {
+    await remove(categoryId);
+  };
+
+  const handleSaveEdit = async (
+    event: React.KeyboardEvent<HTMLInputElement> | React.FocusEvent<HTMLInputElement>,
+    categoryId: number,
+    updatedCategory: string,
+  ) => {
+    if (isComposing) return;
+
+    if ((event.type === 'keydown' && (event as React.KeyboardEvent).key === 'Enter') || event.type === 'blur') {
+      if (event.type === 'keydown') {
+        (event.target as HTMLInputElement).blur();
+        return;
+      }
+      event.preventDefault?.();
+      if (updatedCategory.trim() === '') return;
+      await update(categoryId, updatedCategory);
+    }
   };
 
   return (
@@ -97,15 +107,25 @@ export default function CategorySidebar({ isOpen, onClose, categories, setCatego
             label="카테고리"
             onCompositionStart={() => setIsComposing(true)}
             onCompositionEnd={() => setIsComposing(false)}
-            onChange={(e) => setNewCategory(e.target.value)}
+            onChange={(e) => {
+              setNewCategory(e.target.value);
+              setCategoryError(null);
+            }}
             onKeyDown={handleAddCategory}
             maxLength={12}
-            errorMessage={categoryError ?? undefined}
+            errorMessage={categoryError || error || undefined}
+            disabled={isLoading}
           />
 
           <div className="text-label-xs-m text-gray-700 py-5">카테고리 목록</div>
 
-          {categories && categories.length > 0 ? (
+          {isLoading ? (
+            <Spinner />
+          ) : categories == null || categories.length === 0 ? (
+            <div className="bg-gray-100 text-gray-400 text-body-xs text-center py-10 rounded-sm">
+              추가된 카테고리가 없습니다.\n새로운 카테고리를 입력해 주세요.
+            </div>
+          ) : (
             <ul className="space-y-2">
               {categories.map((category, index) => (
                 <li key={index} className="flex justify-between items-center p-2 rounded-md">
@@ -113,31 +133,27 @@ export default function CategorySidebar({ isOpen, onClose, categories, setCatego
                     <div className="text-gray-500 text-label-xs-m border border-gray-200 px-1 mr-2 select-none">
                       {(index + 1).toString().padStart(3, '0')}
                     </div>
-
                     <MenuTextInput
                       variant="category"
-                      defaultValue={category}
+                      defaultValue={category.category}
                       placeholder="카테고리"
-                      onSave={(value) => handleSaveEdit(index, value)}
+                      onCompositionStart={() => setIsComposing(true)}
+                      onCompositionEnd={() => setIsComposing(false)}
+                      onKeyDown={(event) => handleSaveEdit(event, category.id, event.currentTarget.value)}
+                      onBlur={(event) => handleSaveEdit(event, category.id, event.currentTarget.value)}
                       maxLength={12}
                     />
                   </div>
-
                   <button
                     className="text-red-500 border border-red-200 bg-red-100 p-1 rounded-sm hover:bg-red-200 focus:outline-none"
-                    onClick={() => handleDeleteCategory(index)}
+                    onClick={() => handleDeleteCategory(category.id)}
+                    disabled={isLoading}
                   >
                     <Image className="w-3 h-3" src={trashcanIcon} alt="삭제" draggable="false" />
                   </button>
                 </li>
               ))}
             </ul>
-          ) : (
-            <div className="bg-gray-100 text-gray-400 text-body-xs-m text-center py-10 rounded-sm">
-              추가된 카테고리가 없습니다
-              <br />
-              새로운 카테고리를 입력해 주세요
-            </div>
           )}
         </div>
       </div>
