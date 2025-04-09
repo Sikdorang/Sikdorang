@@ -2,7 +2,7 @@ import axios from 'axios';
 import { useState } from 'react';
 import { toast } from 'react-toastify';
 import { MESSAGES } from '@/constants/messages';
-import { CategoryAPI } from '@/services/category';
+import { CategoryAPI } from '@/services/manageMenu';
 import { handelError } from '@/services/handleError';
 
 export interface ICategory {
@@ -10,12 +10,12 @@ export interface ICategory {
   category: string;
 }
 
-export const useCategory = () => {
+export const useManageCategory = () => {
   const [categories, setCategories] = useState<ICategory[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const create = async (categoryName: string) => {
+  const createCategory = async (categoryName: string) => {
     if (categories.some((cat) => cat.category === categoryName)) {
       toast.error(MESSAGES.duplicatedCategoryError);
       return;
@@ -37,7 +37,7 @@ export const useCategory = () => {
     }
   };
 
-  const fetch = async () => {
+  const fetchCategories = async () => {
     setIsLoading(true);
     setError(null);
     try {
@@ -54,7 +54,7 @@ export const useCategory = () => {
     }
   };
 
-  const update = async (categoryId: number, updatedCategory: string) => {
+  const updateCategory = async (categoryId: number, updatedCategory: string) => {
     try {
       const updatedCategoryResponse = await CategoryAPI.updateCategory(categoryId, updatedCategory);
       const updatedCategories = categories.map((category) =>
@@ -77,7 +77,7 @@ export const useCategory = () => {
     }
   };
 
-  const remove = async (categoryId: number) => {
+  const removeCategory = async (categoryId: number) => {
     try {
       const responseMessage = await CategoryAPI.deleteCategory(categoryId);
       const updatedCategories = categories.filter((category) => category.id !== categoryId);
@@ -98,5 +98,5 @@ export const useCategory = () => {
     }
   };
 
-  return { categories, isLoading, error, create, fetch, update, remove };
+  return { categories, isLoading, error, createCategory, fetchCategories, updateCategory, removeCategory };
 };

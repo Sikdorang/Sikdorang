@@ -1,7 +1,9 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
+import { useManageMenu, IMenu, ISyncLog } from '@/hooks/useManageMenu';
+import { useManageCategory } from '@/hooks/useManageCategory';
 
 import TopNav from '@/components/layout/headers/TopNav';
 import MainControlButton from '@/components/pages/menu/MainControlButton';
@@ -13,16 +15,25 @@ import MenuTextInput from '@/components/pages/menu/MenuTextInput';
 
 import { URLS } from '@/constants/urls';
 
-interface IMenuItem {
-  id: number;
-  name: string;
-  description: string;
-  price: string;
-  category: string;
-  status: string;
-}
-
 export default function MenuPage() {
+  const { menus, isLoading, error, fetchMenus, syncMenus } = useManageMenu();
+  const { categories, fetchCategories } = useManageCategory();
+  const [temporaryMenus, setTemporaryMenus] = useState<IMenu[]>([]);
+  const [changeLogs, setChangeLogs] = useState<ISyncLog[]>([]);
+
+  useEffect(() => {
+    fetchMenus();
+    fetchCategories();
+  }, []);
+
+  useEffect(() => {
+    setTemporaryMenus(menus);
+  }, [menus]);
+
+  useEffect(() => {
+    fetchCategories();
+  }, [categories]);
+
   const [showOnlyEmptyMenus, setShowOnlyEmptyMenus] = useState(false);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
@@ -31,50 +42,33 @@ export default function MenuPage() {
     setShowOnlyEmptyMenus(e.target.checked);
   };
 
-  const [menuItems, setMenuItems] = useState<IMenuItem[]>([
-    {
-      id: 1,
-      name: '이십글자임이십글자임이십글자임이십글자임',
-      description: '맛있는 스테이크',
-      price: '999,999,999',
-      category: '열두글자열두글자열두글자',
-      status: '판매 중',
-    },
-    {
-      id: 2,
-      name: '파스타',
-      description: '크림 파스타',
-      price: '15,800',
-      category: '음료',
-      status: '판매 중',
-    },
-  ]);
+  const handleSynchronize = async () => {
+    await syncMenus(changeLogs);
+  };
   const addMenuItem = () => {
-    setMenuItems((prev) => [
+    setTemporaryMenus((prev) => [
       ...prev,
       {
         id: prev.length + 1,
-        name: '',
-        description: '',
-        price: '',
+        menu: '',
+        price: 0,
         category: '',
         status: '판매 예정',
       },
     ]);
   };
-  const deleteMenuItem = (id: number) => setMenuItems((prev) => prev.filter((item) => item.id !== id));
-  const updateMenuItem = (id: number, field: keyof IMenuItem, value: string | boolean) =>
-    setMenuItems((prev) => prev.map((item) => (item.id === id ? { ...item, [field]: value } : item)));
+  const deleteMenuItem = (id: number) => setTemporaryMenus((prev) => prev.filter((item) => item.id !== id));
+  const updateMenuItem = (id: number, field: keyof IMenu, value: string | boolean) =>
+    setTemporaryMenus((prev) => prev.map((item) => (item.id === id ? { ...item, [field]: value } : item)));
 
-  const [categories, setCategories] = useState(['안주', '증류주', '열두글자열두글자열두글자', '음료']);
   const handleCategoryChange = (id: number, value: string) => updateMenuItem(id, 'category', value);
 
   const [status] = useState(['판매 중', '판매 중단', '판매 예정']);
   const handleStatusChange = (id: number, value: string) => updateMenuItem(id, 'status', value);
 
   const filteredMenuItems = showOnlyEmptyMenus
-    ? menuItems.filter((item) => !item.name || !item.price || !item.category)
-    : menuItems;
+    ? temporaryMenus.filter((item) => !item.menu || !item.price || !item.category)
+    : temporaryMenus;
 
   return (
     <>
@@ -122,7 +116,7 @@ export default function MenuPage() {
                 <td className="items-center">
                   <MenuTextInput
                     variant="menu"
-                    defaultValue={item.name}
+                    defaultValue={item.menu}
                     placeholder="메뉴명"
                     onSave={(value) => updateMenuItem(item.id, 'name', value)}
                     className={`w-full p-1 m-5 rounded text-left`}
@@ -142,7 +136,7 @@ export default function MenuPage() {
 
                 <td className="text-center">
                   <MenuManageSelect
-                    options={categories}
+                    options={categories.map((item) => item.category)}
                     selectedOption={item.category}
                     onChange={(value) => handleCategoryChange(item.id, value)}
                   />
@@ -151,7 +145,7 @@ export default function MenuPage() {
                 <td className="text-center">
                   <MenuManageSelect
                     options={status}
-                    selectedOption={item.status}
+                    selectedOption={'d'}
                     isStatus={true}
                     onChange={(value) => handleStatusChange(item.id, value)}
                   />
@@ -174,7 +168,7 @@ export default function MenuPage() {
                   <Link
                     href={{
                       pathname: '/menu/delete',
-                      query: { id: item.id, name: item.name },
+                      query: { id: item.id, name: item.menu },
                     }}
                   >
                     <ManageButton variant="delete">삭제</ManageButton>
@@ -192,8 +186,7 @@ export default function MenuPage() {
         <CategorySidebar
           isOpen={isSidebarOpen}
           onClose={() => setIsSidebarOpen(false)}
-          categories={categories}
-          setCategories={setCategories}
+          setTemporaryMenus={setTemporaryMenus}
         />
       </div>
     </>

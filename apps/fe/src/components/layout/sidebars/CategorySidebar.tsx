@@ -1,21 +1,24 @@
 import React, { useState, useEffect, useRef } from 'react';
 import Image from 'next/image';
-import { toast } from 'react-toastify';
+import { useManageCategory } from '@/hooks/useManageCategory';
 import { MESSAGES } from '@/constants/messages';
+
 import TextInput from '@/components/common/inputs/TextInput';
 import MenuTextInput from '@/components/pages/menu/MenuTextInput';
-import { useCategory, ICategory } from '@/hooks/useCategory';
-import trashcanIcon from '@public/icons/ic_trashcan.svg';
 import Spinner from '@/components/common/loadings/Spinner';
+
+import trashcanIcon from '@public/icons/ic_trashcan.svg';
 
 interface CategorySidebarProps {
   isOpen: boolean;
   onClose: () => void;
+  setTemporaryMenus: React.Dispatch<React.SetStateAction<any[]>>;
 }
 
-export default function CategorySidebar({ isOpen, onClose }: CategorySidebarProps) {
+export default function CategorySidebar({ isOpen, onClose, setTemporaryMenus }: CategorySidebarProps) {
   const sidebarRef = useRef<HTMLDivElement>(null);
-  const { categories, isLoading, error, create, fetch, update, remove } = useCategory();
+  const { categories, isLoading, error, createCategory, fetchCategories, updateCategory, removeCategory } =
+    useManageCategory();
 
   const [isComposing, setIsComposing] = useState(false);
   const [newCategory, setNewCategory] = useState('');
@@ -23,7 +26,7 @@ export default function CategorySidebar({ isOpen, onClose }: CategorySidebarProp
 
   useEffect(() => {
     if (isOpen) {
-      fetch();
+      fetchCategories();
     }
   }, [isOpen]);
 
@@ -54,14 +57,20 @@ export default function CategorySidebar({ isOpen, onClose }: CategorySidebarProp
         setCategoryError(MESSAGES.emptyCategoryError);
         return;
       }
-      await create(inputValue);
+      await createCategory(inputValue);
       setNewCategory('');
       setCategoryError(null);
     }
   };
 
   const handleDeleteCategory = async (categoryId: number) => {
-    await remove(categoryId);
+    await removeCategory(categoryId);
+    const deletedCategory = categories.find((category) => category.id === categoryId)?.category;
+    if (deletedCategory) {
+      setTemporaryMenus((prevMenus) =>
+        prevMenus.map((menu) => (menu.category === deletedCategory ? { ...menu, category: null } : menu)),
+      );
+    }
   };
 
   const handleSaveEdit = async (
@@ -78,7 +87,7 @@ export default function CategorySidebar({ isOpen, onClose }: CategorySidebarProp
       }
       event.preventDefault?.();
       if (updatedCategory.trim() === '') return;
-      await update(categoryId, updatedCategory);
+      await updateCategory(categoryId, updatedCategory);
     }
   };
 
