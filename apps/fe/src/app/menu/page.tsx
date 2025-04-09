@@ -1,9 +1,11 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import Link from 'next/link';
-import { useManageMenu, IMenu, ISyncLog } from '@/hooks/useManageMenu';
+import { isEqual } from 'lodash';
+import { useManageMenu, IMenu } from '@/hooks/useManageMenu';
 import { useManageCategory } from '@/hooks/useManageCategory';
+import { useDeleteMenuStore } from '@/stores/useDeleteMenuStore';
 
 import TopNav from '@/components/layout/headers/TopNav';
 import MainControlButton from '@/components/pages/menu/MainControlButton';
@@ -18,8 +20,7 @@ import { URLS } from '@/constants/urls';
 export default function MenuPage() {
   const { menus, isLoading, error, fetchMenus, syncMenus } = useManageMenu();
   const { categories, fetchCategories } = useManageCategory();
-  const [temporaryMenus, setTemporaryMenus] = useState<IMenu[]>([]);
-  const [changeLogs, setChangeLogs] = useState<ISyncLog[]>([]);
+  const { setDeleteHandler, clearDeleteHandler } = useDeleteMenuStore();
 
   useEffect(() => {
     fetchMenus();
@@ -34,22 +35,91 @@ export default function MenuPage() {
     fetchCategories();
   }, [categories]);
 
-  const [showOnlyEmptyMenus, setShowOnlyEmptyMenus] = useState(false);
-  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [temporaryMenus, setTemporaryMenus] = useState<IMenu[]>([]);
+  const [changeLogIds, setChangeLogIds] = useState<Set<number>>(new Set());
+  const originalMenuDict = useMemo(
+    () => menus.reduce((acc, menu) => ({ ...acc, [menu.id]: menu }), {} as Record<number, IMenu>),
+    [menus],
+  );
+  const tempMenuDict = useMemo(
+    () => temporaryMenus.reduce((acc, menu) => ({ ...acc, [menu.id]: menu }), {} as Record<number, IMenu>),
+    [temporaryMenus],
+  );
+  useEffect(() => {
+    const changedIds = Object.keys(tempMenuDict)
+      .filter((id) => {
+        const menuId = Number(id);
+        const original = originalMenuDict[menuId];
+        const current = tempMenuDict[menuId];
 
-  const toggleSidebar = () => setIsSidebarOpen((prev) => !prev);
-  const handleCheckboxChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setShowOnlyEmptyMenus(e.target.checked);
-  };
+        return !original || !isEqual(original, current);
+      })
+      .map(Number);
 
+    const deletedIds = Object.keys(originalMenuDict)
+      .filter((id) => !tempMenuDict.hasOwnProperty(id))
+      .map(Number);
+
+    setChangeLogIds(new Set([...changedIds, ...deletedIds]));
+    console.log(changedIds, deletedIds);
+  }, [originalMenuDict, tempMenuDict]);
+  useEffect(() => {
+    setDeleteHandler(deleteMenuItem);
+    return () => clearDeleteHandler();
+  }, [setDeleteHandler, clearDeleteHandler]);
   const handleSynchronize = async () => {
-    await syncMenus(changeLogs);
+    const changedIds = Array.from(changeLogIds);
+
+    const syncData = changedIds.map((id) => {
+      const original = menus.find((m) => m.id === id);
+      const current = temporaryMenus.find((m) => m.id === id);
+
+      if (id < 0 || !original) {
+        return {
+          action: 'create' as const,
+          id: -1,
+          data: {
+            menu: current?.menu || '',
+            price: current?.price || 0,
+            categoryId: categories.find((c) => c.category === current?.category)?.id || 0,
+            soldOut: current?.status === '판매 예정',
+          },
+        };
+      }
+      if (!current) {
+        return {
+          action: 'delete' as const,
+          id,
+          data: {},
+        };
+      }
+      return {
+        action: 'update' as const,
+        id,
+        data: {
+          menu: current.menu,
+          price: current.price,
+          categoryId: categories.find((c) => c.category === current.category)?.id || 0,
+          soldOut: current.status === '판매 중단',
+        },
+      };
+    });
+
+    try {
+      await syncMenus(syncData);
+
+      setChangeLogIds(new Set());
+
+      fetchMenus();
+    } catch (error) {
+      console.error('Sync error:', error);
+    }
   };
   const addMenuItem = () => {
     setTemporaryMenus((prev) => [
       ...prev,
       {
-        id: prev.length + 1,
+        id: -Date.now(),
         menu: '',
         price: 0,
         category: '',
@@ -61,11 +131,15 @@ export default function MenuPage() {
   const updateMenuItem = (id: number, field: keyof IMenu, value: string | boolean) =>
     setTemporaryMenus((prev) => prev.map((item) => (item.id === id ? { ...item, [field]: value } : item)));
 
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const toggleSidebar = () => setIsSidebarOpen((prev) => !prev);
+  const handleCheckboxChange = (e: React.ChangeEvent<HTMLInputElement>) => setShowOnlyEmptyMenus(e.target.checked);
   const handleCategoryChange = (id: number, value: string) => updateMenuItem(id, 'category', value);
 
   const [status] = useState(['판매 중', '판매 중단', '판매 예정']);
   const handleStatusChange = (id: number, value: string) => updateMenuItem(id, 'status', value);
 
+  const [showOnlyEmptyMenus, setShowOnlyEmptyMenus] = useState(false);
   const filteredMenuItems = showOnlyEmptyMenus
     ? temporaryMenus.filter((item) => !item.menu || !item.price || !item.category)
     : temporaryMenus;
@@ -90,6 +164,13 @@ export default function MenuPage() {
           <CheckboxInput checked={showOnlyEmptyMenus} onChange={handleCheckboxChange}>
             미입력 메뉴만 보기
           </CheckboxInput>
+          <MainControlButton
+            className="flex-none w-fit mr-3"
+            onClick={handleSynchronize}
+            disabled={changeLogIds.size === 0}
+          >
+            변경사항 저장하기
+          </MainControlButton>
           <MainControlButton variant="category" className="flex-none w-fit" onClick={toggleSidebar}>
             카테고리 편집
           </MainControlButton>
@@ -118,7 +199,7 @@ export default function MenuPage() {
                     variant="menu"
                     defaultValue={item.menu}
                     placeholder="메뉴명"
-                    onSave={(value) => updateMenuItem(item.id, 'name', value)}
+                    onSave={(value) => updateMenuItem(item.id, 'menu', value)}
                     className={`w-full p-1 m-5 rounded text-left`}
                     maxLength={20}
                   />

@@ -1,17 +1,21 @@
 'use client';
 
 import { useRouter, useSearchParams } from 'next/navigation';
+import { useDeleteMenuStore } from '@/stores/useDeleteMenuStore';
 import { useEffect } from 'react';
 
 export default function DeleteMenuModal() {
   const router = useRouter();
   const searchParams = useSearchParams();
+  const { deleteMenuItem } = useDeleteMenuStore();
 
   const queryId = searchParams.get('id');
   const queryName = searchParams.get('name');
 
   const handleDelete = () => {
-    console.log(`메뉴 ID ${queryId}과 ${queryName} 삭제`);
+    if (deleteMenuItem && queryId) {
+      deleteMenuItem(Number(queryId));
+    }
     router.back();
   };
 
