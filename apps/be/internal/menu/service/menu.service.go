@@ -4,12 +4,17 @@ import (
 	"fmt"
 	"be/internal/menu/dto"
 	"be/internal/menu/repository"
+	"be/internal/models"
 	"be/internal/utils"
 )
 
 type MenuService interface {
 	GetAllByStoreID(storeID uint) ([]dto.GetMenuResponseDTO, error)
 	SyncMenus(storeID uint, syncDatas []dto.SyncMenuRequestDTO) ([]dto.SyncMenuErrorDTO, error)
+	GetImageURLs(storeID, menuID uint) ([]string, error)
+	GetTags(storeID, menuID uint) ([]string, error)
+	GetMenuBoard(storeID, categoryID uint) ([]dto.GetMenuBoardResponseDTO, error)
+	GetDescription(storeID, menuID uint) (dto.GetDescriptionResponseDTO, error)
 }
 
 type menuService struct {
@@ -32,7 +37,7 @@ func (s *menuService) GetAllByStoreID(storeID uint) ([]dto.GetMenuResponseDTO, e
 			ID:         menu.ID,
 			Menu:       menu.Menu,
 			Price:      menu.Price,
-			SoldOut:    menu.SoldOut,
+			Status:     menu.Status,
 			Order:      menu.Order,
 			StoreID:    menu.StoreID,
 			CategoryID: menu.CategoryID,
@@ -41,7 +46,6 @@ func (s *menuService) GetAllByStoreID(storeID uint) ([]dto.GetMenuResponseDTO, e
 	}
 	return result, nil
 }
-
 
 func (s *menuService) SyncMenus(storeID uint, syncDatas []dto.SyncMenuRequestDTO) ([]dto.SyncMenuErrorDTO, error) {
 	var errs []dto.SyncMenuErrorDTO
@@ -84,4 +88,84 @@ func (s *menuService) SyncMenus(storeID uint, syncDatas []dto.SyncMenuRequestDTO
 		return errs, fmt.Errorf("one or more sync errors occurred")
 	}
 	return nil, nil
+}
+
+func (s *menuService) GetImageURLs(storeID, menuID uint) ([]string, error) {
+	images, err := s.repo.FindImages(storeID, menuID)
+	if err != nil {
+		return nil, fmt.Errorf("failed to get Image : %v", err)
+	}
+
+	var urls []string
+	for _, img := range images {
+		urls = append(urls, img.ImageURL)
+	}
+	return urls, nil
+}
+
+func (s *menuService) GetTags(storeID, menuID uint) ([]string, error) {
+	tags, err := s.repo.FindTags(storeID, menuID)
+	if err != nil {
+		return nil, fmt.Errorf("failed to get Tags: %v", err)
+	}
+
+	var result []string
+	for _, tag := range tags {
+		result = append(result, tag.Tag)
+	}
+	return result, nil
+}
+
+func (s *menuService) GetMenuBoard(storeID, categoryID uint) ([]dto.GetMenuBoardResponseDTO, error) {
+	menus, err := s.repo.FindMenuBoard(storeID, categoryID)
+	if err != nil {
+		return nil, err
+	}
+
+	var result []dto.GetMenuBoardResponseDTO
+	for _, menu := range menus {
+		result = append(result, s.buildMenuResponse(menu, storeID))
+	}
+
+	return result, nil
+}
+
+func (s *menuService) GetDescription(storeID, menuID uint) (dto.GetDescriptionResponseDTO, error) {
+	description, err := s.repo.FindDescription(storeID, menuID)
+	if err != nil {
+		return dto.GetDescriptionResponseDTO{}, err
+	}
+
+	menuResponse := s.buildMenuResponse(description, storeID)
+
+	return dto.GetDescriptionResponseDTO{
+		Preview: description.Preview,
+		Details: description.Details,
+		Tags: menuResponse.Tags,
+		Images: menuResponse.ImageURLs,
+	}, nil
+}
+
+func (s *menuService) buildMenuResponse(menu models.Menu, storeID uint) dto.GetMenuBoardResponseDTO {
+	imageURLs, _ := s.GetImageURLs(storeID, menu.ID)
+	tags, _ := s.GetTags(storeID, menu.ID)
+	var categoryIDVal uint
+	if menu.CategoryID != nil {
+		categoryIDVal = *menu.CategoryID
+	}
+
+	return dto.GetMenuBoardResponseDTO{
+		ID:         menu.ID,
+		Menu:       menu.Menu,
+		Price:      menu.Price,
+		Status:     menu.Status,
+		Order:      menu.Order,
+		StoreID:    menu.StoreID,
+		CategoryID: categoryIDVal,
+		Category:   menu.Category.Category,
+		ImageURLs:  imageURLs,
+		Tags:       tags,
+		Details:	menu.Details,
+		Preview: menu.Preview,
+	}
 }

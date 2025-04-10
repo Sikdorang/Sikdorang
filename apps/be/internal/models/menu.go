@@ -13,8 +13,8 @@ type Menu struct {
     StoreID uint
     Store   Store
 
-    SoldOut bool
-    Order   int
+    Status string
+    Order   string
 
     Images         []Image
     RecommandMenus []RecommandMenu

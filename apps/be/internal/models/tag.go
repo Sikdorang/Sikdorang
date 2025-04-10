@@ -5,4 +5,6 @@ type Tag struct {
 	Tag			 string
 	MenuID  uint
     Menu    Menu
+	StoreID  uint
+    Store    Store
 }
