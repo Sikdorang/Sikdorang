@@ -60,12 +60,7 @@ func (c *CategoryController) CreateCategory(ctx *fiber.Ctx) error {
 // @Description  storeID에 해당하는 카테고리 이름 목록을 조회합니다.
 // @Tags         category
 // @Produce      json
-// @Success 	 200 {array} dto.GetCategoryResponseDTO "카테고리 리스트"
-// @Description 응답 예시:
-// @Description [
-// @Description   {"id": 1, "category": "음료"},
-// @Description   {"id": 2, "category": "디저트"}
-// @Description ]
+// @Success      200 {array} dto.GetCategoryResponseDTO "카테고리 리스트"
 // @Failure      401 {object} errorDto.ErrorResponse "인증 실패"
 // @Failure      500 {object} errorDto.ErrorResponse "조회 실패"
 // @Router       /categories [get]

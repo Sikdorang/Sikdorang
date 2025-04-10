@@ -5,6 +5,6 @@ type Category struct {
     Category    string
     StoreID uint
     Store   Store `gorm:"foreignKey:StoreID" json:"-"`
-
+    Order string
     Menus   []Menu
 }

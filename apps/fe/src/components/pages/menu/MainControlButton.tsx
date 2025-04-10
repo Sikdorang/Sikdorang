@@ -1,19 +1,14 @@
-import React from 'react';
+import { ButtonHTMLAttributes, PropsWithChildren } from 'react';
 
-interface MainControlButtonProps {
-  text: string;
-  disabled?: boolean;
+interface MainControlButtonProps extends ButtonHTMLAttributes<HTMLButtonElement>, PropsWithChildren {
   variant?: 'default' | 'category';
-  className?: string;
-  onClick?: () => void;
 }
 
 export default function MainControlButton({
-  text,
-  disabled = false,
+  children,
   variant = 'default',
-  className,
-  onClick,
+  className = '',
+  ...props
 }: MainControlButtonProps) {
   const baseClass = 'w-fit px-3 py-3 text-label-md rounded-[4px] border border-gray-200 focus:outline-none transition';
 
@@ -23,8 +18,8 @@ export default function MainControlButton({
       : 'bg-white text-gray-600 hover:bg-gray-100 disabled:bg-gray-200 disabled:text-gray-300';
 
   return (
-    <button className={`${baseClass} ${variantClass} ${className}`} disabled={disabled} onClick={onClick}>
-      {text}
+    <button className={`${baseClass} ${variantClass} ${className}`} {...props}>
+      {children}
     </button>
   );
 }

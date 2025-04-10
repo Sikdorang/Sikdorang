@@ -34,9 +34,54 @@ definitions:
   dto.GetCategoryResponseDTO:
     properties:
       category:
-        example:
-        - '["음료"'
-        - ' "디저트"]'
+        example: 음료
+        type: string
+      id:
+        example: 1
+        type: integer
+    type: object
+  dto.GetDescriptionResponseDTO:
+    properties:
+      details:
+        type: string
+      images:
+        items:
+          type: string
+        type: array
+      preview:
+        type: string
+      tags:
+        items:
+          type: string
+        type: array
+    type: object
+  dto.GetMenuBoardResponseDTO:
+    properties:
+      category:
+        type: string
+      category_id:
+        type: integer
+      details:
+        type: string
+      id:
+        type: integer
+      image_urls:
+        items:
+          type: string
+        type: array
+      menu:
+        type: string
+      order:
+        type: string
+      preview:
+        type: string
+      price:
+        type: integer
+      status:
+        type: string
+      store_id:
+        type: integer
+      tags:
         items:
           type: string
         type: array
@@ -52,11 +97,11 @@ definitions:
       menu:
         type: string
       order:
-        type: integer
+        type: string
       price:
         type: integer
-      soldOut:
-        type: boolean
+      status:
+        type: string
       storeId:
         type: integer
     type: object
@@ -199,9 +244,11 @@ paths:
       - application/json
       responses:
         "200":
-          description: 카테고리 이름 배열
+          description: 카테고리 리스트
           schema:
-            $ref: '#/definitions/dto.GetCategoryResponseDTO'
+            items:
+              $ref: '#/definitions/dto.GetCategoryResponseDTO'
+            type: array
         "401":
           description: 인증 실패
           schema:
@@ -346,7 +393,7 @@ paths:
       summary: 메뉴 목록 조회
       tags:
       - menu
-  /menus/sync:
+  /menus/:
     post:
       consumes:
       - application/json
@@ -383,6 +430,71 @@ paths:
           schema:
             $ref: '#/definitions/dto.ErrorResponse'
       summary: 메뉴 동기화
+      tags:
+      - menu
+  /menus/{menuID}:
+    get:
+      description: storeID와 menuID로 메뉴 상세 정보를 조회합니다. (Preview, Details, Tags, Images
+        포함)
+      parameters:
+      - description: 메뉴 ID
+        in: path
+        name: menuId
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.GetDescriptionResponseDTO'
+        "400":
+          description: 잘못된 요청 (menuId 없음 또는 invalid)
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+        "401":
+          description: 인증 실패
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+        "500":
+          description: 서버 에러
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+      summary: 메뉴 상세 조회
+      tags:
+      - menu
+  /menus/board/{categoryID}:
+    get:
+      description: 카테고리 ID로 메뉴, 이미지, 태그를 함께 조회합니다.
+      parameters:
+      - description: 카테고리 ID
+        in: path
+        name: category_id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/dto.GetMenuBoardResponseDTO'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+      summary: 메뉴판 조회
       tags:
       - menu
 swagger: "2.0"

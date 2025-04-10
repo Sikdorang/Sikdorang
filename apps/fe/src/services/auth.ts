@@ -7,6 +7,8 @@ export const AuthAPI = {
       Password: password,
     });
 
+    console.log('res: ', res);
+
     return res.data;
   },
 };
