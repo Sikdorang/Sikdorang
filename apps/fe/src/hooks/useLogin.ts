@@ -20,7 +20,7 @@ export const useLogin = () => {
       const data = await AuthAPI.login(email, password);
       localStorage.setItem(STORAGE_KEYS.accessToken, data.accessToken);
       toast.success(MESSAGES.loginSuccess);
-      router.push('/preview');
+      router.push('/menu');
     } catch (error) {
       if (axios.isAxiosError(error) && error.response?.status === 401) {
         setLoginError(MESSAGES.invalidCredentials);
