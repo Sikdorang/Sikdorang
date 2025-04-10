@@ -16,6 +16,8 @@ import CategorySidebar from '@/components/layout/sidebars/CategorySidebar';
 import MenuTextInput from '@/components/pages/menu/MenuTextInput';
 
 import { URLS } from '@/constants/urls';
+import { MESSAGES } from '@/constants/messages';
+import Spinner from '@/components/common/loadings/Spinner';
 
 export default function MenuPage() {
   const { menus, isLoading, error, fetchMenus, syncMenus } = useManageMenu();
@@ -35,8 +37,14 @@ export default function MenuPage() {
     fetchCategories();
   }, [categories]);
 
+  useEffect(() => {
+    setIsMenusLoading(isLoading);
+  }, [isLoading]);
+
+  const [isMenusLoading, setIsMenusLoading] = useState<boolean>(true);
   const [temporaryMenus, setTemporaryMenus] = useState<IMenu[]>([]);
   const [changeLogIds, setChangeLogIds] = useState<Set<number>>(new Set());
+  const [menuErrors, setMenuErrors] = useState<Record<number, string>>({});
   const originalMenuDict = useMemo(
     () => menus.reduce((acc, menu) => ({ ...acc, [menu.id]: menu }), {} as Record<number, IMenu>),
     [menus],
@@ -109,7 +117,7 @@ export default function MenuPage() {
       await syncMenus(syncData);
 
       setChangeLogIds(new Set());
-
+      setMenuErrors({});
       fetchMenus();
     } catch (error) {
       console.error('Sync error:', error);
@@ -128,7 +136,7 @@ export default function MenuPage() {
     ]);
   };
   const deleteMenuItem = (id: number) => setTemporaryMenus((prev) => prev.filter((item) => item.id !== id));
-  const updateMenuItem = (id: number, field: keyof IMenu, value: string | boolean) =>
+  const updateMenuItem = (id: number, field: keyof IMenu, value: string | boolean | number) =>
     setTemporaryMenus((prev) => prev.map((item) => (item.id === id ? { ...item, [field]: value } : item)));
 
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -165,6 +173,7 @@ export default function MenuPage() {
             미입력 메뉴만 보기
           </CheckboxInput>
           <MainControlButton
+            variant="menu"
             className="flex-none w-fit mr-3"
             onClick={handleSynchronize}
             disabled={changeLogIds.size === 0}
@@ -176,93 +185,114 @@ export default function MenuPage() {
           </MainControlButton>
         </header>
 
-        <table className="w-full table-auto border-none">
-          <thead className="bg-gray-100 text-gray-800 text-label-sm-sb border-b border-b-gray-400">
-            <tr>
-              <th className="px-5 py-5 w-[10%]">번호</th>
-              <th className="px-5 py-5 w-[35%] text-left">메뉴명</th>
-              <th className="px-5 py-5 w-[10%]">가격</th>
-              <th className="px-5 py-5 w-[15%]">카테고리</th>
-              <th className="px-5 py-5 w-[10%]">상태</th>
-              <th className="px-5 py-5 w-[10%]">이미지 및 설명</th>
-              <th className="px-5 py-5 w-[10%]">삭제</th>
-            </tr>
-          </thead>
+        {isMenusLoading ? (
+          <div className="flex h-100 justify-center items-center">
+            <Spinner className="border-blue-500 w-10 h-10" />
+          </div>
+        ) : (
+          <>
+            <table className="w-full table-auto border-none">
+              <thead className="bg-gray-100 text-gray-800 text-label-sm-sb border-b border-b-gray-400">
+                <tr>
+                  <th className="px-5 py-5 w-[10%]">번호</th>
+                  <th className="px-5 py-5 w-[35%] text-left">메뉴명</th>
+                  <th className="px-5 py-5 w-[10%]">가격</th>
+                  <th className="px-5 py-5 w-[15%]">카테고리</th>
+                  <th className="px-5 py-5 w-[10%]">상태</th>
+                  <th className="px-5 py-5 w-[10%]">이미지 및 설명</th>
+                  <th className="px-5 py-5 w-[10%]">삭제</th>
+                </tr>
+              </thead>
+              <tbody className="text-label-sm-m text-gray-700">
+                {filteredMenuItems.map((item, idx) => (
+                  <tr key={item.id}>
+                    <td className="text-center">{idx + 1}</td>
 
-          <tbody className="text-label-sm-m text-gray-700">
-            {filteredMenuItems.map((item, idx) => (
-              <tr key={item.id}>
-                <td className="text-center">{idx + 1}</td>
+                    <td className="items-center">
+                      <MenuTextInput
+                        variant="menu"
+                        defaultValue={item.menu}
+                        placeholder="메뉴명"
+                        onSave={(value) => updateMenuItem(item.id, 'menu', value)}
+                        className={`w-full p-1 m-5 rounded text-left`}
+                        maxLength={20}
+                      />
+                    </td>
 
-                <td className="items-center">
-                  <MenuTextInput
-                    variant="menu"
-                    defaultValue={item.menu}
-                    placeholder="메뉴명"
-                    onSave={(value) => updateMenuItem(item.id, 'menu', value)}
-                    className={`w-full p-1 m-5 rounded text-left`}
-                    maxLength={20}
-                  />
-                </td>
+                    <td className="text-center">
+                      <MenuTextInput
+                        variant="menu"
+                        defaultValue={item.price.toString()}
+                        placeholder="가격"
+                        onSave={(value) => {
+                          const numericValue = Number(value);
+                          if (isNaN(numericValue)) {
+                            setMenuErrors((prev) => ({
+                              ...prev,
+                              [item.id]: MESSAGES.invalidPriceError,
+                            }));
+                          } else {
+                            setMenuErrors((prev) => {
+                              const { [item.id]: _, ...rest } = prev;
+                              return rest;
+                            });
+                            updateMenuItem(item.id, 'price', numericValue);
+                          }
+                        }}
+                        maxLength={11}
+                        errorMessage={menuErrors[item.id]}
+                      />
+                    </td>
 
-                <td className="text-center">
-                  <MenuTextInput
-                    variant="menu"
-                    defaultValue={item.price}
-                    placeholder="가격"
-                    onSave={(value) => updateMenuItem(item.id, 'price', value)}
-                    maxLength={11}
-                  />
-                </td>
+                    <td className="text-center">
+                      <MenuManageSelect
+                        options={categories.map((item) => item.category)}
+                        selectedOption={item.category}
+                        onChange={(value) => handleCategoryChange(item.id, value)}
+                      />
+                    </td>
 
-                <td className="text-center">
-                  <MenuManageSelect
-                    options={categories.map((item) => item.category)}
-                    selectedOption={item.category}
-                    onChange={(value) => handleCategoryChange(item.id, value)}
-                  />
-                </td>
+                    <td className="text-center">
+                      <MenuManageSelect
+                        options={status}
+                        selectedOption={'d'}
+                        isStatus={true}
+                        onChange={(value) => handleStatusChange(item.id, value)}
+                      />
+                    </td>
 
-                <td className="text-center">
-                  <MenuManageSelect
-                    options={status}
-                    selectedOption={'d'}
-                    isStatus={true}
-                    onChange={(value) => handleStatusChange(item.id, value)}
-                  />
-                </td>
+                    <td className="text-center">
+                      <Link
+                        href={{
+                          pathname: `/menu/modify`,
+                          query: {
+                            id: item.id,
+                          },
+                        }}
+                      >
+                        <ManageButton variant="modify">편집하기</ManageButton>
+                      </Link>
+                    </td>
 
-                <td className="text-center">
-                  <Link
-                    href={{
-                      pathname: `/menu/modify`,
-                      query: {
-                        id: item.id,
-                      },
-                    }}
-                  >
-                    <ManageButton variant="modify">편집하기</ManageButton>
-                  </Link>
-                </td>
-
-                <td className="text-center">
-                  <Link
-                    href={{
-                      pathname: '/menu/delete',
-                      query: { id: item.id, name: item.menu },
-                    }}
-                  >
-                    <ManageButton variant="delete">삭제</ManageButton>
-                  </Link>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-
-        <MainControlButton className="w-full py-5" onClick={addMenuItem}>
-          새로운 메뉴 추가
-        </MainControlButton>
+                    <td className="text-center">
+                      <Link
+                        href={{
+                          pathname: '/menu/delete',
+                          query: { id: item.id, name: item.menu },
+                        }}
+                      >
+                        <ManageButton variant="delete">삭제</ManageButton>
+                      </Link>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+            <MainControlButton className="w-full py-5" onClick={addMenuItem}>
+              새로운 메뉴 추가
+            </MainControlButton>
+          </>
+        )}
 
         <CategorySidebar
           isOpen={isSidebarOpen}

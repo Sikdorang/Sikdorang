@@ -32,7 +32,7 @@ export const MenuyAPI = {
     return res.data;
   },
   syncMenus: async (syncData: any) => {
-    const res = await axiosInstance.post('/menus/sync', syncData);
+    const res = await axiosInstance.post('/menus', syncData);
     return res.data;
   },
 };
