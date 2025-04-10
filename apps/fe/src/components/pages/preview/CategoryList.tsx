@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import CategoryItem from './CategoryItem';
+import CategoryItem from '../../common/items/CategoryItem';
 
 const categories = [
   '시즌 메뉴',
