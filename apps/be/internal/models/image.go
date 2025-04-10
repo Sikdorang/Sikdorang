@@ -7,5 +7,5 @@ type Image struct {
     Menu     Menu
     StoreID  uint
     Store    Store
+    Order    string
 }
-
