@@ -1,5 +1,7 @@
 import React, { ButtonHTMLAttributes, PropsWithChildren } from 'react';
 import Spinner from '../loadings/Spinner';
+import clsx from 'clsx';
+import { twMerge } from 'tailwind-merge';
 
 interface BaseButtonProps extends PropsWithChildren, ButtonHTMLAttributes<HTMLButtonElement> {
   variant?: 'default' | 'cancel';
@@ -15,11 +17,7 @@ export default function BaseButton({ children, variant = 'default', isLoading = 
       : 'bg-blue-500 text-white hover:bg-blue-400 disabled:bg-gray-200 disabled:text-gray-300';
 
   return (
-    <button
-      className={`${baseClass} ${variantClass} ${props.className}`}
-      disabled={isLoading || props.disabled}
-      {...props}
-    >
+    <button className={clsx(baseClass, variantClass)} disabled={isLoading || props.disabled} {...props}>
       {isLoading ? <Spinner /> : children || '버튼'}
     </button>
   );
