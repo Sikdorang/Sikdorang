@@ -18,6 +18,7 @@ export const useLogin = () => {
 
     try {
       const data = await AuthAPI.login(email, password);
+      document.cookie = `${STORAGE_KEYS.accessToken}=${data.accessToken}; path=/; SameSite=Lax;`;
       localStorage.setItem(STORAGE_KEYS.accessToken, data.accessToken);
       toast.success(MESSAGES.loginSuccess);
       router.push('/menu');
