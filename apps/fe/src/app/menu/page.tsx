@@ -147,7 +147,10 @@ export default function MenuPage() {
   const handleCategoryChange = (id: number, value: string) => updateMenuItem(id, 'category', value);
 
   const [status] = useState(['판매 중', '판매 중단', '판매 예정']);
-  const handleStatusChange = (id: number, value: string) => updateMenuItem(id, 'status', value);
+  const handleStatusChange = (id: number, value: string) => {
+    updateMenuItem(id, 'status', value);
+    console.log('value: ', value);
+  };
 
   const [showOnlyEmptyMenus, setShowOnlyEmptyMenus] = useState(false);
   const filteredMenuItems = showOnlyEmptyMenus
