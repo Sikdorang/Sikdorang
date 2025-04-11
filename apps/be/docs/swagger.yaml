@@ -105,6 +105,15 @@ definitions:
       storeId:
         type: integer
     type: object
+  dto.ImageDTO:
+    properties:
+      id:
+        type: integer
+      image_url:
+        type: string
+      order:
+        type: string
+    type: object
   dto.LoginRequestDTO:
     properties:
       password:
@@ -142,6 +151,13 @@ definitions:
       id:
         type: integer
     type: object
+  dto.TagDTO:
+    properties:
+      id:
+        type: integer
+      tag:
+        type: string
+    type: object
   dto.UpdateCategoryRequestDTO:
     properties:
       category:
@@ -161,6 +177,21 @@ definitions:
       storeId:
         example: 2
         type: integer
+    type: object
+  dto.UpdateDescriptionRequestDTO:
+    properties:
+      details:
+        type: string
+      images:
+        items:
+          $ref: '#/definitions/dto.ImageDTO'
+        type: array
+      preview:
+        type: string
+      tags:
+        items:
+          $ref: '#/definitions/dto.TagDTO'
+        type: array
     type: object
 host: Localhost:4000
 info:
@@ -462,6 +493,46 @@ paths:
           schema:
             $ref: '#/definitions/dto.ErrorResponse'
       summary: 메뉴 상세 조회
+      tags:
+      - menu
+    patch:
+      consumes:
+      - application/json
+      description: storeID와 menuID로 메뉴 상세정보(Preview, Details, Tags, Images)를 수정합니다.
+      parameters:
+      - description: 메뉴 ID
+        in: path
+        name: menuID
+        required: true
+        type: integer
+      - description: 수정할 데이터
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/dto.UpdateDescriptionRequestDTO'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 수정 완료 메시지
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "400":
+          description: 잘못된 요청 (menuId 없음 또는 invalid)
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+        "401":
+          description: 인증 실패
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+        "500":
+          description: 서버 에러
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+      summary: 메뉴 상세 수정
       tags:
       - menu
   /menus/board/{categoryID}:

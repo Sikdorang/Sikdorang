@@ -47,7 +47,7 @@ func (ac *AuthController) Login(ctx *fiber.Ctx) error {
 	// Access Token (15분)
 	accessToken := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
 		"storeId": store.ID,
-		"exp":     time.Now().Add(time.Minute * 15).Unix(),
+		"exp":     time.Now().Add(time.Minute * 30).Unix(),
 	})
 	accessTokenStr, _ := accessToken.SignedString([]byte(os.Getenv("JWT_SECRET")))
 
