@@ -2,6 +2,7 @@ import { ButtonHTMLAttributes, PropsWithChildren } from 'react';
 
 interface MainControlButtonProps extends ButtonHTMLAttributes<HTMLButtonElement>, PropsWithChildren {
   variant?: 'default' | 'category' | 'menu';
+  variant?: 'default' | 'category' | 'menu';
 }
 
 export default function MainControlButton({
