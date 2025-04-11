@@ -21,7 +21,7 @@ type MenuRepository interface {
 	FindTags(storeID, menuID uint) ([]models.Tag, error)
 	FindMenuBoard(storeID, categoryID uint) ([]models.Menu, error)
 	FindDescription(storeID, menuID uint) (models.Menu, error)
-
+	
 	DeleteImages(storeID, menuID uint, images []models.Image) error
 	UpdateImages(images []models.Image) error
 	CreateImages(images []models.Image) error
@@ -30,6 +30,7 @@ type MenuRepository interface {
 	DeleteTags(tags []models.Tag) error
 	CreateTags(tags []models.Tag) error
 	UpdateTags(tags []models.Tag) error
+
 }
 
 type menuRepository struct {
@@ -126,14 +127,9 @@ func (r *menuRepository) CreateImages(images []models.Image) error {
 
 // 이미지 S3 삭제 (S3 연동 자리)
 func (r *menuRepository) DeleteImageFile(imageURL string) error {
-	key := strings.Replace(imageURL, "https://"+config.S3BucketName+".s3."+config.AwsRegion+".amazonaws.com/", "", 1)
-
-	_, err := config.S3Client.DeleteObject(context.TODO(), &s3.DeleteObjectInput{
-		Bucket: aws.String(config.S3BucketName),
-		Key:    aws.String(key),
-	})
-
-	return err
+	// TODO: S3 삭제 로직
+	// ex) s3Client.DeleteObject(bucket, imageURL)
+	return nil
 }
 
 // 태그 삭제

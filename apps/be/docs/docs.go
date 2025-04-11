@@ -513,7 +513,7 @@ const docTemplate = `{
             "patch": {
                 "description": "storeID와 menuID로 메뉴 상세정보(Preview, Details, Tags, Images)를 수정합니다.",
                 "consumes": [
-                    "multipart/form-data"
+                    "application/json"
                 ],
                 "produces": [
                     "application/json"
@@ -531,7 +531,7 @@ const docTemplate = `{
                         "required": true
                     },
                     {
-                        "description": "수정할 데이터 (multipart/form-data로 이미지 파일 포함 가능)",
+                        "description": "수정할 데이터",
                         "name": "request",
                         "in": "body",
                         "required": true,
@@ -542,17 +542,12 @@ const docTemplate = `{
                 ],
                 "responses": {
                     "200": {
-                        "description": "수정 완료 메시지 및 업로드 대상 URL 목록",
+                        "description": "수정 완료 메시지",
                         "schema": {
                             "type": "object",
-                            "additionalProperties": true
-                        }
-                    },
-                    "207": {
-                        "description": "일부 실패, 성공 및 실패 목록 반환",
-                        "schema": {
-                            "type": "object",
-                            "additionalProperties": true
+                            "additionalProperties": {
+                                "type": "string"
+                            }
                         }
                     },
                     "400": {
