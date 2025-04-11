@@ -15,6 +15,7 @@ type MenuService interface {
 	GetTags(storeID, menuID uint) ([]string, error)
 	GetMenuBoard(storeID, categoryID uint) ([]dto.GetMenuBoardResponseDTO, error)
 	GetDescription(storeID, menuID uint) (dto.GetDescriptionResponseDTO, error)
+	UpdateDescription(storeID, menuID uint, req dto.UpdateDescriptionRequestDTO) error
 }
 
 type menuService struct {
@@ -168,4 +169,120 @@ func (s *menuService) buildMenuResponse(menu models.Menu, storeID uint) dto.GetM
 		Details:	menu.Details,
 		Preview: menu.Preview,
 	}
+}
+
+func (s *menuService) UpdateDescription(storeID, menuID uint, body dto.UpdateDescriptionRequestDTO) error {
+	menu, err := s.repo.FindDescription(storeID, menuID)
+	if err != nil {
+		return err
+	}
+
+	// Preview 처리
+	if body.Preview != "" {
+		menu.Preview = body.Preview
+		if err := s.repo.UpdateMenu(&menu); err != nil {
+			return err
+		}
+	}
+
+	// Details 처리
+	if body.Details != "" {
+		menu.Details = body.Details
+		if err := s.repo.UpdateMenu(&menu); err != nil {
+			return err
+		}
+	}
+
+	// Tags 처리
+	if body.Tags != nil {
+		existingTags, _ := s.repo.FindTags(storeID, menuID)
+		newTags := utils.ConvertTagDTOsToTags(body.Tags, storeID, menuID)
+
+		var createTags, updateTags, deleteTags []models.Tag
+		requestTagMap := map[uint]bool{}
+
+		for _, tag := range newTags {
+			if tag.ID == 0 {
+				createTags = append(createTags, tag)
+			} else {
+				updateTags = append(updateTags, tag)
+				requestTagMap[tag.ID] = true
+			}
+		}
+
+		for _, tag := range existingTags {
+			if !requestTagMap[tag.ID] {
+				deleteTags = append(deleteTags, tag)
+			}
+		}
+
+		if len(deleteTags) > 0 {
+			if err := s.repo.DeleteTags(deleteTags); err != nil {
+				return err
+			}
+		}
+
+		if len(updateTags) > 0 {
+			if err := s.repo.UpdateTags(updateTags); err != nil {
+				return err
+			}
+		}
+
+		if len(createTags) > 0 {
+			if err := s.repo.CreateTags(createTags); err != nil {
+				return err
+			}
+		}
+	}
+
+	// Images 처리
+	if body.Images != nil {
+		existingImages, _ := s.repo.FindImages(storeID, menuID)
+		newImages := utils.ConvertImageDTOsToImages(body.Images, storeID, menuID)
+
+		var createImages, updateImages, deleteImages []models.Image
+		requestImageMap := map[uint]bool{}
+
+		for _, img := range newImages {
+			if img.ID == 0 {
+				createImages = append(createImages, img)
+			} else {
+				updateImages = append(updateImages, img)
+				requestImageMap[img.ID] = true
+			}
+		}
+
+		for _, img := range existingImages {
+			if !requestImageMap[img.ID] {
+				deleteImages = append(deleteImages, img)
+			}
+		}
+
+		// S3 삭제
+		for _, img := range deleteImages {
+			if err := s.repo.DeleteImageFile(img.ImageURL); err != nil {
+				return err
+			}
+		}
+
+		if len(deleteImages) > 0 {
+			if err := s.repo.DeleteImages(storeID, menuID, deleteImages); err != nil {
+				return err
+			}
+		}
+
+		if len(updateImages) > 0 {
+			if err := s.repo.UpdateImages(updateImages); err != nil {
+				return err
+			}
+		}
+
+		if len(createImages) > 0 {
+			if err := s.repo.CreateImages(createImages); err != nil {
+				return err
+			}
+		}
+	}
+
+	return nil
 }
