@@ -1,7 +1,11 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import Link from 'next/link';
+import { isEqual } from 'lodash';
+import { useManageMenu, IMenu } from '@/hooks/useManageMenu';
+import { useManageCategory } from '@/hooks/useManageCategory';
+import { useDeleteMenuStore } from '@/stores/useDeleteMenuStore';
 
 import TopNav from '@/components/layout/headers/TopNav';
 import MainControlButton from '@/components/pages/menu/MainControlButton';
@@ -12,69 +16,144 @@ import CategorySidebar from '@/components/layout/sidebars/CategorySidebar';
 import MenuTextInput from '@/components/pages/menu/MenuTextInput';
 
 import { URLS } from '@/constants/urls';
-
-interface IMenuItem {
-  id: number;
-  name: string;
-  description: string;
-  price: string;
-  category: string;
-  status: string;
-}
+import { MESSAGES } from '@/constants/messages';
+import Spinner from '@/components/common/loadings/Spinner';
 
 export default function MenuPage() {
-  const [showOnlyEmptyMenus, setShowOnlyEmptyMenus] = useState(false);
-  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const { menus, isLoading, error, fetchMenus, syncMenus } = useManageMenu();
+  const { categories, fetchCategories } = useManageCategory();
+  const { setDeleteHandler, clearDeleteHandler } = useDeleteMenuStore();
 
-  const toggleSidebar = () => setIsSidebarOpen((prev) => !prev);
-  const handleCheckboxChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setShowOnlyEmptyMenus(e.target.checked);
+  useEffect(() => {
+    fetchMenus();
+    fetchCategories();
+  }, []);
+
+  useEffect(() => {
+    setTemporaryMenus(menus);
+  }, [menus]);
+
+  useEffect(() => {
+    fetchCategories();
+  }, [categories]);
+
+  useEffect(() => {
+    setIsMenusLoading(isLoading);
+  }, [isLoading]);
+
+  const [isMenusLoading, setIsMenusLoading] = useState<boolean>(true);
+  const [temporaryMenus, setTemporaryMenus] = useState<IMenu[]>([]);
+  const [changeLogIds, setChangeLogIds] = useState<Set<number>>(new Set());
+  const [menuErrors, setMenuErrors] = useState<Record<number, string>>({});
+  const originalMenuDict = useMemo(
+    () => menus.reduce((acc, menu) => ({ ...acc, [menu.id]: menu }), {} as Record<number, IMenu>),
+    [menus],
+  );
+  const tempMenuDict = useMemo(
+    () => temporaryMenus.reduce((acc, menu) => ({ ...acc, [menu.id]: menu }), {} as Record<number, IMenu>),
+    [temporaryMenus],
+  );
+  useEffect(() => {
+    const changedIds = Object.keys(tempMenuDict)
+      .filter((id) => {
+        const menuId = Number(id);
+        const original = originalMenuDict[menuId];
+        const current = tempMenuDict[menuId];
+
+        return !original || !isEqual(original, current);
+      })
+      .map(Number);
+
+    const deletedIds = Object.keys(originalMenuDict)
+      .filter((id) => !tempMenuDict.hasOwnProperty(id))
+      .map(Number);
+
+    setChangeLogIds(new Set([...changedIds, ...deletedIds]));
+    console.log(changedIds, deletedIds);
+  }, [originalMenuDict, tempMenuDict]);
+  useEffect(() => {
+    setDeleteHandler(deleteMenuItem);
+    return () => clearDeleteHandler();
+  }, [setDeleteHandler, clearDeleteHandler]);
+  const handleSynchronize = async () => {
+    const changedIds = Array.from(changeLogIds);
+
+    const syncData = changedIds.map((id) => {
+      const original = menus.find((m) => m.id === id);
+      const current = temporaryMenus.find((m) => m.id === id);
+
+      if (id < 0 || !original) {
+        return {
+          action: 'create' as const,
+          id: -1,
+          data: {
+            menu: current?.menu || '',
+            price: current?.price || 0,
+            categoryId: categories.find((c) => c.category === current?.category)?.id || 0,
+            status: current?.status,
+          },
+        };
+      }
+      if (!current) {
+        return {
+          action: 'delete' as const,
+          id,
+          data: {},
+        };
+      }
+      return {
+        action: 'update' as const,
+        id,
+        data: {
+          menu: current.menu,
+          price: current.price,
+          categoryId: categories.find((c) => c.category === current.category)?.id || 0,
+          status: current.status,
+        },
+      };
+    });
+
+    try {
+      await syncMenus(syncData);
+
+      setChangeLogIds(new Set());
+      setMenuErrors({});
+      fetchMenus();
+    } catch (error) {
+      console.error('Sync error:', error);
+    }
   };
-
-  const [menuItems, setMenuItems] = useState<IMenuItem[]>([
-    {
-      id: 1,
-      name: '이십글자임이십글자임이십글자임이십글자임',
-      description: '맛있는 스테이크',
-      price: '999,999,999',
-      category: '열두글자열두글자열두글자',
-      status: '판매 중',
-    },
-    {
-      id: 2,
-      name: '파스타',
-      description: '크림 파스타',
-      price: '15,800',
-      category: '음료',
-      status: '판매 중',
-    },
-  ]);
   const addMenuItem = () => {
-    setMenuItems((prev) => [
+    setTemporaryMenus((prev) => [
       ...prev,
       {
-        id: prev.length + 1,
-        name: '',
-        description: '',
-        price: '',
+        id: -Date.now(),
+        menu: '',
+        price: 0,
         category: '',
         status: '판매 예정',
       },
     ]);
   };
-  const deleteMenuItem = (id: number) => setMenuItems((prev) => prev.filter((item) => item.id !== id));
-  const updateMenuItem = (id: number, field: keyof IMenuItem, value: string | boolean) =>
-    setMenuItems((prev) => prev.map((item) => (item.id === id ? { ...item, [field]: value } : item)));
+  const deleteMenuItem = (id: number) => setTemporaryMenus((prev) => prev.filter((item) => item.id !== id));
+  const updateMenuItem = (id: number, field: keyof IMenu, value: string | boolean | number) =>
+    setTemporaryMenus((prev) => prev.map((item) => (item.id === id ? { ...item, [field]: value } : item)));
 
-  const [categories, setCategories] = useState(['안주', '증류주', '열두글자열두글자열두글자', '음료']);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const toggleSidebar = () => setIsSidebarOpen((prev) => !prev);
+  const handleCheckboxChange = (e: React.ChangeEvent<HTMLInputElement>) => setShowOnlyEmptyMenus(e.target.checked);
   const handleCategoryChange = (id: number, value: string) => updateMenuItem(id, 'category', value);
 
   const [status] = useState(['판매 중', '판매 중단', '판매 예정']);
-  const handleStatusChange = (id: number, value: string) => updateMenuItem(id, 'status', value);
+  const handleStatusChange = (id: number, value: string) => {
+    updateMenuItem(id, 'status', value);
+    console.log('value: ', value);
+  };
 
+  const [showOnlyEmptyMenus, setShowOnlyEmptyMenus] = useState(false);
   const filteredMenuItems = showOnlyEmptyMenus
-    ? menuItems.filter((item) => !item.name || !item.price || !item.category)
-    : menuItems;
+    ? temporaryMenus.filter((item) => !item.menu || !item.price || !item.category)
+    : temporaryMenus;
 
   return (
     <>
@@ -96,104 +175,132 @@ export default function MenuPage() {
           <CheckboxInput checked={showOnlyEmptyMenus} onChange={handleCheckboxChange}>
             미입력 메뉴만 보기
           </CheckboxInput>
+          <MainControlButton
+            variant="menu"
+            className="flex-none w-fit mr-3"
+            onClick={handleSynchronize}
+            disabled={changeLogIds.size === 0}
+          >
+            변경사항 저장하기
+          </MainControlButton>
           <MainControlButton variant="category" className="flex-none w-fit" onClick={toggleSidebar}>
             카테고리 편집
           </MainControlButton>
         </header>
 
-        <table className="w-full table-auto border-none">
-          <thead className="bg-gray-100 text-gray-800 text-label-sm-sb border-b border-b-gray-400">
-            <tr>
-              <th className="px-5 py-5 w-[10%]">번호</th>
-              <th className="px-5 py-5 w-[35%] text-left">메뉴명</th>
-              <th className="px-5 py-5 w-[10%]">가격</th>
-              <th className="px-5 py-5 w-[15%]">카테고리</th>
-              <th className="px-5 py-5 w-[10%]">상태</th>
-              <th className="px-5 py-5 w-[10%]">이미지 및 설명</th>
-              <th className="px-5 py-5 w-[10%]">삭제</th>
-            </tr>
-          </thead>
+        {isMenusLoading ? (
+          <div className="flex h-100 justify-center items-center">
+            <Spinner className="border-blue-500 w-10 h-10" />
+          </div>
+        ) : (
+          <>
+            <table className="w-full table-auto border-none">
+              <thead className="bg-gray-100 text-gray-800 text-label-sm-sb border-b border-b-gray-400">
+                <tr>
+                  <th className="px-5 py-5 w-[10%]">번호</th>
+                  <th className="px-5 py-5 w-[35%] text-left">메뉴명</th>
+                  <th className="px-5 py-5 w-[10%]">가격</th>
+                  <th className="px-5 py-5 w-[15%]">카테고리</th>
+                  <th className="px-5 py-5 w-[10%]">상태</th>
+                  <th className="px-5 py-5 w-[10%]">이미지 및 설명</th>
+                  <th className="px-5 py-5 w-[10%]">삭제</th>
+                </tr>
+              </thead>
+              <tbody className="text-label-sm-m text-gray-700">
+                {filteredMenuItems.map((item, idx) => (
+                  <tr key={item.id}>
+                    <td className="text-center">{idx + 1}</td>
 
-          <tbody className="text-label-sm-m text-gray-700">
-            {filteredMenuItems.map((item, idx) => (
-              <tr key={item.id}>
-                <td className="text-center">{idx + 1}</td>
+                    <td className="items-center">
+                      <MenuTextInput
+                        variant="menu"
+                        defaultValue={item.menu}
+                        placeholder="메뉴명"
+                        onSave={(value) => updateMenuItem(item.id, 'menu', value)}
+                        className={`w-full p-1 m-5 rounded text-left`}
+                        maxLength={20}
+                      />
+                    </td>
 
-                <td className="items-center">
-                  <MenuTextInput
-                    variant="menu"
-                    defaultValue={item.name}
-                    placeholder="메뉴명"
-                    onSave={(value) => updateMenuItem(item.id, 'name', value)}
-                    className={`w-full p-1 m-5 rounded text-left`}
-                    maxLength={20}
-                  />
-                </td>
+                    <td className="text-center">
+                      <MenuTextInput
+                        variant="menu"
+                        defaultValue={item.price.toString()}
+                        placeholder="가격"
+                        onSave={(value) => {
+                          const numericValue = Number(value);
+                          if (isNaN(numericValue)) {
+                            setMenuErrors((prev) => ({
+                              ...prev,
+                              [item.id]: MESSAGES.invalidPriceError,
+                            }));
+                          } else {
+                            setMenuErrors((prev) => {
+                              const { [item.id]: _, ...rest } = prev;
+                              return rest;
+                            });
+                            updateMenuItem(item.id, 'price', numericValue);
+                          }
+                        }}
+                        maxLength={11}
+                        errorMessage={menuErrors[item.id]}
+                      />
+                    </td>
 
-                <td className="text-center">
-                  <MenuTextInput
-                    variant="menu"
-                    defaultValue={item.price}
-                    placeholder="가격"
-                    onSave={(value) => updateMenuItem(item.id, 'price', value)}
-                    maxLength={11}
-                  />
-                </td>
+                    <td className="text-center">
+                      <MenuManageSelect
+                        options={categories.map((item) => item.category)}
+                        selectedOption={item.category}
+                        onChange={(value) => handleCategoryChange(item.id, value)}
+                      />
+                    </td>
 
-                <td className="text-center">
-                  <MenuManageSelect
-                    options={categories}
-                    selectedOption={item.category}
-                    onChange={(value) => handleCategoryChange(item.id, value)}
-                  />
-                </td>
+                    <td className="text-center">
+                      <MenuManageSelect
+                        options={status}
+                        selectedOption={item.status || '판매 예정'}
+                        isStatus={true}
+                        onChange={(value) => handleStatusChange(item.id, value)}
+                      />
+                    </td>
 
-                <td className="text-center">
-                  <MenuManageSelect
-                    options={status}
-                    selectedOption={item.status}
-                    isStatus={true}
-                    onChange={(value) => handleStatusChange(item.id, value)}
-                  />
-                </td>
+                    <td className="text-center">
+                      <Link
+                        href={{
+                          pathname: `/menu/modify`,
+                          query: {
+                            id: item.id,
+                          },
+                        }}
+                      >
+                        <ManageButton variant="modify">편집하기</ManageButton>
+                      </Link>
+                    </td>
 
-                <td className="text-center">
-                  <Link
-                    href={{
-                      pathname: `/menu/modify`,
-                      query: {
-                        id: item.id,
-                      },
-                    }}
-                  >
-                    <ManageButton variant="modify">편집하기</ManageButton>
-                  </Link>
-                </td>
-
-                <td className="text-center">
-                  <Link
-                    href={{
-                      pathname: '/menu/delete',
-                      query: { id: item.id, name: item.name },
-                    }}
-                  >
-                    <ManageButton variant="delete">삭제</ManageButton>
-                  </Link>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-
-        <MainControlButton className="w-full py-5" onClick={addMenuItem}>
-          새로운 메뉴 추가
-        </MainControlButton>
+                    <td className="text-center">
+                      <Link
+                        href={{
+                          pathname: '/menu/delete',
+                          query: { id: item.id, name: item.menu },
+                        }}
+                      >
+                        <ManageButton variant="delete">삭제</ManageButton>
+                      </Link>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+            <MainControlButton className="w-full py-5" onClick={addMenuItem}>
+              새로운 메뉴 추가
+            </MainControlButton>
+          </>
+        )}
 
         <CategorySidebar
           isOpen={isSidebarOpen}
           onClose={() => setIsSidebarOpen(false)}
-          categories={categories}
-          setCategories={setCategories}
+          setTemporaryMenus={setTemporaryMenus}
         />
       </div>
     </>
