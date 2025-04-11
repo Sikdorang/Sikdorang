@@ -5,21 +5,25 @@ import deleteIcon from '@public/icons/ic_x.svg';
 import addIcon from '@public/icons/ic_plus.svg';
 
 interface MenuImageGalleryProps {
-  images: string[];
+  images?: string[];
   setImages: (images: string[]) => void;
   maxImages?: number;
 }
 
-export default function MenuImageGallery({ images, setImages, maxImages = 10 }: MenuImageGalleryProps) {
-  const [selectedImage, setSelectedImage] = useState<string | null>(images[0] || null);
+export default function MenuImageGallery({ images = [], setImages, maxImages = 10 }: MenuImageGalleryProps) {
+  const [selectedImage, setSelectedImage] = useState<string | null>((images || [])[0] || null);
 
   const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(event.target.files || []);
-    if (images.length + files.length > maxImages) {
+    const validImages = images || [];
+
+    if (validImages.length + files.length > maxImages) {
       return;
     }
+
     const uploadedImages = files.map((file) => URL.createObjectURL(file));
-    setImages((prev: any) => [...prev, ...uploadedImages]);
+    setImages([...validImages, ...uploadedImages]);
+
     if (!selectedImage && uploadedImages.length > 0) {
       setSelectedImage(uploadedImages[0]);
     }
@@ -45,7 +49,7 @@ export default function MenuImageGallery({ images, setImages, maxImages = 10 }: 
       </div>
 
       <div className="flex items-center space-x-2 overflow-x-auto mb-3">
-        {images.map((image, index) => (
+        {images?.map((image, index) => (
           <div key={index} className="relative">
             <img
               src={image}
@@ -64,7 +68,7 @@ export default function MenuImageGallery({ images, setImages, maxImages = 10 }: 
           </div>
         ))}
 
-        {images.length < maxImages && (
+        {(images || []).length < maxImages && (
           <label className="w-16 h-16 flex items-center justify-center bg-gray-100 hover:bg-gray-200 rounded-md cursor-pointer">
             <Image src={addIcon} alt="추가" width={16} height={16} />
             <input type="file" multiple accept="image/*" onChange={handleImageUpload} className="hidden" />
