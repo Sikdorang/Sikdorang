@@ -22,7 +22,7 @@ export default function BaseButton({
 
   return (
     <button className={`${baseClass} ${variantClass} ${className}`} disabled={isLoading || props.disabled} {...props}>
-      {isLoading ? <Spinner /> : children || '버튼'}
+      {isLoading ? <Spinner className="border-white" /> : children || '버튼'}
     </button>
   );
 }

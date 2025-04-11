@@ -1,17 +1,21 @@
 'use client';
 
 import { useRouter, useSearchParams } from 'next/navigation';
+import { useDeleteMenuStore } from '@/stores/useDeleteMenuStore';
 import { useEffect } from 'react';
 
 export default function DeleteMenuModal() {
   const router = useRouter();
   const searchParams = useSearchParams();
+  const { deleteMenuItem } = useDeleteMenuStore();
 
   const queryId = searchParams.get('id');
   const queryName = searchParams.get('name');
 
   const handleDelete = () => {
-    console.log(`메뉴 ID ${queryId}과 ${queryName} 삭제`);
+    if (deleteMenuItem && queryId) {
+      deleteMenuItem(Number(queryId));
+    }
     router.back();
   };
 
@@ -37,7 +41,7 @@ export default function DeleteMenuModal() {
         <div className="flex justify-center gap-4">
           <button
             onClick={handleCancel}
-            className="flex-1 w-full px-4 py-2 bg-gray-100 text-label-md text-gray-500 rounded hover:bg-gray-200"
+            className="flex-1 w-full px-4 py-4 bg-gray-100 text-label-md text-gray-500 rounded hover:bg-gray-200"
           >
             취소
           </button>
