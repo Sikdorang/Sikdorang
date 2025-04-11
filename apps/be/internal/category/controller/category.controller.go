@@ -60,7 +60,7 @@ func (c *CategoryController) CreateCategory(ctx *fiber.Ctx) error {
 // @Description  storeID에 해당하는 카테고리 이름 목록을 조회합니다.
 // @Tags         category
 // @Produce      json
-// @Success      200 {object} dto.GetCategoryResponseDTO "카테고리 이름 배열"
+// @Success      200 {array} dto.GetCategoryResponseDTO "카테고리 리스트"
 // @Failure      401 {object} errorDto.ErrorResponse "인증 실패"
 // @Failure      500 {object} errorDto.ErrorResponse "조회 실패"
 // @Router       /categories [get]
@@ -75,14 +75,15 @@ func (c *CategoryController) GetCategories(ctx *fiber.Ctx) error {
 		return ctx.Status(500).JSON(errorDto.ErrorResponse{Error: "failed to fetch categories"})
 	}
 
-	var names []string
+	var result []dto.GetCategoryResponseDTO
 	for _, cat := range categories {
-		names = append(names, cat.Category)
+		result = append(result, dto.GetCategoryResponseDTO{
+			ID:       cat.ID,
+			Category: cat.Category,
+		})
 	}
 
-	return ctx.JSON(dto.GetCategoryResponseDTO{
-		Category: names,
-	})
+	return ctx.Status(fiber.StatusOK).JSON(result)
 }
 
 // UpdateCategory godoc

@@ -131,9 +131,12 @@ const docTemplate = `{
                 "summary": "카테고리 목록 조회",
                 "responses": {
                     "200": {
-                        "description": "카테고리 이름 배열",
+                        "description": "카테고리 리스트",
                         "schema": {
-                            "$ref": "#/definitions/dto.GetCategoryResponseDTO"
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/dto.GetCategoryResponseDTO"
+                            }
                         }
                     },
                     "401": {
@@ -316,6 +319,197 @@ const docTemplate = `{
                     }
                 }
             }
+        },
+        "/menus": {
+            "get": {
+                "description": "storeID에 해당하는 메뉴 목록을 조회합니다.",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "menu"
+                ],
+                "summary": "메뉴 목록 조회",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/dto.GetMenuResponseDTO"
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "인증 실패",
+                        "schema": {
+                            "$ref": "#/definitions/dto.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "서버 에러",
+                        "schema": {
+                            "$ref": "#/definitions/dto.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/menus/": {
+            "post": {
+                "description": "여러 메뉴에 대해 생성/수정/삭제 동기화를 처리합니다.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "menu"
+                ],
+                "summary": "메뉴 동기화",
+                "parameters": [
+                    {
+                        "description": "동기화 요청 데이터",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/dto.SyncMenuRequestDTO"
+                            }
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "전체 성공",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "207": {
+                        "description": "일부 실패",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    },
+                    "400": {
+                        "description": "요청 바디 오류",
+                        "schema": {
+                            "$ref": "#/definitions/dto.ErrorResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "인증 실패",
+                        "schema": {
+                            "$ref": "#/definitions/dto.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/menus/board/{categoryID}": {
+            "get": {
+                "description": "카테고리 ID로 메뉴, 이미지, 태그를 함께 조회합니다.",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "menu"
+                ],
+                "summary": "메뉴판 조회",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "카테고리 ID",
+                        "name": "category_id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/dto.GetMenuBoardResponseDTO"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/dto.ErrorResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/dto.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/dto.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/menus/{menuID}": {
+            "get": {
+                "description": "storeID와 menuID로 메뉴 상세 정보를 조회합니다. (Preview, Details, Tags, Images 포함)",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "menu"
+                ],
+                "summary": "메뉴 상세 조회",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "메뉴 ID",
+                        "name": "menuId",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/dto.GetDescriptionResponseDTO"
+                        }
+                    },
+                    "400": {
+                        "description": "잘못된 요청 (menuId 없음 또는 invalid)",
+                        "schema": {
+                            "$ref": "#/definitions/dto.ErrorResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "인증 실패",
+                        "schema": {
+                            "$ref": "#/definitions/dto.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "서버 에러",
+                        "schema": {
+                            "$ref": "#/definitions/dto.ErrorResponse"
+                        }
+                    }
+                }
+            }
         }
     },
     "definitions": {
@@ -369,14 +563,111 @@ const docTemplate = `{
             "type": "object",
             "properties": {
                 "category": {
+                    "type": "string",
+                    "example": "음료"
+                },
+                "id": {
+                    "type": "integer",
+                    "example": 1
+                }
+            }
+        },
+        "dto.GetDescriptionResponseDTO": {
+            "type": "object",
+            "properties": {
+                "details": {
+                    "type": "string"
+                },
+                "images": {
                     "type": "array",
                     "items": {
                         "type": "string"
-                    },
-                    "example": [
-                        "[\"음료\"",
-                        " \"디저트\"]"
-                    ]
+                    }
+                },
+                "preview": {
+                    "type": "string"
+                },
+                "tags": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                }
+            }
+        },
+        "dto.GetMenuBoardResponseDTO": {
+            "type": "object",
+            "properties": {
+                "category": {
+                    "type": "string"
+                },
+                "category_id": {
+                    "type": "integer"
+                },
+                "details": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "image_urls": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "menu": {
+                    "type": "string"
+                },
+                "order": {
+                    "type": "string"
+                },
+                "preview": {
+                    "type": "string"
+                },
+                "price": {
+                    "type": "integer"
+                },
+                "status": {
+                    "type": "string"
+                },
+                "store_id": {
+                    "type": "integer"
+                },
+                "tags": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                }
+            }
+        },
+        "dto.GetMenuResponseDTO": {
+            "type": "object",
+            "properties": {
+                "category": {
+                    "type": "string"
+                },
+                "categoryId": {
+                    "type": "integer"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "menu": {
+                    "type": "string"
+                },
+                "order": {
+                    "type": "string"
+                },
+                "price": {
+                    "type": "integer"
+                },
+                "status": {
+                    "type": "string"
+                },
+                "storeId": {
+                    "type": "integer"
                 }
             }
         },
@@ -417,6 +708,21 @@ const docTemplate = `{
                 "accessToken": {
                     "type": "string",
                     "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+                }
+            }
+        },
+        "dto.SyncMenuRequestDTO": {
+            "type": "object",
+            "properties": {
+                "action": {
+                    "type": "string"
+                },
+                "data": {
+                    "type": "object",
+                    "additionalProperties": {}
+                },
+                "id": {
+                    "type": "integer"
                 }
             }
         },

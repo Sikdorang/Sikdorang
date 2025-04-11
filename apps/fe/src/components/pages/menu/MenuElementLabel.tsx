@@ -15,7 +15,8 @@ export default function MenuElementLabel({
   isStatus = false,
   onClick,
 }: MenuElementLabelProps) {
-  const baseClass = 'inline-flex items-center text-label-sm-m border rounded-[4px] focus:outline-none transition';
+  const baseClass =
+    'inline-flex items-center text-label-sm-m border rounded-sm focus:outline-none transition select-none';
 
   if (isStatus) {
     if (text === '판매 중') {

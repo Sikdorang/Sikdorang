@@ -27,7 +27,7 @@ func NewCategoryService(repo repository.CategoryRepository) CategoryService {
 }
 
 func (s *categoryService) Create(category string, storeID uint) (models.Category, error) {
-	newCategory := models.Category{
+	newCategory := &models.Category{
 		Category: category,
 		StoreID:  storeID,
 	}
@@ -35,7 +35,7 @@ func (s *categoryService) Create(category string, storeID uint) (models.Category
 	if err := s.repo.Save(newCategory); err != nil {
 		return models.Category{}, err
 	}
-	return newCategory, nil
+	return *newCategory, nil
 }
 
 func (s *categoryService) GetAllByStoreID(storeID uint) ([]models.Category, error) {
