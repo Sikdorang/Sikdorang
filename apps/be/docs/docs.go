@@ -509,6 +509,66 @@ const docTemplate = `{
                         }
                     }
                 }
+            },
+            "patch": {
+                "description": "storeID와 menuID로 메뉴 상세정보(Preview, Details, Tags, Images)를 수정합니다.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "menu"
+                ],
+                "summary": "메뉴 상세 수정",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "메뉴 ID",
+                        "name": "menuID",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "수정할 데이터",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.UpdateDescriptionRequestDTO"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "수정 완료 메시지",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "잘못된 요청 (menuId 없음 또는 invalid)",
+                        "schema": {
+                            "$ref": "#/definitions/dto.ErrorResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "인증 실패",
+                        "schema": {
+                            "$ref": "#/definitions/dto.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "서버 에러",
+                        "schema": {
+                            "$ref": "#/definitions/dto.ErrorResponse"
+                        }
+                    }
+                }
             }
         }
     },
@@ -671,6 +731,20 @@ const docTemplate = `{
                 }
             }
         },
+        "dto.ImageDTO": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "integer"
+                },
+                "image_url": {
+                    "type": "string"
+                },
+                "order": {
+                    "type": "string"
+                }
+            }
+        },
         "dto.LoginRequestDTO": {
             "type": "object",
             "properties": {
@@ -726,6 +800,17 @@ const docTemplate = `{
                 }
             }
         },
+        "dto.TagDTO": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "integer"
+                },
+                "tag": {
+                    "type": "string"
+                }
+            }
+        },
         "dto.UpdateCategoryRequestDTO": {
             "type": "object",
             "required": [
@@ -752,6 +837,29 @@ const docTemplate = `{
                 "storeId": {
                     "type": "integer",
                     "example": 2
+                }
+            }
+        },
+        "dto.UpdateDescriptionRequestDTO": {
+            "type": "object",
+            "properties": {
+                "details": {
+                    "type": "string"
+                },
+                "images": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/dto.ImageDTO"
+                    }
+                },
+                "preview": {
+                    "type": "string"
+                },
+                "tags": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/dto.TagDTO"
+                    }
                 }
             }
         }

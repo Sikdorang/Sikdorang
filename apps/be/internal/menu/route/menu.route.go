@@ -22,6 +22,7 @@ func InitMenuRoutes(router fiber.Router, db *gorm.DB) {
 	group.Post("/", ctrl.SyncMenus)      // POST /api/menus/
 	group.Get("/board/:categoryID", ctrl.GetMenuBoard)
 	group.Get("/:menuID", ctrl.GetDescription)
+	group.Patch("/:menuID", ctrl.UpdateDescription)
 //	group.Post("/", ctrl.CreateMenus)      // POST /api/menus
 //	group.Patch("/:menuId", ctrl.UpdateMenus)    // PUT /api/menus/:id
 //	group.Delete("/:menuId", ctrl.DeleteMenus) // DELETE /api/menus/:id
