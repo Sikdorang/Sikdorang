@@ -21,7 +21,6 @@ export default function MenuManageSelect({
   const [isOpen, setIsOpen] = useState(false);
   const selectRef = useRef<HTMLDivElement>(null);
 
-  // 외부 클릭 감지
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (selectRef.current && !selectRef.current.contains(event.target as Node)) {
@@ -34,14 +33,13 @@ export default function MenuManageSelect({
     };
   }, []);
 
-  // 선택된 옵션의 텍스트 길이를 기준으로 left 값 계산
   const calculateLeftPosition = (text: string) => {
-    const fontSize = 16; // 텍스트의 폰트 크기 (픽셀)
-    const averageCharacterWidth = fontSize * 1; // 문자당 평균 너비 계산
-    return (text.length / 2) * averageCharacterWidth + 4; // 글자 길이에 따른 left 값 계산 (+4px)
+    const fontSize = 16;
+    const averageCharacterWidth = fontSize * 1;
+    return (text.length / 2) * averageCharacterWidth + 4;
   };
 
-  const leftPosition = calculateLeftPosition(selectedOption || '카테고리 선택'); // 기본값 포함
+  const leftPosition = calculateLeftPosition(selectedOption || '카테고리 선택');
 
   return (
     <div className="relative inline-block w-full cursor-pointer" ref={selectRef}>
@@ -56,7 +54,7 @@ export default function MenuManageSelect({
       {isOpen && (
         <div
           className="absolute z-10 top-0 w-full bg-white border border-gray-200 rounded shadow-lg"
-          style={{ left: `calc(50% + ${leftPosition}px)` }} // 동적으로 계산된 left 값 적용
+          style={{ left: `calc(50% + ${leftPosition}px)` }}
         >
           {options.map((option) => (
             <div

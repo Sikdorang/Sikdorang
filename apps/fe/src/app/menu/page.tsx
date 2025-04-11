@@ -90,7 +90,7 @@ export default function MenuPage() {
             menu: current?.menu || '',
             price: current?.price || 0,
             categoryId: categories.find((c) => c.category === current?.category)?.id || 0,
-            soldOut: current?.status === '판매 예정',
+            status: current?.status,
           },
         };
       }
@@ -108,7 +108,7 @@ export default function MenuPage() {
           menu: current.menu,
           price: current.price,
           categoryId: categories.find((c) => c.category === current.category)?.id || 0,
-          soldOut: current.status === '판매 중단',
+          status: current.status,
         },
       };
     });
@@ -145,7 +145,10 @@ export default function MenuPage() {
   const handleCategoryChange = (id: number, value: string) => updateMenuItem(id, 'category', value);
 
   const [status] = useState(['판매 중', '판매 중단', '판매 예정']);
-  const handleStatusChange = (id: number, value: string) => updateMenuItem(id, 'status', value);
+  const handleStatusChange = (id: number, value: string) => {
+    updateMenuItem(id, 'status', value);
+    console.log('value: ', value);
+  };
 
   const [showOnlyEmptyMenus, setShowOnlyEmptyMenus] = useState(false);
   const filteredMenuItems = showOnlyEmptyMenus
@@ -255,7 +258,7 @@ export default function MenuPage() {
                     <td className="text-center">
                       <MenuManageSelect
                         options={status}
-                        selectedOption={'d'}
+                        selectedOption={item.status || '판매 예정'}
                         isStatus={true}
                         onChange={(value) => handleStatusChange(item.id, value)}
                       />
