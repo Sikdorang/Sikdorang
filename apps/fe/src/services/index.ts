@@ -8,9 +8,11 @@ export const axiosInstance = axios.create({
 });
 
 axiosInstance.interceptors.request.use(
-  (config) => {
+  async (config) => {
     const token =
-      typeof window !== 'undefined' ? localStorage.getItem(STORAGE_KEYS.accessToken) : getAccessTokenFromCookies();
+      typeof window !== 'undefined'
+        ? localStorage.getItem(STORAGE_KEYS.accessToken)
+        : await getAccessTokenFromCookies();
 
     if (token) config.headers.Authorization = `Bearer ${token}`;
 

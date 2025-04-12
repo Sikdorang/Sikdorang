@@ -9,10 +9,11 @@ interface MenuItemProps {
 
 export default function MenuItem({ item, draggable = false }: MenuItemProps) {
   const isEditing = false;
+  console.log(item);
 
   return (
     <div
-      className={`group relative rounded-sm overflow-hidden border border-gray-200 hover:shadow-md transition-shadow duration-300 bg-white ${!item.status ? 'cursor-not-allowed' : isEditing ? 'cursor-grab' : 'cursor-pointer'}`}
+      className={`group relative rounded-sm overflow-hidden border border-gray-300 hover:shadow-md transition-shadow duration-300 bg-white ${!item.status ? 'cursor-not-allowed' : isEditing ? 'cursor-grab' : 'cursor-pointer'}`}
     >
       {draggable && (
         <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200 z-10">
@@ -23,10 +24,10 @@ export default function MenuItem({ item, draggable = false }: MenuItemProps) {
       <div className="relative w-full overflow-hidden aspect-[8/7]">
         <Image
           className={`${!item.status && 'blur-xs grayscale'} object-cover w-full h-full transition-all duration-300 hover:scale-105`}
-          src={item.images[0] || '/placeholder.jpg'}
+          src={'/placeholder.jpg'}
           width={400}
           height={400}
-          alt={item.images[0] || '이미지'}
+          alt={'이미지'}
         />
         {!item.status && (
           <div className="absolute inset-0 flex items-center justify-center bg-white/80">

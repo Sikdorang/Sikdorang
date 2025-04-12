@@ -1,13 +1,17 @@
 interface TextSkeletonProps {
   lines?: number;
-  className?: string;
+  lastLineWidthPercent?: number;
 }
 
-export default function TextSkeleton({ lines = 1, className = '' }: TextSkeletonProps) {
+export default function TextSkeleton({ lines = 1, lastLineWidthPercent = 0.8 }: TextSkeletonProps) {
   return (
-    <div className={`space-y-2 animate-pulse ${className}`}>
+    <div className="space-y-2 animate-pulse">
       {Array.from({ length: lines }).map((_, i) => (
-        <div key={i} className={`h-4 bg-gray-200 rounded ${i === lines - 1 ? 'w-5/6' : 'w-full'}`} />
+        <div
+          key={i}
+          className="h-4 bg-gray-200 rounded"
+          style={{ width: i === lines - 1 ? `${lastLineWidthPercent * 100}%` : '100%' }}
+        />
       ))}
     </div>
   );
