@@ -1,31 +1,33 @@
-'use client';
-
-import { useState } from 'react';
+import { useQueryCategories } from '@/hooks/useQueryCategories';
 import CategoryItem from '../../common/items/CategoryItem';
+import { useEffect } from 'react';
 
-const categories = [
-  '시즌 메뉴',
-  '음식',
-  '막걸리',
-  '프리미엄 탁주',
-  '청주',
-  '약주',
-  '증류식 소주, 리큐르',
-  '지화자 PICK! 전통주',
-  '카테고리 카테고리 12',
-  '추가 메뉴',
-];
+interface CategoryListProps {
+  selectedCategoryId: number | null;
+  onSelectCategory: (id: number) => void;
+}
 
-export default function CategoryList() {
-  const [selected, setSelected] = useState('전체');
+export default function CategoryList({ selectedCategoryId, onSelectCategory }: CategoryListProps) {
+  const { categories } = useQueryCategories();
+
+  useEffect(() => {
+    if (!selectedCategoryId && categories && categories.length > 0) {
+      onSelectCategory(categories[0].id);
+    }
+  }, [categories, selectedCategoryId, onSelectCategory]);
 
   return (
     <ul className="flex flex-col gap-2 w-full">
-      {categories.map((category) => (
-        <CategoryItem key={category} isSelected={selected === category} onClick={() => setSelected(category)}>
-          {category}
-        </CategoryItem>
-      ))}
+      {categories &&
+        categories.map((category) => (
+          <CategoryItem
+            key={category.id}
+            isSelected={selectedCategoryId === category.id}
+            onClick={() => onSelectCategory(category.id)}
+          >
+            {category.category}
+          </CategoryItem>
+        ))}
     </ul>
   );
 }

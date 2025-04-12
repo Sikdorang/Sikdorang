@@ -25,14 +25,3 @@ export const CategoryAPI = {
     return res.data;
   },
 };
-
-export const MenuyAPI = {
-  getMenus: async () => {
-    const res = await axiosInstance.get('/menus');
-    return res.data;
-  },
-  syncMenus: async (syncData: any) => {
-    const res = await axiosInstance.post('/menus', syncData);
-    return res.data;
-  },
-};
