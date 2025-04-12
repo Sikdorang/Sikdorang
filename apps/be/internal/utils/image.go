@@ -1,18 +1,32 @@
 package utils
 
-import "be/internal/models"
-import "be/internal/menu/dto"
+import (
+	"be/internal/menu/dto"
+	"be/internal/models"
+	"fmt"
+
+	"github.com/google/uuid"
+)
+
+
+func GenerateFileName(originalName string) string {
+	return fmt.Sprintf("%s_%s", originalName, uuid.New().String())
+}
+
+func ConvertImageDTOToImage(imageDTO dto.ImageDTO, storeID, menuID uint) models.Image {
+	return models.Image{
+		ID:       imageDTO.ID,
+		ImageURL: imageDTO.ImageURL,
+		Order:    imageDTO.Order,
+		StoreID:  storeID,
+		MenuID:   menuID,
+	}
+}
 
 func ConvertImageDTOsToImages(imageDTOs []dto.ImageDTO, storeID, menuID uint) []models.Image {
 	var images []models.Image
 	for _, img := range imageDTOs {
-		images = append(images, models.Image{
-			ID:       img.ID,
-			ImageURL: img.ImageURL,
-			Order:    img.Order,
-			StoreID:  storeID,
-			MenuID:   menuID,
-		})
+		images = append(images, ConvertImageDTOToImage(img, storeID, menuID))
 	}
 	return images
 }
