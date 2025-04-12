@@ -119,4 +119,8 @@
   .scroll-hide::-webkit-scrollbar {
     display: none; /* Chrome, Safari, Opera*/
   }
+
+  .drag-none {
+    -webkit-user-drag: none;
+  }
 }

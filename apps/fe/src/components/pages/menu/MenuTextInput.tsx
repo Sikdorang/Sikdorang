@@ -15,12 +15,10 @@ export default function MenuTextInput({
   const [internalValue, setInternalValue] = useState(defaultValue);
   const inputRef = useRef<HTMLInputElement>(null); // input 요소 참조
 
-  // 외부 defaultValue 변경 시 내부 상태 동기화
   useEffect(() => {
     setInternalValue(defaultValue);
   }, [defaultValue]);
 
-  // 텍스트 길이에 따라 너비 조정
   useEffect(() => {
     if (inputRef.current) {
       const tempSpan = document.createElement('span');
@@ -28,7 +26,7 @@ export default function MenuTextInput({
       tempSpan.style.position = 'absolute';
       tempSpan.style.whiteSpace = 'pre';
       tempSpan.style.font = window.getComputedStyle(inputRef.current).font;
-      tempSpan.textContent = internalValue || props.placeholder || '';
+      tempSpan.textContent = String(internalValue) || props.placeholder || '';
       document.body.appendChild(tempSpan);
       inputRef.current.style.width = `${tempSpan.offsetWidth + 15}px`;
       document.body.removeChild(tempSpan);
