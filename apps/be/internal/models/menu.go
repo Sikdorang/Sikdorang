@@ -1,21 +1,21 @@
 package models
 
 type Menu struct {
-    ID       uint   `gorm:"primaryKey"`
-    Menu     string
-    Preview  string
-    Details  string
-    Price    int
+	ID      uint `gorm:"primaryKey"`
+	Menu    string
+	Preview string
+	Details string
+	Price   int
 
-    CategoryID *uint
-    Category   Category `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;"`
+	CategoryID *uint
+	Category   Category `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;"`
 
-    StoreID uint
-    Store   Store
+	StoreID uint
+	Store   Store
 
-    Status string
-    Order   string
+	Status string
+	Order  string
 
-    Images         []Image
-    RecommandMenus []RecommandMenu
+	Images         []Image
+	RecommandMenus []RecommandMenu
 }

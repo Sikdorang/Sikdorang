@@ -7,8 +7,8 @@ import (
 	"github.com/gofiber/fiber/v2"
 	"github.com/golang-jwt/jwt/v4"
 
-	"be/internal/auth/service"
 	"be/internal/auth/dto"
+	"be/internal/auth/service"
 	errorDto "be/internal/common/dto"
 )
 

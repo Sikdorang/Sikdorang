@@ -4,11 +4,11 @@ import (
 	"github.com/gofiber/fiber/v2"
 	"gorm.io/gorm"
 
-	"be/internal/category/route"
+	_ "be/docs"
 	"be/internal/auth/route"
+	"be/internal/category/route"
 	"be/internal/menu/route"
 	swagger "github.com/gofiber/swagger"
-	_ "be/docs"
 )
 
 func SetupRoutes(app *fiber.App, db *gorm.DB) {

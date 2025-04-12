@@ -1,19 +1,23 @@
 package main
+
 // @title My API
 // @version 1.0
 // @description API 문서
 // @host Localhost:4000
 // @BasePath /api
 import (
-	"log"
-	"github.com/gofiber/fiber/v2"
-	"github.com/gofiber/fiber/v2/middleware/cors"
 	"be/config"
 	"be/internal/models"
 	"be/internal/routes"
+	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/fiber/v2/middleware/cors"
+	"log"
 )
 
 func main() {
+	//s3 초기화
+	config.InitS3()
+
 	// DB 초기화 (.env 기반)
 	db := config.InitDB()
 
@@ -27,7 +31,7 @@ func main() {
 		&models.RecommandQuestion{},
 		&models.RecommandMenu{},
 		&models.Tag{},
-	)	
+	)
 
 	// Fiber 인스턴스 생성
 	app := fiber.New()
