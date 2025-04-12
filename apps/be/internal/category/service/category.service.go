@@ -39,7 +39,15 @@ func (s *categoryService) Create(category string, storeID uint) (models.Category
 }
 
 func (s *categoryService) GetAllByStoreID(storeID uint) ([]models.Category, error) {
-	return s.repo.FindByStoreID(storeID)
+	categories, err := s.repo.FindByStoreID(storeID)
+	if err != nil {
+		return nil, err
+	}
+
+	result := []models.Category{}
+	result = append(result, categories...)
+
+	return result, nil
 }
 
 func (s *categoryService) Update(categoryID uint, storeID uint, newCategory string) (models.Category, error) {
