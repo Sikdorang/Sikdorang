@@ -150,11 +150,12 @@ func (c *MenuController) GetDescription(ctx *fiber.Ctx) error {
 // @Summary      메뉴 상세 수정
 // @Description  storeID와 menuID로 메뉴 상세정보(Preview, Details, Tags, Images)를 수정합니다.
 // @Tags         menu
-// @Accept       json
+// @Accept       multipart/form-data
 // @Produce      json
 // @Param        menuID path int true "메뉴 ID"
-// @Param        request body dto.UpdateDescriptionRequestDTO true "수정할 데이터"
-// @Success      200 {object} map[string]string "수정 완료 메시지"
+// @Param        request body dto.UpdateDescriptionRequestDTO true "수정할 데이터 (multipart/form-data로 이미지 파일 포함 가능)"
+// @Success      200 {object} map[string]interface{} "수정 완료 메시지 및 업로드 대상 URL 목록"
+// @Failure      207 {object} map[string]interface{} "일부 실패, 성공 및 실패 목록 반환"
 // @Failure      400 {object} errorDto.ErrorResponse "잘못된 요청 (menuId 없음 또는 invalid)"
 // @Failure      401 {object} errorDto.ErrorResponse "인증 실패"
 // @Failure      500 {object} errorDto.ErrorResponse "서버 에러"
@@ -180,9 +181,32 @@ func (c *MenuController) UpdateDescription(ctx *fiber.Ctx) error {
 		return ctx.Status(400).JSON(errorDto.ErrorResponse{Error: "invalid body"})
 	}
 
-	if err := c.service.UpdateDescription(storeID, uint(menuID), body); err != nil {
-		return ctx.Status(500).JSON(errorDto.ErrorResponse{Error: "failed to update description"})
+	// 멀티파트 파일 처리 (추가적인 파일 업로드 있을 시)
+	form, err := ctx.MultipartForm()
+	if err == nil && form.File != nil {
+		files := form.File["file"]
+
+		fileIdx := 0
+		for i := range body.Images {
+			if body.Images[i].ID == 0 && fileIdx < len(files) {
+				body.Images[i].UploadFile = files[fileIdx]
+				fileIdx++
+			}
+		}
 	}
 
-	return ctx.JSON(fiber.Map{"message": "update completed successfully"})
+	// 서비스 호출
+	uploadTargets, err := c.service.UpdateDescription(storeID, uint(menuID), body)
+	if err != nil {
+		return ctx.Status(207).JSON(fiber.Map{
+			"message":       "partial success",
+			"uploadTargets": uploadTargets,
+			"error":         err.Error(),
+		})
+	}
+
+	return ctx.JSON(fiber.Map{
+		"message":       "update completed successfully",
+		"uploadTargets": uploadTargets,
+	})
 }
