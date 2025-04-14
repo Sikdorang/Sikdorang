@@ -100,6 +100,12 @@ export default function CategorySidebar({
       event.preventDefault?.();
       if (updatedCategory.trim() === '') return;
       await updateCategory(categoryId, updatedCategory);
+
+      setTemporaryCategories((prevCategories) =>
+        prevCategories.map((category) =>
+          category.id === categoryId ? { ...category, category: updatedCategory } : category,
+        ),
+      );
     }
   };
 

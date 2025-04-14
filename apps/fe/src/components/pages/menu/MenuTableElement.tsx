@@ -47,7 +47,7 @@ export default function MenuTableElement({
           defaultValue={item.menu}
           placeholder="메뉴명"
           onSave={(value) => updateMenuItem(item.id, 'menu', value)}
-          className={`text-left`}
+          className={`text-left p-2 my-6`}
           maxLength={20}
         />
       </td>
@@ -73,6 +73,7 @@ export default function MenuTableElement({
             }
           }}
           maxLength={11}
+          className={`p-2 my-6`}
           errorMessage={menuErrors[item.id]}
         />
       </td>

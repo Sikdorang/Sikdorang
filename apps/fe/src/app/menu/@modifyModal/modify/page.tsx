@@ -3,6 +3,7 @@
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useState, useEffect } from 'react';
 import { isEqual } from 'lodash';
+import MDEditor, { commands } from '@uiw/react-md-editor';
 
 import TextInput from '@/components/common/inputs/TextInput';
 import BaseButton from '@/components/common/buttons/BaseButton';
@@ -122,18 +123,24 @@ export default function ManageMenuModal() {
             maxLength={20}
           />
 
-          <TextInput
-            label="상세 설명"
-            placeholder="메뉴 클릭 시 보일 상세 설명을 입력해 주세요"
-            value={temporaryMenuDetails.details}
-            onChange={(e) =>
-              setTemporaryMenuDetails((prev) => ({
-                ...prev,
-                details: e.target.value,
-              }))
-            }
-            maxLength={150}
-          />
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">상세 설명</label>
+            <MDEditor
+              value={temporaryMenuDetails.details}
+              onChange={(value) =>
+                setTemporaryMenuDetails((prev) => ({
+                  ...prev,
+                  details: value || '',
+                }))
+              }
+              commands={[commands.bold, commands.italic, commands.title, commands.hr, commands.strikethrough]}
+              height={200}
+              textareaProps={{
+                placeholder: '메뉴 클릭 시 보일 상세 설명을 입력해 주세요',
+                maxLength: 150,
+              }}
+            />
+          </div>
 
           <TextInput
             label="태그"
