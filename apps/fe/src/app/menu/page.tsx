@@ -6,12 +6,13 @@ import { useManageMenu, IMenu } from '@/hooks/useManageMenu';
 import { useManageCategory, ICategory } from '@/hooks/useManageCategory';
 import { useDeleteMenuStore } from '@/stores/useDeleteMenuStore';
 import { SYNC_ACTIONS } from '@/constants/enums';
+import { LexoRank } from 'lexorank';
 
 import TopNav from '@/components/layout/headers/TopNav';
 import MenuHeader from '@/components/pages/menu/MenuHeader';
 import Spinner from '@/components/common/loadings/Spinner';
 import MenuTableElement from '@/components/pages/menu/MenuTableElement';
-import MainControlButton from '@/components/pages/menu/MainControlButton';
+import MainControlButton from '@/components/pages/menu/cells/MainControlButton';
 import CategorySidebar from '@/components/layout/sidebars/CategorySidebar';
 
 export default function MenuPage() {
@@ -71,7 +72,6 @@ export default function MenuPage() {
   }, [setDeleteHandler, clearDeleteHandler]);
   const handleSynchronize = async () => {
     const changedIds = Array.from(changeLogIds);
-
     const syncData = changedIds.map((id) => {
       const original = menus.find((m) => m.id === id);
       const current = temporaryMenus.find((m) => m.id === id);
@@ -85,6 +85,7 @@ export default function MenuPage() {
             price: current?.price || 0,
             categoryId: categories.find((c) => c.category === current?.category)?.id || 0,
             status: current?.status,
+            order: current?.order,
           },
         };
       }
@@ -103,13 +104,12 @@ export default function MenuPage() {
           price: current.price,
           categoryId: categories.find((c) => c.category === current.category)?.id || 0,
           status: current.status,
+          order: current.order,
         },
       };
     });
-
     try {
       await syncMenus(syncData);
-
       setChangeLogIds(new Set());
       setMenuErrors({});
       fetchMenus();
@@ -118,6 +118,10 @@ export default function MenuPage() {
     }
   };
   const addMenuItem = () => {
+    const sortedMenus = [...temporaryMenus].sort((a, b) => a.order.localeCompare(b.order));
+    const lastOrder =
+      sortedMenus.length > 0 ? LexoRank.parse(sortedMenus[sortedMenus.length - 1].order) : LexoRank.min();
+    const newOrder = lastOrder.genNext();
     setTemporaryMenus((prev) => [
       ...prev,
       {
@@ -126,6 +130,7 @@ export default function MenuPage() {
         price: 0,
         category: '',
         status: '판매 예정',
+        order: newOrder.toString(),
       },
     ]);
   };
@@ -140,10 +145,7 @@ export default function MenuPage() {
   const handleCategoryChange = (id: number, value: string) => updateMenuItem(id, 'category', value);
 
   const [status] = useState(['판매 중', '판매 중단', '판매 예정']);
-  const handleStatusChange = (id: number, value: string) => {
-    updateMenuItem(id, 'status', value);
-    console.log('value: ', value);
-  };
+  const handleStatusChange = (id: number, value: string) => updateMenuItem(id, 'status', value);
 
   const [showOnlyEmptyMenus, setShowOnlyEmptyMenus] = useState(false);
   const filteredMenuItems = showOnlyEmptyMenus

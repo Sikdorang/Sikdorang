@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, InputHTMLAttributes } from 'react';
+import React, { useState, useEffect, InputHTMLAttributes } from 'react';
 
 import ErrorMessage from '@/components/common/labels/ErrorMessage';
 
@@ -17,36 +17,21 @@ export default function MenuTextInput({
   ...props
 }: TextInputProps) {
   const [internalValue, setInternalValue] = useState(defaultValue);
-  const inputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     setInternalValue(defaultValue);
   }, [defaultValue]);
 
-  useEffect(() => {
-    if (inputRef.current) {
-      const tempSpan = document.createElement('span');
-      tempSpan.style.visibility = 'hidden';
-      tempSpan.style.position = 'absolute';
-      tempSpan.style.whiteSpace = 'pre';
-      tempSpan.style.font = window.getComputedStyle(inputRef.current).font;
-      tempSpan.textContent = String(internalValue) || props.placeholder || '';
-      document.body.appendChild(tempSpan);
-      inputRef.current.style.width = `${tempSpan.offsetWidth + 15}px`;
-      document.body.removeChild(tempSpan);
-    }
-  }, [internalValue, props.placeholder]);
-
   const handleSave = () => {
-    if (internalValue.trim() !== defaultValue) {
-      onSave?.(internalValue.trim());
+    const trimmedValue = String(internalValue).trim();
+    if (trimmedValue !== defaultValue) {
+      onSave?.(trimmedValue);
     }
   };
 
   return (
     <div className="flex flex-col">
       <input
-        ref={inputRef}
         value={internalValue}
         onChange={(e) => setInternalValue(e.target.value)}
         onBlur={handleSave}
@@ -56,10 +41,10 @@ export default function MenuTextInput({
             (e.target as HTMLInputElement).blur();
           }
         }}
-        className={`w-full rounded ${
+        className={`w-full p-2 my-6 rounded ${
           variant === 'menu'
-            ? 'p-1 text-center'
-            : 'bg-gray-100 border border-gray-300 px-[6px] py-[4px] text-label-xs-m text-gray-700 focus:outline-none transition'
+            ? 'text-center'
+            : 'bg-gray-100 border border-gray-300 px-3 py-2 text-label-xs-m text-gray-700 focus:outline-none transition'
         } ${className}`}
         {...props}
       />

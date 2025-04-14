@@ -10,16 +10,32 @@ import DraggableIcon from '@public/icons/ic_3_lines.svg';
 
 interface MenuImageGalleryProps {
   images?: string[];
-  setImages: (images: string[]) => void;
+  setImages: React.Dispatch<React.SetStateAction<string[]>>;
   maxImages?: number;
 }
+
+const getUpdatedImages = (prevImages: string[], activeId: string, overId: string | undefined): string[] => {
+  if (!Array.isArray(prevImages)) {
+    return [];
+  }
+
+  const oldIndex = prevImages.findIndex((img) => img === activeId);
+  const newIndex = prevImages.findIndex((img) => img === overId);
+
+  if (oldIndex === -1 || newIndex === -1) {
+    console.warn('Invalid drag indices:', { oldIndex, newIndex });
+    return prevImages;
+  }
+
+  return arrayMove(prevImages, oldIndex, newIndex);
+};
 
 export default function MenuImageGallery({ images = [], setImages, maxImages = 10 }: MenuImageGalleryProps) {
   const sensors = useSensors(useSensor(PointerSensor));
 
   const handleDragEnd = (event: DragEndEvent) => {
     const { active, over } = event;
-    if (active.id !== over?.id) {
+    if (active.id !== over?.id && over) {
       setImages((prevImages) => {
         if (!Array.isArray(prevImages)) {
           return [];
@@ -39,7 +55,7 @@ export default function MenuImageGallery({ images = [], setImages, maxImages = 1
   }, [images]);
   const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(event.target.files || []);
-    setImages((prevImages) => {
+    setImages((prevImages: any) => {
       const validImages = Array.isArray(prevImages) ? prevImages : [];
       if (validImages.length + files.length > maxImages) {
         return validImages;
@@ -88,7 +104,6 @@ export default function MenuImageGallery({ images = [], setImages, maxImages = 1
                   onDelete={() => handleDeleteImage(index)}
                 />
               ))}
-
             {(images?.length || 0) < maxImages && (
               <label className="w-16 h-16 flex shrink-0 items-center justify-center bg-gray-100 hover:bg-gray-200 rounded-md cursor-pointer">
                 <AddIcon width={16} height={16} />

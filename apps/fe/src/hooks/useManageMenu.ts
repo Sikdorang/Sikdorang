@@ -11,6 +11,7 @@ export interface IMenu {
   price: number;
   category: string;
   status: string;
+  order: string;
 }
 
 export interface ISyncLog {
@@ -29,7 +30,11 @@ export const useManageMenu = () => {
     setError(null);
     try {
       const response = await MenuyAPI.getMenus();
-      setMenus(response);
+      if (Array.isArray(response)) {
+        setMenus(response);
+      } else {
+        setMenus([]);
+      }
     } catch (error: any) {
       if (axios.isAxiosError(error) && error.response?.status === 401) {
         setError(MESSAGES.authenticationError);

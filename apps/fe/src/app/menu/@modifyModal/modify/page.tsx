@@ -100,10 +100,15 @@ export default function ManageMenuModal() {
         <div className="space-y-4">
           <ImageGallery
             images={temporaryMenuDetails.images || []}
-            setImages={(updater) => {
+            setImages={(updater: ((prev: string[]) => string[]) | string[]) => {
               setTemporaryMenuDetails((prev) => ({
                 ...prev,
-                images: typeof updater === 'function' ? updater(prev.images || []) : updater,
+                images:
+                  typeof updater === 'function'
+                    ? updater(prev.images || [])
+                    : Array.isArray(updater)
+                      ? updater
+                      : prev.images || [],
               }));
             }}
             maxImages={10}

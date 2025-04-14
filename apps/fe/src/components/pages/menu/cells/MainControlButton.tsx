@@ -11,7 +11,7 @@ export default function MainControlButton({
   ...props
 }: MainControlButtonProps) {
   const baseClass =
-    'w-fit px-3 py-3 text-label-md rounded-[4px] border border-gray-200 focus:outline-none transition select-none';
+    'w-fit px-3 py-3 text-label-md rounded-sm border border-gray-200 focus:outline-none transition select-none';
 
   const variantClass =
     variant === 'category'

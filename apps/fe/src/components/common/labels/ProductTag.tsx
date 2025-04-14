@@ -1,5 +1,4 @@
 import { PropsWithChildren } from 'react';
-import Image from 'next/image';
 
 import CloseIcon from '@public/icons/ic_x.svg';
 

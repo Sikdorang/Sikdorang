@@ -1,6 +1,6 @@
 import React from 'react';
 
-import MainControlButton from './MainControlButton';
+import MainControlButton from './cells/MainControlButton';
 import CheckboxInput from '@/components/common/inputs/CheckboxInput';
 
 import { URLS } from '@/constants/urls';
