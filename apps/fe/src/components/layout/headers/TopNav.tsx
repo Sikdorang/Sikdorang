@@ -4,7 +4,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { usePathname } from 'next/navigation';
 
-import profileBackgroundImage from '../../../../public/icons/ic_circle.svg';
+import ProfileImage from '@public/icons/ic_circle.svg';
 
 const navItems = [
   { name: '메뉴', path: '/menu' },
@@ -35,7 +35,7 @@ export default function TopNav() {
                 </Link>
               </li>
             ))}
-            <Image src={profileBackgroundImage} className="space-x-4 w-7 h-7" alt={''} />
+            <ProfileImage />
           </ul>
         </div>
       </div>

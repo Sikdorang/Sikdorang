@@ -1,9 +1,8 @@
 import React, { useState, useRef, useEffect } from 'react';
-import Image from 'next/image';
 
 import MenuElementLabel from './MenuElementLabel';
 
-import checkedIcon from '@public/icons/ic_check.svg';
+import CheckedIcon from '@public/icons/ic_check.svg';
 
 interface MenuManageSelectProps {
   options: string[];
@@ -65,11 +64,7 @@ export default function MenuManageSelect({
               }}
               className={`flex items-center w-full px-4 py-2 cursor-pointer hover:bg-gray-100`}
             >
-              {option === selectedOption ? (
-                <Image src={checkedIcon} alt="체크됨" className="w-3 h-3 mr-2" />
-              ) : (
-                <div className="w-3 h-3 mr-2"></div>
-              )}
+              {option === selectedOption ? <CheckedIcon className="mr-2" /> : <div className="w-3 h-3 mr-2"></div>}
               <MenuElementLabel text={option} hover={false} isStatus={isStatus} />
             </div>
           ))}

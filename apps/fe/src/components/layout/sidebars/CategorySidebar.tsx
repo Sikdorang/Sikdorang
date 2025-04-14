@@ -1,21 +1,31 @@
 import React, { useState, useEffect, useRef } from 'react';
-import Image from 'next/image';
 import { useManageCategory } from '@/hooks/useManageCategory';
 import { MESSAGES } from '@/constants/messages';
 
 import TextInput from '@/components/common/inputs/TextInput';
-import MenuTextInput from '@/components/pages/menu/MenuTextInput';
+import MenuTextInput from '@/components/pages/menu/cells/MenuTextInput';
 import Spinner from '@/components/common/loadings/Spinner';
 
-import trashcanIcon from '@public/icons/ic_trashcan.svg';
+import TrashcanIcon from '@public/icons/ic_trashcan.svg';
+
+interface CreateCategoryResponse {
+  id: number;
+  category: string;
+}
 
 interface CategorySidebarProps {
   isOpen: boolean;
   onClose: () => void;
   setTemporaryMenus: React.Dispatch<React.SetStateAction<any[]>>;
+  setTemporaryCategories: React.Dispatch<React.SetStateAction<any[]>>;
 }
 
-export default function CategorySidebar({ isOpen, onClose, setTemporaryMenus }: CategorySidebarProps) {
+export default function CategorySidebar({
+  isOpen,
+  onClose,
+  setTemporaryMenus,
+  setTemporaryCategories,
+}: CategorySidebarProps) {
   const sidebarRef = useRef<HTMLDivElement>(null);
   const { categories, isLoading, error, createCategory, fetchCategories, updateCategory, removeCategory } =
     useManageCategory();
@@ -57,7 +67,8 @@ export default function CategorySidebar({ isOpen, onClose, setTemporaryMenus }: 
         setCategoryError(MESSAGES.emptyCategoryError);
         return;
       }
-      await createCategory(inputValue);
+      const response: CreateCategoryResponse = await createCategory(inputValue);
+      setTemporaryCategories((prevCategories) => [...prevCategories, { id: response.id, category: response.category }]);
       setNewCategory('');
       setCategoryError(null);
     }
@@ -70,6 +81,7 @@ export default function CategorySidebar({ isOpen, onClose, setTemporaryMenus }: 
       setTemporaryMenus((prevMenus) =>
         prevMenus.map((menu) => (menu.category === deletedCategory ? { ...menu, category: null } : menu)),
       );
+      setTemporaryCategories((prevCategories) => prevCategories.filter((category) => category.id !== categoryId));
     }
   };
 
@@ -129,7 +141,9 @@ export default function CategorySidebar({ isOpen, onClose, setTemporaryMenus }: 
           <div className="text-label-xs-m text-gray-700 py-5">카테고리 목록</div>
 
           {isLoading ? (
-            <Spinner />
+            <div className="flex justify-center items-center h-100">
+              <Spinner className="border-blue-500 w-10 h-10" />
+            </div>
           ) : categories == null || categories.length === 0 ? (
             <div className="bg-gray-100 text-gray-400 text-body-xs text-center py-10 rounded-sm">
               추가된 카테고리가 없습니다.\n새로운 카테고리를 입력해 주세요.
@@ -158,7 +172,7 @@ export default function CategorySidebar({ isOpen, onClose, setTemporaryMenus }: 
                     onClick={() => handleDeleteCategory(category.id)}
                     disabled={isLoading}
                   >
-                    <Image className="w-3 h-3" src={trashcanIcon} alt="삭제" draggable="false" />
+                    <TrashcanIcon />
                   </button>
                 </li>
               ))}

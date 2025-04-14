@@ -23,7 +23,6 @@ export const useManageMenuDetails = () => {
     try {
       const response = await DetailsAPI.getMenuDetails(menuId);
       setMenusDetails(response);
-      toast.success(MESSAGES.loginSuccess);
     } catch (error: any) {
       if (axios.isAxiosError(error) && error.response?.status === 401) {
         setError(MESSAGES.emailRequired);

@@ -1,23 +1,18 @@
 'use client';
 
 import React, { useState, useEffect, useMemo } from 'react';
-import Link from 'next/link';
 import { isEqual } from 'lodash';
 import { useManageMenu, IMenu } from '@/hooks/useManageMenu';
-import { useManageCategory } from '@/hooks/useManageCategory';
+import { useManageCategory, ICategory } from '@/hooks/useManageCategory';
 import { useDeleteMenuStore } from '@/stores/useDeleteMenuStore';
+import { SYNC_ACTIONS } from '@/constants/enums';
 
 import TopNav from '@/components/layout/headers/TopNav';
-import MainControlButton from '@/components/pages/menu/MainControlButton';
-import ManageButton from '@/components/pages/menu/ManageButton';
-import MenuManageSelect from '@/components/pages/menu/MenuManageSelect';
-import CheckboxInput from '@/components/common/inputs/CheckboxInput';
-import CategorySidebar from '@/components/layout/sidebars/CategorySidebar';
-import MenuTextInput from '@/components/pages/menu/MenuTextInput';
-
-import { URLS } from '@/constants/urls';
-import { MESSAGES } from '@/constants/messages';
+import MenuHeader from '@/components/pages/menu/MenuHeader';
 import Spinner from '@/components/common/loadings/Spinner';
+import MenuTableElement from '@/components/pages/menu/MenuTableElement';
+import MainControlButton from '@/components/pages/menu/MainControlButton';
+import CategorySidebar from '@/components/layout/sidebars/CategorySidebar';
 
 export default function MenuPage() {
   const { menus, isLoading, error, fetchMenus, syncMenus } = useManageMenu();
@@ -34,7 +29,7 @@ export default function MenuPage() {
   }, [menus]);
 
   useEffect(() => {
-    fetchCategories();
+    setTemporaryCategories(categories);
   }, [categories]);
 
   useEffect(() => {
@@ -69,7 +64,6 @@ export default function MenuPage() {
       .map(Number);
 
     setChangeLogIds(new Set([...changedIds, ...deletedIds]));
-    console.log(changedIds, deletedIds);
   }, [originalMenuDict, tempMenuDict]);
   useEffect(() => {
     setDeleteHandler(deleteMenuItem);
@@ -84,7 +78,7 @@ export default function MenuPage() {
 
       if (id < 0 || !original) {
         return {
-          action: 'create' as const,
+          action: SYNC_ACTIONS.CREATE,
           id: -1,
           data: {
             menu: current?.menu || '',
@@ -96,13 +90,13 @@ export default function MenuPage() {
       }
       if (!current) {
         return {
-          action: 'delete' as const,
+          action: SYNC_ACTIONS.DELETE,
           id,
           data: {},
         };
       }
       return {
-        action: 'update' as const,
+        action: SYNC_ACTIONS.UPDATE,
         id,
         data: {
           menu: current.menu,
@@ -140,6 +134,7 @@ export default function MenuPage() {
     setTemporaryMenus((prev) => prev.map((item) => (item.id === id ? { ...item, [field]: value } : item)));
 
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [temporaryCategories, setTemporaryCategories] = useState<ICategory[]>([]);
   const toggleSidebar = () => setIsSidebarOpen((prev) => !prev);
   const handleCheckboxChange = (e: React.ChangeEvent<HTMLInputElement>) => setShowOnlyEmptyMenus(e.target.checked);
   const handleCategoryChange = (id: number, value: string) => updateMenuItem(id, 'category', value);
@@ -160,33 +155,13 @@ export default function MenuPage() {
       <TopNav />
 
       <div className="pt-30 mx-auto p-6 wrapper">
-        <header className="mb-6">
-          <h1 className="text-title-xl">메뉴 관리</h1>
-        </header>
-
-        <header className="flex flex-row w-full mb-6">
-          <MainControlButton
-            className="flex-none w-fit"
-            onClick={() => window.open(URLS.helpMenuManageUrl, '_blank', 'noopener noreferrer')}
-          >
-            사용 설명 보기
-          </MainControlButton>
-          <div className="grow"></div>
-          <CheckboxInput checked={showOnlyEmptyMenus} onChange={handleCheckboxChange}>
-            미입력 메뉴만 보기
-          </CheckboxInput>
-          <MainControlButton
-            variant="menu"
-            className="flex-none w-fit mr-3"
-            onClick={handleSynchronize}
-            disabled={changeLogIds.size === 0}
-          >
-            변경사항 저장하기
-          </MainControlButton>
-          <MainControlButton variant="category" className="flex-none w-fit" onClick={toggleSidebar}>
-            카테고리 편집
-          </MainControlButton>
-        </header>
+        <MenuHeader
+          showOnlyEmptyMenus={showOnlyEmptyMenus}
+          handleCheckboxChange={handleCheckboxChange}
+          handleSynchronize={handleSynchronize}
+          changeLogIds={changeLogIds}
+          toggleSidebar={toggleSidebar}
+        />
 
         {isMenusLoading ? (
           <div className="flex h-100 justify-center items-center">
@@ -208,86 +183,18 @@ export default function MenuPage() {
               </thead>
               <tbody className="text-label-sm-m text-gray-700">
                 {filteredMenuItems.map((item, idx) => (
-                  <tr key={item.id}>
-                    <td className="text-center">{idx + 1}</td>
-
-                    <td className="items-center">
-                      <MenuTextInput
-                        variant="menu"
-                        defaultValue={item.menu}
-                        placeholder="메뉴명"
-                        onSave={(value) => updateMenuItem(item.id, 'menu', value)}
-                        className={`w-full p-1 m-5 rounded text-left`}
-                        maxLength={20}
-                      />
-                    </td>
-
-                    <td className="text-center">
-                      <MenuTextInput
-                        variant="menu"
-                        defaultValue={item.price.toString()}
-                        placeholder="가격"
-                        onSave={(value) => {
-                          const numericValue = Number(value);
-                          if (isNaN(numericValue)) {
-                            setMenuErrors((prev) => ({
-                              ...prev,
-                              [item.id]: MESSAGES.invalidPriceError,
-                            }));
-                          } else {
-                            setMenuErrors((prev) => {
-                              const { [item.id]: _, ...rest } = prev;
-                              return rest;
-                            });
-                            updateMenuItem(item.id, 'price', numericValue);
-                          }
-                        }}
-                        maxLength={11}
-                        errorMessage={menuErrors[item.id]}
-                      />
-                    </td>
-
-                    <td className="text-center">
-                      <MenuManageSelect
-                        options={categories.map((item) => item.category)}
-                        selectedOption={item.category}
-                        onChange={(value) => handleCategoryChange(item.id, value)}
-                      />
-                    </td>
-
-                    <td className="text-center">
-                      <MenuManageSelect
-                        options={status}
-                        selectedOption={item.status || '판매 예정'}
-                        isStatus={true}
-                        onChange={(value) => handleStatusChange(item.id, value)}
-                      />
-                    </td>
-
-                    <td className="text-center">
-                      <Link
-                        href={{
-                          pathname: `/menu/modify`,
-                          query: {
-                            id: item.id,
-                          },
-                        }}
-                      >
-                        <ManageButton variant="modify">편집하기</ManageButton>
-                      </Link>
-                    </td>
-
-                    <td className="text-center">
-                      <Link
-                        href={{
-                          pathname: '/menu/delete',
-                          query: { id: item.id, name: item.menu },
-                        }}
-                      >
-                        <ManageButton variant="delete">삭제</ManageButton>
-                      </Link>
-                    </td>
-                  </tr>
+                  <MenuTableElement
+                    key={item.id}
+                    item={item}
+                    idx={idx}
+                    categories={temporaryCategories}
+                    status={status}
+                    updateMenuItem={updateMenuItem}
+                    handleCategoryChange={handleCategoryChange}
+                    handleStatusChange={handleStatusChange}
+                    setMenuErrors={setMenuErrors}
+                    menuErrors={menuErrors}
+                  />
                 ))}
               </tbody>
             </table>
@@ -301,6 +208,7 @@ export default function MenuPage() {
           isOpen={isSidebarOpen}
           onClose={() => setIsSidebarOpen(false)}
           setTemporaryMenus={setTemporaryMenus}
+          setTemporaryCategories={setTemporaryCategories}
         />
       </div>
     </>

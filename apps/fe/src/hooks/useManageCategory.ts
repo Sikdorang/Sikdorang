@@ -24,6 +24,7 @@ export const useManageCategory = () => {
       const newCategory = await CategoryAPI.addCategory(categoryName);
       setCategories((prev) => [...prev, newCategory]);
       toast.success(MESSAGES.createCategorySuccess);
+      return newCategory;
     } catch (error: any) {
       if (axios.isAxiosError(error) && error.response?.status === 400) {
         setError(MESSAGES.badRequestError);
