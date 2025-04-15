@@ -4,14 +4,10 @@ import { toast } from 'react-toastify';
 import { MESSAGES } from '@/constants/messages';
 import { CategoryAPI } from '@/services/manageMenu';
 import { handelError } from '@/services/handleError';
-
-export interface ICategory {
-  id: number;
-  category: string;
-}
+import { ICategoryItem } from '@/types/model/category';
 
 export const useManageCategory = () => {
-  const [categories, setCategories] = useState<ICategory[]>([]);
+  const [categories, setCategories] = useState<ICategoryItem[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 

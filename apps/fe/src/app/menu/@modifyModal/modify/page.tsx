@@ -4,15 +4,15 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { useState, useEffect } from 'react';
 import { isEqual } from 'lodash';
 import MDEditor, { commands } from '@uiw/react-md-editor';
+import { useManageMenuDetails } from '@/hooks/useManageMenuDetails';
+import { IMenuDetailsItem } from '@/types/model/menu';
+import { MESSAGES } from '@/constants/messages';
 
 import TextInput from '@/components/common/inputs/TextInput';
 import BaseButton from '@/components/common/buttons/BaseButton';
 import ProductTag from '@/components/common/labels/ProductTag';
 import ImageGallery from '@/components/pages/menu/MenuImageGallery';
 import Spinner from '@/components/common/loadings/Spinner';
-
-import { MESSAGES } from '@/constants/messages';
-import { useManageMenuDetails, IMenuDetails } from '@/hooks/useManageMenuDetails';
 
 export default function ManageMenuModal() {
   const { menusDetails, isLoading, error, fetchMenusDetails } = useManageMenuDetails();
@@ -31,7 +31,7 @@ export default function ManageMenuModal() {
   const searchParams = useSearchParams();
   const queryId = searchParams.get('id');
 
-  const [temporaryMenuDetails, setTemporaryMenuDetails] = useState<IMenuDetails>({
+  const [temporaryMenuDetails, setTemporaryMenuDetails] = useState<IMenuDetailsItem>({
     preview: '',
     details: '',
     tags: [],

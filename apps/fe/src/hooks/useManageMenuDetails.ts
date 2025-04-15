@@ -4,16 +4,10 @@ import { toast } from 'react-toastify';
 import { MESSAGES } from '@/constants/messages';
 import { DetailsAPI } from '@/services/manageMenuDetails';
 import { handelError } from '@/services/handleError';
-
-export interface IMenuDetails {
-  preview: string;
-  details: string;
-  tags: string[];
-  images: string[];
-}
+import { IMenuDetailsItem } from '@/types/model/menu';
 
 export const useManageMenuDetails = () => {
-  const [menusDetails, setMenusDetails] = useState<IMenuDetails>();
+  const [menusDetails, setMenusDetails] = useState<IMenuDetailsItem>();
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 

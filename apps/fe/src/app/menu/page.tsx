@@ -2,11 +2,13 @@
 
 import React, { useState, useEffect, useMemo } from 'react';
 import { isEqual } from 'lodash';
-import { useManageMenu, IMenu } from '@/hooks/useManageMenu';
-import { useManageCategory, ICategory } from '@/hooks/useManageCategory';
+import { useManageMenu } from '@/hooks/useManageMenu';
+import { useManageCategory } from '@/hooks/useManageCategory';
 import { useDeleteMenuStore } from '@/stores/useDeleteMenuStore';
 import { SYNC_ACTIONS } from '@/constants/enums';
 import { LexoRank } from 'lexorank';
+import { IManageMenuItem } from '@/types/model/menu';
+import { ICategoryItem } from '@/types/model/category';
 
 import TopNav from '@/components/layout/headers/TopNav';
 import MenuHeader from '@/components/pages/menu/MenuHeader';
@@ -38,15 +40,15 @@ export default function MenuPage() {
   }, [isLoading]);
 
   const [isMenusLoading, setIsMenusLoading] = useState<boolean>(true);
-  const [temporaryMenus, setTemporaryMenus] = useState<IMenu[]>([]);
+  const [temporaryMenus, setTemporaryMenus] = useState<IManageMenuItem[]>([]);
   const [changeLogIds, setChangeLogIds] = useState<Set<number>>(new Set());
   const [menuErrors, setMenuErrors] = useState<Record<number, string>>({});
   const originalMenuDict = useMemo(
-    () => menus.reduce((acc, menu) => ({ ...acc, [menu.id]: menu }), {} as Record<number, IMenu>),
+    () => menus.reduce((acc, menu) => ({ ...acc, [menu.id]: menu }), {} as Record<number, IManageMenuItem>),
     [menus],
   );
   const tempMenuDict = useMemo(
-    () => temporaryMenus.reduce((acc, menu) => ({ ...acc, [menu.id]: menu }), {} as Record<number, IMenu>),
+    () => temporaryMenus.reduce((acc, menu) => ({ ...acc, [menu.id]: menu }), {} as Record<number, IManageMenuItem>),
     [temporaryMenus],
   );
   useEffect(() => {
@@ -72,7 +74,7 @@ export default function MenuPage() {
   }, [setDeleteHandler, clearDeleteHandler]);
   const handleSynchronize = async () => {
     const changedIds = Array.from(changeLogIds);
-    const syncData = changedIds.map((id) => {
+    const syncDatas = changedIds.map((id) => {
       const original = menus.find((m) => m.id === id);
       const current = temporaryMenus.find((m) => m.id === id);
 
@@ -109,7 +111,7 @@ export default function MenuPage() {
       };
     });
     try {
-      await syncMenus(syncData);
+      await syncMenus(syncDatas);
       setChangeLogIds(new Set());
       setMenuErrors({});
       fetchMenus();
@@ -135,11 +137,11 @@ export default function MenuPage() {
     ]);
   };
   const deleteMenuItem = (id: number) => setTemporaryMenus((prev) => prev.filter((item) => item.id !== id));
-  const updateMenuItem = (id: number, field: keyof IMenu, value: string | boolean | number) =>
+  const updateMenuItem = (id: number, field: keyof IManageMenuItem, value: string | boolean | number) =>
     setTemporaryMenus((prev) => prev.map((item) => (item.id === id ? { ...item, [field]: value } : item)));
 
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-  const [temporaryCategories, setTemporaryCategories] = useState<ICategory[]>([]);
+  const [temporaryCategories, setTemporaryCategories] = useState<ICategoryItem[]>([]);
   const toggleSidebar = () => setIsSidebarOpen((prev) => !prev);
   const handleCheckboxChange = (e: React.ChangeEvent<HTMLInputElement>) => setShowOnlyEmptyMenus(e.target.checked);
   const handleCategoryChange = (id: number, value: string) => updateMenuItem(id, 'category', value);
