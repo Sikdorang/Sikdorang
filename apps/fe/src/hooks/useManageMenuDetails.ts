@@ -14,7 +14,7 @@ export interface IMenuDetails {
 
 export const useManageMenuDetails = () => {
   const [menusDetails, setMenusDetails] = useState<IMenuDetails>();
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   const fetchMenusDetails = async (menuId: number) => {
