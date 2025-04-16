@@ -2,7 +2,7 @@ import axios from 'axios';
 import { useState } from 'react';
 import { toast } from 'react-toastify';
 import { MESSAGES } from '@/constants/messages';
-import { MenuyAPI } from '@/services/manageMenu';
+import { MenuyAPI } from '@/services/menu';
 import { handelError } from '@/services/handleError';
 
 export interface IMenu {

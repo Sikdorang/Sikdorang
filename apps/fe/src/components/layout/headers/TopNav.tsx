@@ -9,7 +9,8 @@ import profileBackgroundImage from '../../../../public/icons/ic_circle.svg';
 const navItems = [
   { name: '메뉴', path: '/menu' },
   { name: '이벤트', path: '/events' },
-  { name: '메뉴판 편집', path: '/preview' },
+  { name: '메뉴 순서 편집', path: '/edit' },
+  { name: '손님용으로 전환', path: '/preview' },
 ];
 
 export default function TopNav() {
