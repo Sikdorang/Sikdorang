@@ -60,14 +60,15 @@ export default function ManageMenuModal() {
     if (event.key === 'Enter' && inputTagValue.trim()) {
       event.preventDefault();
 
-      if (temporaryMenuDetails.tags.length >= 10) {
+      const tags = temporaryMenuDetails.tags || [];
+      if (tags.length >= 10) {
         setTagError(MESSAGES.maximumTagError);
         return;
       }
-      if (!temporaryMenuDetails.tags.includes(inputTagValue.trim())) {
+      if (!tags.includes(inputTagValue.trim())) {
         setTemporaryMenuDetails((prev) => ({
           ...prev,
-          tags: [...prev.tags, inputTagValue.trim()],
+          tags: [...(prev.tags || []), inputTagValue.trim()],
         }));
         setInputTagValue('');
         setTagError('');
