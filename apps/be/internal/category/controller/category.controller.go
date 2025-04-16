@@ -6,8 +6,8 @@ import (
 
 	"github.com/gofiber/fiber/v2"
 
-	"be/internal/category/service"
 	"be/internal/category/dto"
+	"be/internal/category/service"
 	errorDto "be/internal/common/dto"
 	"be/internal/middleware"
 )
@@ -75,7 +75,7 @@ func (c *CategoryController) GetCategories(ctx *fiber.Ctx) error {
 		return ctx.Status(500).JSON(errorDto.ErrorResponse{Error: "failed to fetch categories"})
 	}
 
-	var result []dto.GetCategoryResponseDTO
+	result := []dto.GetCategoryResponseDTO{}
 	for _, cat := range categories {
 		result = append(result, dto.GetCategoryResponseDTO{
 			ID:       cat.ID,

@@ -2,9 +2,11 @@ package service
 
 import (
 	"fmt"
+
 	"be/internal/menu/dto"
 	"be/internal/menu/repository"
 	"be/internal/models"
+	s3service "be/internal/s3/service"
 	"be/internal/utils"
 )
 
@@ -15,6 +17,7 @@ type MenuService interface {
 	GetTags(storeID, menuID uint) ([]string, error)
 	GetMenuBoard(storeID, categoryID uint) ([]dto.GetMenuBoardResponseDTO, error)
 	GetDescription(storeID, menuID uint) (dto.GetDescriptionResponseDTO, error)
+	UpdateDescription(storeID, menuID uint, body dto.UpdateDescriptionRequestDTO) ([]dto.ImageUploadTargetDTO, error)
 }
 
 type menuService struct {
@@ -31,7 +34,7 @@ func (s *menuService) GetAllByStoreID(storeID uint) ([]dto.GetMenuResponseDTO, e
 		return nil, err
 	}
 
-	var result []dto.GetMenuResponseDTO
+	result := []dto.GetMenuResponseDTO{}
 	for _, menu := range menus {
 		result = append(result, dto.GetMenuResponseDTO{
 			ID:         menu.ID,
@@ -96,7 +99,7 @@ func (s *menuService) GetImageURLs(storeID, menuID uint) ([]string, error) {
 		return nil, fmt.Errorf("failed to get Image : %v", err)
 	}
 
-	var urls []string
+	urls := []string{}
 	for _, img := range images {
 		urls = append(urls, img.ImageURL)
 	}
@@ -109,7 +112,7 @@ func (s *menuService) GetTags(storeID, menuID uint) ([]string, error) {
 		return nil, fmt.Errorf("failed to get Tags: %v", err)
 	}
 
-	var result []string
+	result := []string{}
 	for _, tag := range tags {
 		result = append(result, tag.Tag)
 	}
@@ -122,7 +125,7 @@ func (s *menuService) GetMenuBoard(storeID, categoryID uint) ([]dto.GetMenuBoard
 		return nil, err
 	}
 
-	var result []dto.GetMenuBoardResponseDTO
+	result := []dto.GetMenuBoardResponseDTO{}
 	for _, menu := range menus {
 		result = append(result, s.buildMenuResponse(menu, storeID))
 	}
@@ -141,8 +144,8 @@ func (s *menuService) GetDescription(storeID, menuID uint) (dto.GetDescriptionRe
 	return dto.GetDescriptionResponseDTO{
 		Preview: description.Preview,
 		Details: description.Details,
-		Tags: menuResponse.Tags,
-		Images: menuResponse.ImageURLs,
+		Tags:    menuResponse.Tags,
+		Images:  menuResponse.ImageURLs,
 	}, nil
 }
 
@@ -165,7 +168,163 @@ func (s *menuService) buildMenuResponse(menu models.Menu, storeID uint) dto.GetM
 		Category:   menu.Category.Category,
 		ImageURLs:  imageURLs,
 		Tags:       tags,
-		Details:	menu.Details,
-		Preview: menu.Preview,
+		Details:    menu.Details,
+		Preview:    menu.Preview,
 	}
+}
+func (s *menuService) UpdateDescription(storeID, menuID uint, body dto.UpdateDescriptionRequestDTO) ([]dto.ImageUploadTargetDTO, error) {
+	var execErrs []error
+	var uploadTargets []dto.ImageUploadTargetDTO
+
+	menu, err := s.repo.FindDescription(storeID, menuID)
+	if err != nil {
+		return nil, err
+	}
+
+	// Preview 처리
+	if body.Preview != "" {
+		menu.Preview = body.Preview
+		if err := s.repo.UpdateMenu(&menu); err != nil {
+			execErrs = append(execErrs, err)
+		}
+	}
+
+	// Details 처리
+	if body.Details != "" {
+		menu.Details = body.Details
+		if err := s.repo.UpdateMenu(&menu); err != nil {
+			execErrs = append(execErrs, err)
+		}
+	}
+
+	// Tags 처리
+	if body.Tags != nil {
+		existingTags, _ := s.repo.FindTags(storeID, menuID)
+		newTags := utils.ConvertTagDTOsToTags(body.Tags, storeID, menuID)
+	
+		existingTagMap := map[uint]models.Tag{}
+		for _, tag := range existingTags {
+			existingTagMap[tag.ID] = tag
+		}
+	
+		var createTags, updateTags, deleteTags []models.Tag
+		requestTagMap := map[uint]bool{}
+	
+		// update or create 구분
+		for _, tag := range newTags {
+			if _, exists := existingTagMap[tag.ID]; exists {
+				// update 대상
+				updateTags = append(updateTags, tag)
+				requestTagMap[tag.ID] = true
+			} else {
+				// create 대상
+				createTags = append(createTags, tag)
+			}
+		}
+	
+		// delete 대상 : DB에는 있는데 request에 없는 것
+		for _, tag := range existingTags {
+			if !requestTagMap[tag.ID] {
+				deleteTags = append(deleteTags, tag)
+			}
+		}
+	
+		if len(deleteTags) > 0 {
+			if err := s.repo.DeleteTags(deleteTags); err != nil {
+				execErrs = append(execErrs, err)
+			}
+		}
+		if len(updateTags) > 0 {
+			if err := s.repo.UpdateTags(updateTags); err != nil {
+				execErrs = append(execErrs, err)
+			}
+		}
+		if len(createTags) > 0 {
+			if err := s.repo.CreateTags(createTags); err != nil {
+				execErrs = append(execErrs, err)
+			}
+		}
+	}
+
+	// Images 처리
+	if body.Images != nil {
+		existingImages, _ := s.repo.FindImages(storeID, menuID)
+	
+		// 기존 이미지 Map 생성 (DB 기준)
+		existingImageMap := make(map[uint]models.Image)
+		for _, img := range existingImages {
+			existingImageMap[img.ID] = img
+		}
+	
+		var createImages, updateImages, deleteImages []models.Image
+		requestImageMap := map[uint]bool{}
+	
+		for _, imgDTO := range body.Images {
+			// 전달받은 ID가 DB에 없다면 새로 생성해야 하는 이미지
+			if imgDTO.ID == 0 || existingImageMap[imgDTO.ID].ID == 0 {
+				filename := utils.GenerateFileName(imgDTO.ImageURL) // 프론트에서 보낸 파일 이름 그대로 사용
+	
+				uploadURL, fileURL, _ := s3service.GeneratePresignedURL(filename)
+	
+				uploadTargets = append(uploadTargets, dto.ImageUploadTargetDTO{
+					Order:     imgDTO.Order,
+					FileURL:   fileURL,
+					UploadURL: uploadURL,
+				})
+	
+				createImages = append(createImages, models.Image{
+					MenuID:   menuID,
+					StoreID:  storeID,
+					ImageURL: fileURL,
+					Order:    imgDTO.Order,
+				})
+			} else {
+				// DB에 존재하는 ID -> 업데이트 대상
+				updateImages = append(updateImages, utils.ConvertImageDTOToImage(imgDTO, storeID, menuID))
+				requestImageMap[imgDTO.ID] = true
+			}
+		}
+	
+		// 삭제 대상 필터링
+		for _, img := range existingImages {
+			if !requestImageMap[img.ID] {
+				deleteImages = append(deleteImages, img)
+			}
+		}
+	
+		// S3 파일 삭제
+		for _, img := range deleteImages {
+			if err := s.repo.DeleteImageFile(img.ImageURL); err != nil {
+				execErrs = append(execErrs, err)
+			}
+		}
+	
+		// DB 삭제
+		if len(deleteImages) > 0 {
+			if err := s.repo.DeleteImages(storeID, menuID, deleteImages); err != nil {
+				execErrs = append(execErrs, err)
+			}
+		}
+	
+		// DB 업데이트
+		if len(updateImages) > 0 {
+			if err := s.repo.UpdateImages(updateImages); err != nil {
+				execErrs = append(execErrs, err)
+			}
+		}
+	
+		// DB 생성
+		if len(createImages) > 0 {
+			if err := s.repo.CreateImages(createImages); err != nil {
+				execErrs = append(execErrs, err)
+			}
+		}
+	}
+	
+	// 최종 처리
+	if len(execErrs) > 0 {
+		return uploadTargets, fmt.Errorf("partial success: %v", execErrs)
+	}
+	
+	return uploadTargets, nil
 }

@@ -1,7 +1,5 @@
 import React, { ButtonHTMLAttributes, PropsWithChildren } from 'react';
 import Spinner from '../loadings/Spinner';
-import clsx from 'clsx';
-import { twMerge } from 'tailwind-merge';
 
 interface BaseButtonProps extends PropsWithChildren, ButtonHTMLAttributes<HTMLButtonElement> {
   variant?: 'default' | 'cancel';

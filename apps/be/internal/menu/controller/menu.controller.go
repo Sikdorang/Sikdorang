@@ -3,9 +3,9 @@ package controller
 import (
 	"github.com/gofiber/fiber/v2"
 
-	"be/internal/menu/service"
-	"be/internal/menu/dto"
 	errorDto "be/internal/common/dto"
+	"be/internal/menu/dto"
+	"be/internal/menu/service"
 	"be/internal/middleware"
 	"strconv"
 )
@@ -126,7 +126,7 @@ func (c *MenuController) GetMenuBoard(ctx *fiber.Ctx) error {
 func (c *MenuController) GetDescription(ctx *fiber.Ctx) error {
 	storeID, err := middleware.ExtractStoreID(ctx)
 	if err != nil {
-		return ctx.Status(401).JSON(errorDto.ErrorResponse{Error : "unauthorized"})
+		return ctx.Status(401).JSON(errorDto.ErrorResponse{Error: "unauthorized"})
 	}
 	menuParam := ctx.Params("menuID")
 	if menuParam == "" {
@@ -144,4 +144,69 @@ func (c *MenuController) GetDescription(ctx *fiber.Ctx) error {
 	}
 
 	return ctx.JSON(description)
+}
+
+// UpdateDescription godoc
+// @Summary      메뉴 상세 수정
+// @Description  storeID와 menuID로 메뉴 상세정보(Preview, Details, Tags, Images)를 수정합니다.
+// @Tags         menu
+// @Accept       multipart/form-data
+// @Produce      json
+// @Param        menuID path int true "메뉴 ID"
+// @Param        request body dto.UpdateDescriptionRequestDTO true "수정할 데이터 (multipart/form-data로 이미지 파일 포함 가능)"
+// @Success      200 {object} map[string]interface{} "수정 완료 메시지 및 업로드 대상 URL 목록"
+// @Failure      207 {object} map[string]interface{} "일부 실패, 성공 및 실패 목록 반환"
+// @Failure      400 {object} errorDto.ErrorResponse "잘못된 요청 (menuId 없음 또는 invalid)"
+// @Failure      401 {object} errorDto.ErrorResponse "인증 실패"
+// @Failure      500 {object} errorDto.ErrorResponse "서버 에러"
+// @Router       /menus/{menuID} [patch]
+func (c *MenuController) UpdateDescription(ctx *fiber.Ctx) error {
+	storeID, err := middleware.ExtractStoreID(ctx)
+	if err != nil {
+		return ctx.Status(401).JSON(errorDto.ErrorResponse{Error: "unauthorized"})
+	}
+
+	menuParam := ctx.Params("menuID")
+	if menuParam == "" {
+		return ctx.Status(400).JSON(errorDto.ErrorResponse{Error: "menuId is required"})
+	}
+
+	menuID, err := strconv.Atoi(menuParam)
+	if err != nil {
+		return ctx.Status(400).JSON(errorDto.ErrorResponse{Error: "invalid menu_id"})
+	}
+
+	var body dto.UpdateDescriptionRequestDTO
+	if err := ctx.BodyParser(&body); err != nil {
+		return ctx.Status(400).JSON(errorDto.ErrorResponse{Error: "invalid body"})
+	}
+
+	// 멀티파트 파일 처리 (추가적인 파일 업로드 있을 시)
+	form, err := ctx.MultipartForm()
+	if err == nil && form.File != nil {
+		files := form.File["file"]
+
+		fileIdx := 0
+		for i := range body.Images {
+			if body.Images[i].ID == 0 && fileIdx < len(files) {
+				body.Images[i].UploadFile = files[fileIdx]
+				fileIdx++
+			}
+		}
+	}
+
+	// 서비스 호출
+	uploadTargets, err := c.service.UpdateDescription(storeID, uint(menuID), body)
+	if err != nil {
+		return ctx.Status(207).JSON(fiber.Map{
+			"message":       "partial success",
+			"uploadTargets": uploadTargets,
+			"error":         err.Error(),
+		})
+	}
+
+	return ctx.JSON(fiber.Map{
+		"message":       "update completed successfully",
+		"uploadTargets": uploadTargets,
+	})
 }

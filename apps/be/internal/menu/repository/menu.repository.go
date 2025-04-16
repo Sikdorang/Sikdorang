@@ -2,7 +2,14 @@ package repository
 
 import (
 	"be/internal/models"
+	"context"
 	"gorm.io/gorm"
+	"strings"
+
+	"be/config"
+
+	"github.com/aws/aws-sdk-go-v2/aws"
+	"github.com/aws/aws-sdk-go-v2/service/s3"
 )
 
 type MenuRepository interface {
@@ -14,6 +21,15 @@ type MenuRepository interface {
 	FindTags(storeID, menuID uint) ([]models.Tag, error)
 	FindMenuBoard(storeID, categoryID uint) ([]models.Menu, error)
 	FindDescription(storeID, menuID uint) (models.Menu, error)
+
+	DeleteImages(storeID, menuID uint, images []models.Image) error
+	UpdateImages(images []models.Image) error
+	CreateImages(images []models.Image) error
+	DeleteImageFile(imageURL string) error
+
+	DeleteTags(tags []models.Tag) error
+	CreateTags(tags []models.Tag) error
+	UpdateTags(tags []models.Tag) error
 }
 
 type menuRepository struct {
@@ -81,4 +97,64 @@ func (r *menuRepository) FindDescription(storeID, menuID uint) (models.Menu, err
 		First(&menu).Error
 
 	return menu, err
+}
+
+// 이미지 삭제 (DB)
+func (r *menuRepository) DeleteImages(storeID, menuID uint, images []models.Image) error {
+	var ids []uint
+	for _, img := range images {
+		ids = append(ids, img.ID)
+	}
+	return r.db.Where("store_id = ? AND menu_id = ? AND id IN ?", storeID, menuID, ids).
+		Delete(&models.Image{}).Error
+}
+
+// 이미지 업데이트
+func (r *menuRepository) UpdateImages(images []models.Image) error {
+	for _, img := range images {
+		if err := r.db.Save(&img).Error; err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+// 이미지 생성
+func (r *menuRepository) CreateImages(images []models.Image) error {
+	return r.db.Create(&images).Error
+}
+
+// 이미지 S3 삭제 (S3 연동 자리)
+func (r *menuRepository) DeleteImageFile(imageURL string) error {
+	key := strings.Replace(imageURL, "https://"+config.S3BucketName+".s3."+config.AwsRegion+".amazonaws.com/", "", 1)
+
+	_, err := config.S3Client.DeleteObject(context.TODO(), &s3.DeleteObjectInput{
+		Bucket: aws.String(config.S3BucketName),
+		Key:    aws.String(key),
+	})
+
+	return err
+}
+
+// 태그 삭제
+func (r *menuRepository) DeleteTags(tags []models.Tag) error {
+	var ids []uint
+	for _, tag := range tags {
+		ids = append(ids, tag.ID)
+	}
+	return r.db.Where("id IN ?", ids).Delete(&models.Tag{}).Error
+}
+
+// 태그 생성
+func (r *menuRepository) CreateTags(tags []models.Tag) error {
+	return r.db.Create(&tags).Error
+}
+
+func (r *menuRepository) UpdateTags(tags []models.Tag) error {
+	for _, tag := range tags {
+		if err := r.db.Save(&tag).Error; err != nil {
+			return err
+		}
+	}
+	return nil
 }
