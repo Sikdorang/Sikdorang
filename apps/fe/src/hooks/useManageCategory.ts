@@ -2,7 +2,7 @@ import axios from 'axios';
 import { useState } from 'react';
 import { toast } from 'react-toastify';
 import { MESSAGES } from '@/constants/messages';
-import { CategoryAPI } from '@/services/manageMenu';
+import { CategoryAPI } from '@/services/category';
 import { handelError } from '@/services/handleError';
 import { ICategoryItem } from '@/types/model/category';
 

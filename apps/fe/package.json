@@ -23,7 +23,7 @@
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "react-toastify": "^11.0.5",
-    "sortablejs": "^1.15.6",
+    "tailwind-merge": "^3.2.0",
     "zustand": "^5.0.3"
   },
   "devDependencies": {
@@ -34,7 +34,6 @@
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "@types/react-toastify": "^4.0.2",
-    "@types/sortablejs": "^1.15.8",
     "eslint": "^9",
     "eslint-config-next": "15.2.3",
     "msw": "^2.7.3",

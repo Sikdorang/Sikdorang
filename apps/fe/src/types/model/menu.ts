@@ -21,3 +21,12 @@ export interface ISyncMenuRequest {
   id: number;
   data: Record<string, any>;
 }
+export interface IMenuItem {
+  id: number;
+  name: string;
+  description: string;
+  price: number;
+  status: boolean;
+  images: string[];
+  tags?: string[];
+}

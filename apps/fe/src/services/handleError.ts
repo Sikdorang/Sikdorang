@@ -8,9 +8,9 @@ export const handelError = (error: unknown) => {
 
     if (status === 500) {
       toast.error(MESSAGES.serverError);
+    } else {
+      toast.error(MESSAGES.unexpectedError);
     }
-  } else {
-    toast.error(MESSAGES.unexpectedError);
   }
 
   console.error(error);
