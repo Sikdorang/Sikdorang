@@ -47,6 +47,7 @@ func (s *menuService) GetAllByStoreID(storeID uint) ([]dto.GetMenuResponseDTO, e
 			Category:   menu.Category.Category,
 		})
 	}
+
 	return result, nil
 }
 
