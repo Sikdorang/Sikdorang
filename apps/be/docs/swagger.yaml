@@ -114,15 +114,6 @@ definitions:
       order:
         type: string
     type: object
-  dto.ImageDTO:
-    properties:
-      id:
-        type: integer
-      image_url:
-        type: string
-      order:
-        type: string
-    type: object
   dto.LoginRequestDTO:
     properties:
       password:

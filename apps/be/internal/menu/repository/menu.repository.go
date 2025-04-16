@@ -21,6 +21,7 @@ type MenuRepository interface {
 	FindTags(storeID, menuID uint) ([]models.Tag, error)
 	FindMenuBoard(storeID, categoryID uint) ([]models.Menu, error)
 	FindDescription(storeID, menuID uint) (models.Menu, error)
+
 	DeleteImages(storeID, menuID uint, images []models.Image) error
 	UpdateImages(images []models.Image) error
 	CreateImages(images []models.Image) error
