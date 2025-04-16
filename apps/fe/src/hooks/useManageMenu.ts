@@ -21,7 +21,7 @@ export const useManageMenu = () => {
       } else {
         setMenus([]);
       }
-    } catch (error: any) {
+    } catch (error) {
       if (axios.isAxiosError(error) && error.response?.status === 401) {
         setError(MESSAGES.authenticationError);
       } else {
@@ -40,7 +40,7 @@ export const useManageMenu = () => {
       toast.success(MESSAGES.syncMenusSuccess);
       fetchMenus();
       return response;
-    } catch (error: any) {
+    } catch (error) {
       if (axios.isAxiosError(error)) {
         handelError(error);
       }

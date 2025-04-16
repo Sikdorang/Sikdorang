@@ -1,3 +1,4 @@
+import { ISyncMenuRequest } from '@/types/model/menu';
 import { axiosInstance } from '.';
 
 export const MenuyAPI = {
@@ -5,7 +6,7 @@ export const MenuyAPI = {
     const res = await axiosInstance.get('/menus');
     return res.data;
   },
-  syncMenus: async (syncData: any) => {
+  syncMenus: async (syncData: ISyncMenuRequest[]) => {
     const res = await axiosInstance.post('/menus', syncData);
     return res.data;
   },

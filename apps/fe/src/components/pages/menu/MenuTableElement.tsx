@@ -5,21 +5,14 @@ import MenuManageSelect from './cells/MenuManageSelect';
 import MenuTextInput from './cells/MenuTextInput';
 
 import { MESSAGES } from '@/constants/messages';
-
-interface IMenu {
-  id: number;
-  menu: string;
-  price: number;
-  category: string;
-  status: string;
-}
+import { IManageMenuItem } from '@/types/model/menu';
 
 interface MenuTableElementProps {
   idx: number;
-  item: IMenu;
+  item: IManageMenuItem;
   categories: Array<{ id: number; category: string }>;
   status: string[];
-  updateMenuItem: (id: number, field: keyof IMenu, value: any) => void;
+  updateMenuItem: (id: number, field: keyof IManageMenuItem, value: string | boolean | number) => void;
   handleCategoryChange: (id: number, value: string) => void;
   handleStatusChange: (id: number, value: string) => void;
   setMenuErrors: React.Dispatch<React.SetStateAction<Record<number, string>>>;
@@ -66,7 +59,7 @@ export default function MenuTableElement({
               }));
             } else {
               setMenuErrors((prev) => {
-                const { [item.id]: _, ...rest } = prev;
+                const { [item.id]: rest } = prev;
                 return rest;
               });
               updateMenuItem(item.id, 'price', numericValue);
@@ -81,7 +74,7 @@ export default function MenuTableElement({
       <td className="text-center">
         <MenuManageSelect
           options={categories.map((item) => item.category)}
-          selectedOption={item.category}
+          selectedOption={item.category!}
           onChange={(value) => handleCategoryChange(item.id, value)}
         />
       </td>

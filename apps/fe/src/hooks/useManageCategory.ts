@@ -21,13 +21,15 @@ export const useManageCategory = () => {
       setCategories((prev) => [...prev, newCategory]);
       toast.success(MESSAGES.createCategorySuccess);
       return newCategory;
-    } catch (error: any) {
-      if (axios.isAxiosError(error) && error.response?.status === 400) {
-        setError(MESSAGES.badRequestError);
-      } else if (error.response?.status === 401) {
-        setError(MESSAGES.authenticationError);
-      } else {
-        handelError(error);
+    } catch (error) {
+      if (axios.isAxiosError(error)) {
+        if (error.response?.status === 400) {
+          setError(MESSAGES.badRequestError);
+        } else if (error.response?.status === 401) {
+          setError(MESSAGES.authenticationError);
+        } else {
+          handelError(error);
+        }
       }
     } finally {
       setIsLoading(false);
@@ -40,7 +42,7 @@ export const useManageCategory = () => {
     try {
       const response = await CategoryAPI.getCategories();
       setCategories(response);
-    } catch (error: any) {
+    } catch (error) {
       if (axios.isAxiosError(error) && error.response?.status === 401) {
         setError(MESSAGES.authenticationError);
       } else {
@@ -59,15 +61,17 @@ export const useManageCategory = () => {
       );
       setCategories(updatedCategories);
       toast.success(MESSAGES.updateCategorySuccess);
-    } catch (error: any) {
-      if (axios.isAxiosError(error) && error.response?.status === 400) {
-        setError(MESSAGES.badRequestError);
-      } else if (error.response?.status === 401) {
-        setError(MESSAGES.authenticationError);
-      } else if (error.response?.status === 404) {
-        setError(MESSAGES.unknownCategoryError);
-      } else {
-        handelError(error);
+    } catch (error) {
+      if (axios.isAxiosError(error)) {
+        if (error.response?.status === 400) {
+          setError(MESSAGES.badRequestError);
+        } else if (error.response?.status === 401) {
+          setError(MESSAGES.authenticationError);
+        } else if (error.response?.status === 404) {
+          setError(MESSAGES.unknownCategoryError);
+        } else {
+          handelError(error);
+        }
       }
     } finally {
       setIsLoading(false);
@@ -76,19 +80,21 @@ export const useManageCategory = () => {
 
   const removeCategory = async (categoryId: number) => {
     try {
-      const responseMessage = await CategoryAPI.deleteCategory(categoryId);
+      await CategoryAPI.deleteCategory(categoryId);
       const updatedCategories = categories.filter((category) => category.id !== categoryId);
       setCategories(updatedCategories);
       toast.success(MESSAGES.deleteCategorySuccess);
-    } catch (error: any) {
-      if (axios.isAxiosError(error) && error.response?.status === 400) {
-        setError(MESSAGES.badRequestError);
-      } else if (error.response?.status === 401) {
-        setError(MESSAGES.authenticationError);
-      } else if (error.response?.status === 404) {
-        setError(MESSAGES.unknownCategoryError);
-      } else {
-        handelError(error);
+    } catch (error) {
+      if (axios.isAxiosError(error)) {
+        if (error.response?.status === 400) {
+          setError(MESSAGES.badRequestError);
+        } else if (error.response?.status === 401) {
+          setError(MESSAGES.authenticationError);
+        } else if (error.response?.status === 404) {
+          setError(MESSAGES.unknownCategoryError);
+        } else {
+          handelError(error);
+        }
       }
     } finally {
       setIsLoading(false);

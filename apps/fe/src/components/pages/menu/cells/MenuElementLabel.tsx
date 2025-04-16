@@ -44,4 +44,6 @@ const MenuElementLabel = forwardRef<HTMLDivElement, MenuElementLabelProps>(
   },
 );
 
+MenuElementLabel.displayName = 'MenuElementLabel';
+
 export default MenuElementLabel;
