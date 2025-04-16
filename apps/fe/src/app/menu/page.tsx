@@ -18,7 +18,7 @@ import MainControlButton from '@/components/pages/menu/cells/MainControlButton';
 import CategorySidebar from '@/components/layout/sidebars/CategorySidebar';
 
 export default function MenuPage() {
-  const { menus, isLoading, error, fetchMenus, syncMenus } = useManageMenu();
+  const { menus, isLoading, fetchMenus, syncMenus } = useManageMenu();
   const { categories, fetchCategories } = useManageCategory();
   const { setDeleteHandler, clearDeleteHandler } = useDeleteMenuStore();
 

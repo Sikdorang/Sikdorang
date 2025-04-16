@@ -1,6 +1,5 @@
 import axios from 'axios';
 import { useState } from 'react';
-import { toast } from 'react-toastify';
 import { MESSAGES } from '@/constants/messages';
 import { DetailsAPI } from '@/services/manageMenuDetails';
 import { handelError } from '@/services/handleError';
@@ -17,7 +16,7 @@ export const useManageMenuDetails = () => {
     try {
       const response = await DetailsAPI.getMenuDetails(menuId);
       setMenusDetails(response);
-    } catch (error: any) {
+    } catch (error) {
       if (axios.isAxiosError(error) && error.response?.status === 401) {
         setError(MESSAGES.emailRequired);
       } else {

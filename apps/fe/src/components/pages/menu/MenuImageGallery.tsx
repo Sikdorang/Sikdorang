@@ -14,22 +14,6 @@ interface MenuImageGalleryProps {
   maxImages?: number;
 }
 
-const getUpdatedImages = (prevImages: string[], activeId: string, overId: string | undefined): string[] => {
-  if (!Array.isArray(prevImages)) {
-    return [];
-  }
-
-  const oldIndex = prevImages.findIndex((img) => img === activeId);
-  const newIndex = prevImages.findIndex((img) => img === overId);
-
-  if (oldIndex === -1 || newIndex === -1) {
-    console.warn('Invalid drag indices:', { oldIndex, newIndex });
-    return prevImages;
-  }
-
-  return arrayMove(prevImages, oldIndex, newIndex);
-};
-
 export default function MenuImageGallery({ images = [], setImages, maxImages = 10 }: MenuImageGalleryProps) {
   const sensors = useSensors(useSensor(PointerSensor));
 
@@ -52,10 +36,10 @@ export default function MenuImageGallery({ images = [], setImages, maxImages = 1
     if (images.length > 0 && !selectedImage) {
       setSelectedImage(images[0]);
     }
-  }, [images]);
+  }, [images, selectedImage]);
   const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(event.target.files || []);
-    setImages((prevImages: any) => {
+    setImages((prevImages: string[]) => {
       const validImages = Array.isArray(prevImages) ? prevImages : [];
       if (validImages.length + files.length > maxImages) {
         return validImages;
@@ -117,7 +101,15 @@ export default function MenuImageGallery({ images = [], setImages, maxImages = 1
   );
 }
 
-function SortableItem({ id, image, selectedImage, onSelect, onDelete }: any) {
+interface SortableItemProps {
+  id: string;
+  image: string;
+  selectedImage: string | null;
+  onSelect: () => void;
+  onDelete: () => void;
+}
+
+function SortableItem({ id, image, selectedImage, onSelect, onDelete }: SortableItemProps) {
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id });
 
   const style = {

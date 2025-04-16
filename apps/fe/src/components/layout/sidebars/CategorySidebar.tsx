@@ -1,6 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useManageCategory } from '@/hooks/useManageCategory';
 import { MESSAGES } from '@/constants/messages';
+import { IManageMenuItem } from '@/types/model/menu';
+import { ICategoryItem } from '@/types/model/category';
 
 import TextInput from '@/components/common/inputs/TextInput';
 import MenuTextInput from '@/components/pages/menu/cells/MenuTextInput';
@@ -16,8 +18,8 @@ interface CreateCategoryResponse {
 interface CategorySidebarProps {
   isOpen: boolean;
   onClose: () => void;
-  setTemporaryMenus: React.Dispatch<React.SetStateAction<any[]>>;
-  setTemporaryCategories: React.Dispatch<React.SetStateAction<any[]>>;
+  setTemporaryMenus: React.Dispatch<React.SetStateAction<IManageMenuItem[]>>;
+  setTemporaryCategories: React.Dispatch<React.SetStateAction<ICategoryItem[]>>;
 }
 
 export default function CategorySidebar({
@@ -38,7 +40,7 @@ export default function CategorySidebar({
     if (isOpen) {
       fetchCategories();
     }
-  }, [isOpen]);
+  }, [isOpen, fetchCategories]);
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {

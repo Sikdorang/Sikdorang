@@ -1,3 +1,5 @@
+import { Suspense } from 'react';
+
 export default function MenuLayout({
   children,
   modifyModal,
@@ -9,8 +11,8 @@ export default function MenuLayout({
 }) {
   return (
     <div className="relative">
-      {modifyModal}
-      {deleteModal}
+      <Suspense fallback={<div />}>{modifyModal}</Suspense>
+      <Suspense fallback={<div />}>{deleteModal}</Suspense>
       <div>{children}</div>
     </div>
   );

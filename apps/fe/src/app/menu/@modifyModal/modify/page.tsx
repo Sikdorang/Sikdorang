@@ -15,7 +15,7 @@ import ImageGallery from '@/components/pages/menu/MenuImageGallery';
 import Spinner from '@/components/common/loadings/Spinner';
 
 export default function ManageMenuModal() {
-  const { menusDetails, isLoading, error, fetchMenusDetails } = useManageMenuDetails();
+  const { menusDetails, isLoading, fetchMenusDetails } = useManageMenuDetails();
 
   useEffect(() => {
     fetchMenusDetails(Number(queryId));
