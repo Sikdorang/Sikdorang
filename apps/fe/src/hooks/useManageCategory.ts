@@ -4,14 +4,10 @@ import { toast } from 'react-toastify';
 import { MESSAGES } from '@/constants/messages';
 import { CategoryAPI } from '@/services/category';
 import { handelError } from '@/services/handleError';
-
-export interface ICategory {
-  id: number;
-  category: string;
-}
+import { ICategoryItem } from '@/types/model/category';
 
 export const useManageCategory = () => {
-  const [categories, setCategories] = useState<ICategory[]>([]);
+  const [categories, setCategories] = useState<ICategoryItem[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -24,6 +20,7 @@ export const useManageCategory = () => {
       const newCategory = await CategoryAPI.addCategory(categoryName);
       setCategories((prev) => [...prev, newCategory]);
       toast.success(MESSAGES.createCategorySuccess);
+      return newCategory;
     } catch (error: any) {
       if (axios.isAxiosError(error) && error.response?.status === 400) {
         setError(MESSAGES.badRequestError);

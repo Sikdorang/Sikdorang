@@ -1,7 +1,6 @@
 import { PropsWithChildren } from 'react';
-import Image from 'next/image';
 
-import closeIcon from '@public/icons/ic_x.svg';
+import CloseIcon from '@public/icons/ic_x.svg';
 
 interface ProductTagProps extends PropsWithChildren {
   variant?: 'default' | 'editable' | 'deletable';
@@ -26,7 +25,7 @@ export default function ProductTag({ children, variant = 'default', onClick, onD
             if (onDelete) onDelete();
           }}
         >
-          <Image src={closeIcon} alt="Close" className="w-[6px] h-[6px]" />
+          <CloseIcon />
         </button>
       )}
     </div>

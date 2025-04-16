@@ -4,23 +4,10 @@ import { toast } from 'react-toastify';
 import { MESSAGES } from '@/constants/messages';
 import { MenuyAPI } from '@/services/menu';
 import { handelError } from '@/services/handleError';
-
-export interface IMenu {
-  id: number;
-  menu: string;
-  price: number;
-  category: string;
-  status: string;
-}
-
-export interface ISyncLog {
-  action: 'create' | 'update' | 'delete';
-  id: number;
-  data: Record<string, any>;
-}
+import { IManageMenuItem, ISyncMenuRequest } from '@/types/model/menu';
 
 export const useManageMenu = () => {
-  const [menus, setMenus] = useState<IMenu[]>([]);
+  const [menus, setMenus] = useState<IManageMenuItem[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -29,7 +16,11 @@ export const useManageMenu = () => {
     setError(null);
     try {
       const response = await MenuyAPI.getMenus();
-      setMenus(response);
+      if (Array.isArray(response)) {
+        setMenus(response);
+      } else {
+        setMenus([]);
+      }
     } catch (error: any) {
       if (axios.isAxiosError(error) && error.response?.status === 401) {
         setError(MESSAGES.authenticationError);
@@ -41,7 +32,7 @@ export const useManageMenu = () => {
     }
   };
 
-  const syncMenus = async (syncData: any) => {
+  const syncMenus = async (syncData: ISyncMenuRequest[]) => {
     setIsLoading(true);
     setError(null);
     try {
