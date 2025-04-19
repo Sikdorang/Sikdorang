@@ -129,7 +129,7 @@ export default function MenuPage() {
       {
         id: -Date.now(),
         menu: '',
-        price: 0,
+        price: null,
         category: '',
         status: '판매 예정',
         order: newOrder.toString(),
