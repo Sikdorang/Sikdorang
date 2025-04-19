@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { useState } from 'react';
+import { useCallback, useState } from 'react';
 import { toast } from 'react-toastify';
 import { MESSAGES } from '@/constants/messages';
 import { CategoryAPI } from '@/services/category';
@@ -36,7 +36,7 @@ export const useManageCategory = () => {
     }
   };
 
-  const fetchCategories = async () => {
+  const fetchCategories = useCallback(async () => {
     setIsLoading(true);
     setError(null);
     try {
@@ -51,7 +51,7 @@ export const useManageCategory = () => {
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [setIsLoading, setError, setCategories, handelError]);
 
   const updateCategory = async (categoryId: number, updatedCategory: string) => {
     try {
