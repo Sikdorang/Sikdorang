@@ -48,7 +48,7 @@ export default function MenuTableElement({
       <td className="text-center">
         <MenuTextInput
           variant="menu"
-          defaultValue={item.price.toString()}
+          defaultValue={item.price?.toString()}
           placeholder="가격"
           onSave={(value) => {
             const numericValue = Number(value);
@@ -59,15 +59,16 @@ export default function MenuTableElement({
               }));
             } else {
               setMenuErrors((prev) => {
-                const { [item.id]: rest } = prev;
+                const rest = { ...prev };
+                delete rest[item.id]; // 해당 id만 삭제
                 return rest;
               });
               updateMenuItem(item.id, 'price', numericValue);
             }
           }}
           maxLength={11}
-          className={`p-2 my-6`}
-          errorMessage={menuErrors[item.id]}
+          className="p-2 my-6"
+          errorMessage={menuErrors?.[item.id]}
         />
       </td>
 

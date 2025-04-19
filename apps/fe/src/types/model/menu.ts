@@ -10,7 +10,7 @@ export interface IMenuDetailsItem {
 export interface IManageMenuItem {
   id: number;
   menu: string;
-  price: number;
+  price: number | null;
   category: string | null;
   status: string;
   order: string;
