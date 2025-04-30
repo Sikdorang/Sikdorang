@@ -15,16 +15,22 @@ export default function MenuModal({ item, onClose }: MenuModalProps) {
   };
 
   return (
-    <div onClick={handleContentClick} className="bg-white rounded-2xl shadow-2xl p-6 z-60 w-[90%] max-w-md">
-      <div className="flex flex-col">
+    <div
+      onClick={handleContentClick}
+      className="gap-5 flex flex-col bg-white rounded-lg shadow-2xl p-4 z-60 w-[90%] max-w-xl min-h-1/2"
+    >
+      <div className="h-full">
         <Carousel images={item.images} />
-        <div className="space-y-1 mt-4 mb-6">
-          <h2 className="text-body-md-sm text-gray-900">{item.name}</h2>
-          <p className="text-body-sm text-gray-500">{item.description}</p>
-          {item.tags && item.tags?.length > 0 && <MenuTagList tags={item.tags} />}
-          <p className="text-body-md-sm text-gray-800 mt-4">{item.price.toLocaleString()}원</p>
+      </div>
+      <div className="flex flex-col flex-2 justify-between gap-2">
+        <div className="flex flex-col gap-1">
+          <h3 className="font-semibold text-xl tracking-tight text-gray-900 line-clamp-1">
+            {item.menu || '메뉴 이름'}
+          </h3>
+          <p className="font-base text-base text-gray-600 tracking-tight line-clamp-1">{item.details}</p>
         </div>
 
+        <p className="font-bold text-2xl tracking-tight text-gray-900 mb-6">{item.price.toLocaleString()}원</p>
         <BaseButton variant="cancel" onClick={onClose}>
           닫기
         </BaseButton>
