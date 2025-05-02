@@ -181,32 +181,12 @@ func (c *MenuController) UpdateDescription(ctx *fiber.Ctx) error {
 		return ctx.Status(400).JSON(errorDto.ErrorResponse{Error: "invalid body"})
 	}
 
-	// 멀티파트 파일 처리 (추가적인 파일 업로드 있을 시)
-	form, err := ctx.MultipartForm()
-	if err == nil && form.File != nil {
-		files := form.File["file"]
-
-		fileIdx := 0
-		for i := range body.Images {
-			if body.Images[i].ID == 0 && fileIdx < len(files) {
-				body.Images[i].UploadFile = files[fileIdx]
-				fileIdx++
-			}
-		}
-	}
-
 	// 서비스 호출
-	uploadTargets, err := c.service.UpdateDescription(storeID, uint(menuID), body)
-	if err != nil {
-		return ctx.Status(207).JSON(fiber.Map{
-			"message":       "partial success",
-			"uploadTargets": uploadTargets,
-			"error":         err.Error(),
-		})
+	if err := c.service.UpdateDescription(storeID, uint(menuID), body); err != nil {
+		return ctx.Status(500).JSON(errorDto.ErrorResponse{Error: err.Error()})
 	}
 
 	return ctx.JSON(fiber.Map{
-		"message":       "update completed successfully",
-		"uploadTargets": uploadTargets,
+		"message": "update completed successfully",
 	})
 }
