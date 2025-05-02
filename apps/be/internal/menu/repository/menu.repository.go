@@ -22,14 +22,12 @@ type MenuRepository interface {
 	FindMenuBoard(storeID, categoryID uint) ([]models.Menu, error)
 	FindDescription(storeID, menuID uint) (models.Menu, error)
 
-	DeleteImages(storeID, menuID uint, images []models.Image) error
 	UpdateImages(images []models.Image) error
 	CreateImages(images []models.Image) error
 	DeleteImageFile(imageURL string) error
 
-	DeleteTags(tags []models.Tag) error
+	DeleteAllTags(storeID, menuID uint) error
 	CreateTags(tags []models.Tag) error
-	UpdateTags(tags []models.Tag) error
 }
 
 type menuRepository struct {
@@ -67,7 +65,7 @@ func (r *menuRepository) DeleteMenu(storeID uint, menuID uint) error {
 
 func (r *menuRepository) FindImages(storeID, menuID uint) ([]models.Image, error) {
 	var images []models.Image
-	result := r.db.Where("store_id = ? AND menu_id = ?", storeID, menuID).
+	result := r.db.Where("store_id = ? AND menu_id = ? AND deleted = false", storeID, menuID).
 		Order("`order` ASC").
 		Find(&images)
 	return images, result.Error
@@ -99,19 +97,10 @@ func (r *menuRepository) FindDescription(storeID, menuID uint) (models.Menu, err
 	return menu, err
 }
 
-// 이미지 삭제 (DB)
-func (r *menuRepository) DeleteImages(storeID, menuID uint, images []models.Image) error {
-	var ids []uint
-	for _, img := range images {
-		ids = append(ids, img.ID)
-	}
-	return r.db.Where("store_id = ? AND menu_id = ? AND id IN ?", storeID, menuID, ids).
-		Delete(&models.Image{}).Error
-}
-
 // 이미지 업데이트
 func (r *menuRepository) UpdateImages(images []models.Image) error {
 	for _, img := range images {
+		// 이미지 update 로직 (DB에서 해당 이미지 업데이트)
 		if err := r.db.Save(&img).Error; err != nil {
 			return err
 		}
@@ -121,7 +110,13 @@ func (r *menuRepository) UpdateImages(images []models.Image) error {
 
 // 이미지 생성
 func (r *menuRepository) CreateImages(images []models.Image) error {
-	return r.db.Create(&images).Error
+	for _, img := range images {
+		// 이미지 insert 로직 (DB에 추가)
+		if err := r.db.Create(&img).Error; err != nil {
+			return err
+		}
+	}
+	return nil
 }
 
 // 이미지 S3 삭제 (S3 연동 자리)
@@ -136,25 +131,11 @@ func (r *menuRepository) DeleteImageFile(imageURL string) error {
 	return err
 }
 
-// 태그 삭제
-func (r *menuRepository) DeleteTags(tags []models.Tag) error {
-	var ids []uint
-	for _, tag := range tags {
-		ids = append(ids, tag.ID)
-	}
-	return r.db.Where("id IN ?", ids).Delete(&models.Tag{}).Error
-}
-
 // 태그 생성
 func (r *menuRepository) CreateTags(tags []models.Tag) error {
 	return r.db.Create(&tags).Error
 }
 
-func (r *menuRepository) UpdateTags(tags []models.Tag) error {
-	for _, tag := range tags {
-		if err := r.db.Save(&tag).Error; err != nil {
-			return err
-		}
-	}
-	return nil
+func (r *menuRepository) DeleteAllTags(storeID, menuID uint) error {
+	return r.db.Where("store_id = ? AND menu_id = ?", storeID, menuID).Delete(&models.Tag{}).Error
 }

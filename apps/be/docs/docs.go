@@ -575,6 +575,68 @@ const docTemplate = `{
                     }
                 }
             }
+        },
+        "/s3/{menuID}": {
+            "post": {
+                "description": "storeID (토큰에서 추출)와 menuID, filename을 기반으로 S3 Presigned URL을 발급합니다.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "s3"
+                ],
+                "summary": "이미지 업로드용 Presigned URL 발급",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "메뉴 ID",
+                        "name": "menuID",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "파일명",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.GeneratePresignedURLRequestDTO"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Presigned URL 반환",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "잘못된 요청",
+                        "schema": {
+                            "$ref": "#/definitions/dto.ErrorResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "인증 실패",
+                        "schema": {
+                            "$ref": "#/definitions/dto.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "서버 에러",
+                        "schema": {
+                            "$ref": "#/definitions/dto.ErrorResponse"
+                        }
+                    }
+                }
+            }
         }
     },
     "definitions": {
@@ -621,6 +683,17 @@ const docTemplate = `{
                 "error": {
                     "type": "string",
                     "example": "unauthorized"
+                }
+            }
+        },
+        "dto.GeneratePresignedURLRequestDTO": {
+            "type": "object",
+            "required": [
+                "filename"
+            ],
+            "properties": {
+                "filename": {
+                    "type": "string"
                 }
             }
         },

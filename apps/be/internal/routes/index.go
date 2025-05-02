@@ -8,6 +8,7 @@ import (
 	"be/internal/auth/route"
 	"be/internal/category/route"
 	"be/internal/menu/route"
+	"be/internal/s3/route"
 	swagger "github.com/gofiber/swagger"
 )
 
@@ -20,5 +21,6 @@ func SetupRoutes(app *fiber.App, db *gorm.DB) {
 	category.InitCategoryRoutes(api, db)
 	auth.InitAuthRoutes(api, db)
 	menu.InitMenuRoutes(api, db)
+	s3.InitS3Routes(api, db)
 
 }

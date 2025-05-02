@@ -6,7 +6,7 @@ definitions:
         example: 증류주
         type: string
     required:
-      - category
+    - category
     type: object
   dto.CreateCategoryResponseDTO:
     properties:
@@ -30,6 +30,13 @@ definitions:
       error:
         example: unauthorized
         type: string
+    type: object
+  dto.GeneratePresignedURLRequestDTO:
+    properties:
+      filename:
+        type: string
+    required:
+    - filename
     type: object
   dto.GetCategoryResponseDTO:
     properties:
@@ -117,7 +124,7 @@ definitions:
   dto.LoginRequestDTO:
     properties:
       password:
-        example: '1234'
+        example: "1234"
         type: string
       userId:
         example: admin123
@@ -164,7 +171,7 @@ definitions:
         example: 증류주
         type: string
     required:
-      - category
+    - category
     type: object
   dto.UpdateCategoryResponseDTO:
     properties:
@@ -198,378 +205,419 @@ info:
   contact: {}
   description: API 문서
   title: My API
-  version: '1.0'
+  version: "1.0"
 paths:
   /auth/login:
     post:
       consumes:
-        - application/json
+      - application/json
       description: 아이디와 비밀번호로 로그인하여 Access/Refresh Token 발급
       parameters:
-        - description: 로그인 요청
-          in: body
-          name: request
-          required: true
-          schema:
-            $ref: '#/definitions/dto.LoginRequestDTO'
+      - description: 로그인 요청
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/dto.LoginRequestDTO'
       produces:
-        - application/json
+      - application/json
       responses:
-        '200':
+        "200":
           description: OK
           schema:
             $ref: '#/definitions/dto.LoginResponseDTO'
-        '400':
+        "400":
           description: Bad Request
           schema:
             $ref: '#/definitions/dto.ErrorResponse'
-        '401':
+        "401":
           description: Unauthorized
           schema:
             $ref: '#/definitions/dto.ErrorResponse'
-        '500':
+        "500":
           description: Internal Server Error
           schema:
             $ref: '#/definitions/dto.ErrorResponse'
       summary: 로그인
       tags:
-        - auth
+      - auth
   /auth/logout:
     post:
       description: Refresh Token을 무효화하고 쿠키에서 제거합니다.
       produces:
-        - application/json
+      - application/json
       responses:
-        '200':
+        "200":
           description: 로그아웃 성공
           schema:
             $ref: '#/definitions/dto.LogoutResponseDTO'
-        '500':
+        "500":
           description: 서버 에러
           schema:
             $ref: '#/definitions/dto.ErrorResponse'
       summary: 로그아웃
       tags:
-        - auth
+      - auth
   /auth/refresh:
     post:
       description: Refresh Token을 사용하여 새로운 Access Token을 발급합니다.
       produces:
-        - application/json
+      - application/json
       responses:
-        '200':
+        "200":
           description: accessToken 응답
           schema:
             $ref: '#/definitions/dto.RefreshTokenResponseDTO'
-        '401':
+        "401":
           description: Refresh Token 누락 또는 유효하지 않음
           schema:
             $ref: '#/definitions/dto.ErrorResponse'
       summary: Access Token 갱신
       tags:
-        - auth
+      - auth
   /categories:
     get:
       description: storeID에 해당하는 카테고리 이름 목록을 조회합니다.
       produces:
-        - application/json
+      - application/json
       responses:
-        '200':
+        "200":
           description: 카테고리 리스트
           schema:
             items:
               $ref: '#/definitions/dto.GetCategoryResponseDTO'
             type: array
-        '401':
+        "401":
           description: 인증 실패
           schema:
             $ref: '#/definitions/dto.ErrorResponse'
-        '500':
+        "500":
           description: 조회 실패
           schema:
             $ref: '#/definitions/dto.ErrorResponse'
       summary: 카테고리 목록 조회
       tags:
-        - category
+      - category
     post:
       consumes:
-        - application/json
+      - application/json
       description: storeID에 해당하는 카테고리를 추가합니다.
       parameters:
-        - description: 카테고리 요청 데이터
-          in: body
-          name: request
-          required: true
-          schema:
-            $ref: '#/definitions/dto.CreateCategoryRequestDTO'
+      - description: 카테고리 요청 데이터
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/dto.CreateCategoryRequestDTO'
       produces:
-        - application/json
+      - application/json
       responses:
-        '201':
+        "201":
           description: 생성된 카테고리 응답
           schema:
             $ref: '#/definitions/dto.CreateCategoryResponseDTO'
-        '400':
+        "400":
           description: 잘못된 요청
           schema:
             $ref: '#/definitions/dto.ErrorResponse'
-        '401':
+        "401":
           description: 인증 실패
           schema:
             $ref: '#/definitions/dto.ErrorResponse'
-        '500':
+        "500":
           description: 서버 에러
           schema:
             $ref: '#/definitions/dto.ErrorResponse'
       summary: 카테고리 생성
       tags:
-        - category
+      - category
   /categories/{categoryId}:
     delete:
       description: 카테고리 ID와 storeID로 카테고리를 삭제합니다.
       parameters:
-        - description: 카테고리 ID
-          in: path
-          name: categoryId
-          required: true
-          type: integer
+      - description: 카테고리 ID
+        in: path
+        name: categoryId
+        required: true
+        type: integer
       produces:
-        - application/json
+      - application/json
       responses:
-        '200':
+        "200":
           description: 삭제 성공 메시지
           schema:
             $ref: '#/definitions/dto.DeleteCategoryResponseDTO'
-        '400':
+        "400":
           description: 잘못된 요청
           schema:
             $ref: '#/definitions/dto.ErrorResponse'
-        '401':
+        "401":
           description: 인증 실패
           schema:
             $ref: '#/definitions/dto.ErrorResponse'
-        '404':
+        "404":
           description: 카테고리 없음
           schema:
             $ref: '#/definitions/dto.ErrorResponse'
-        '500':
+        "500":
           description: 서버 에러
           schema:
             $ref: '#/definitions/dto.ErrorResponse'
       summary: 카테고리 삭제
       tags:
-        - category
+      - category
     patch:
       consumes:
-        - application/json
+      - application/json
       description: 카테고리 ID와 storeID로 카테고리 이름을 수정합니다.
       parameters:
-        - description: 카테고리 ID
-          in: path
-          name: categoryId
-          required: true
-          type: integer
-        - description: 수정할 카테고리 정보
-          in: body
-          name: request
-          required: true
-          schema:
-            $ref: '#/definitions/dto.UpdateCategoryRequestDTO'
+      - description: 카테고리 ID
+        in: path
+        name: categoryId
+        required: true
+        type: integer
+      - description: 수정할 카테고리 정보
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/dto.UpdateCategoryRequestDTO'
       produces:
-        - application/json
+      - application/json
       responses:
-        '200':
+        "200":
           description: OK
           schema:
             $ref: '#/definitions/dto.UpdateCategoryResponseDTO'
-        '400':
+        "400":
           description: 잘못된 요청
           schema:
             $ref: '#/definitions/dto.ErrorResponse'
-        '401':
+        "401":
           description: 인증 실패
           schema:
             $ref: '#/definitions/dto.ErrorResponse'
-        '404':
+        "404":
           description: 카테고리 없음
           schema:
             $ref: '#/definitions/dto.ErrorResponse'
-        '500':
+        "500":
           description: 서버 에러
           schema:
             $ref: '#/definitions/dto.ErrorResponse'
       summary: 카테고리 수정
       tags:
-        - category
+      - category
   /menus:
     get:
       description: storeID에 해당하는 메뉴 목록을 조회합니다.
       produces:
-        - application/json
+      - application/json
       responses:
-        '200':
+        "200":
           description: OK
           schema:
             items:
               $ref: '#/definitions/dto.GetMenuResponseDTO'
             type: array
-        '401':
+        "401":
           description: 인증 실패
           schema:
             $ref: '#/definitions/dto.ErrorResponse'
-        '500':
+        "500":
           description: 서버 에러
           schema:
             $ref: '#/definitions/dto.ErrorResponse'
       summary: 메뉴 목록 조회
       tags:
-        - menu
+      - menu
   /menus/:
     post:
       consumes:
-        - application/json
+      - application/json
       description: 여러 메뉴에 대해 생성/수정/삭제 동기화를 처리합니다.
       parameters:
-        - description: 동기화 요청 데이터
-          in: body
-          name: request
-          required: true
-          schema:
-            items:
-              $ref: '#/definitions/dto.SyncMenuRequestDTO'
-            type: array
+      - description: 동기화 요청 데이터
+        in: body
+        name: request
+        required: true
+        schema:
+          items:
+            $ref: '#/definitions/dto.SyncMenuRequestDTO'
+          type: array
       produces:
-        - application/json
+      - application/json
       responses:
-        '200':
+        "200":
           description: 전체 성공
           schema:
             additionalProperties:
               type: string
             type: object
-        '207':
+        "207":
           description: 일부 실패
           schema:
             additionalProperties: true
             type: object
-        '400':
+        "400":
           description: 요청 바디 오류
           schema:
             $ref: '#/definitions/dto.ErrorResponse'
-        '401':
+        "401":
           description: 인증 실패
           schema:
             $ref: '#/definitions/dto.ErrorResponse'
       summary: 메뉴 동기화
       tags:
-        - menu
+      - menu
   /menus/{menuID}:
     get:
       description: storeID와 menuID로 메뉴 상세 정보를 조회합니다. (Preview, Details, Tags, Images
         포함)
       parameters:
-        - description: 메뉴 ID
-          in: path
-          name: menuId
-          required: true
-          type: integer
+      - description: 메뉴 ID
+        in: path
+        name: menuId
+        required: true
+        type: integer
       produces:
-        - application/json
+      - application/json
       responses:
-        '200':
+        "200":
           description: OK
           schema:
             $ref: '#/definitions/dto.GetDescriptionResponseDTO'
-        '400':
+        "400":
           description: 잘못된 요청 (menuId 없음 또는 invalid)
           schema:
             $ref: '#/definitions/dto.ErrorResponse'
-        '401':
+        "401":
           description: 인증 실패
           schema:
             $ref: '#/definitions/dto.ErrorResponse'
-        '500':
+        "500":
           description: 서버 에러
           schema:
             $ref: '#/definitions/dto.ErrorResponse'
       summary: 메뉴 상세 조회
       tags:
-        - menu
+      - menu
     patch:
       consumes:
-        - multipart/form-data
+      - multipart/form-data
       description: storeID와 menuID로 메뉴 상세정보(Preview, Details, Tags, Images)를 수정합니다.
       parameters:
-        - description: 메뉴 ID
-          in: path
-          name: menuID
-          required: true
-          type: integer
-        - description: 수정할 데이터 (multipart/form-data로 이미지 파일 포함 가능)
-          in: body
-          name: request
-          required: true
-          schema:
-            $ref: '#/definitions/dto.UpdateDescriptionRequestDTO'
+      - description: 메뉴 ID
+        in: path
+        name: menuID
+        required: true
+        type: integer
+      - description: 수정할 데이터 (multipart/form-data로 이미지 파일 포함 가능)
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/dto.UpdateDescriptionRequestDTO'
       produces:
-        - application/json
+      - application/json
       responses:
-        '200':
+        "200":
           description: 수정 완료 메시지 및 업로드 대상 URL 목록
           schema:
             additionalProperties: true
             type: object
-        '207':
+        "207":
           description: 일부 실패, 성공 및 실패 목록 반환
           schema:
             additionalProperties: true
             type: object
-        '400':
+        "400":
           description: 잘못된 요청 (menuId 없음 또는 invalid)
           schema:
             $ref: '#/definitions/dto.ErrorResponse'
-        '401':
+        "401":
           description: 인증 실패
           schema:
             $ref: '#/definitions/dto.ErrorResponse'
-        '500':
+        "500":
           description: 서버 에러
           schema:
             $ref: '#/definitions/dto.ErrorResponse'
       summary: 메뉴 상세 수정
       tags:
-        - menu
+      - menu
   /menus/board/{categoryID}:
     get:
       description: 카테고리 ID로 메뉴, 이미지, 태그를 함께 조회합니다.
       parameters:
-        - description: 카테고리 ID
-          in: path
-          name: category_id
-          required: true
-          type: integer
+      - description: 카테고리 ID
+        in: path
+        name: category_id
+        required: true
+        type: integer
       produces:
-        - application/json
+      - application/json
       responses:
-        '200':
+        "200":
           description: OK
           schema:
             items:
               $ref: '#/definitions/dto.GetMenuBoardResponseDTO'
             type: array
-        '400':
+        "400":
           description: Bad Request
           schema:
             $ref: '#/definitions/dto.ErrorResponse'
-        '401':
+        "401":
           description: Unauthorized
           schema:
             $ref: '#/definitions/dto.ErrorResponse'
-        '500':
+        "500":
           description: Internal Server Error
           schema:
             $ref: '#/definitions/dto.ErrorResponse'
       summary: 메뉴판 조회
       tags:
-        - menu
-swagger: '2.0'
+      - menu
+  /s3/{menuID}:
+    post:
+      consumes:
+      - application/json
+      description: storeID (토큰에서 추출)와 menuID, filename을 기반으로 S3 Presigned URL을 발급합니다.
+      parameters:
+      - description: 메뉴 ID
+        in: path
+        name: menuID
+        required: true
+        type: integer
+      - description: 파일명
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/dto.GeneratePresignedURLRequestDTO'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Presigned URL 반환
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "400":
+          description: 잘못된 요청
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+        "401":
+          description: 인증 실패
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+        "500":
+          description: 서버 에러
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+      summary: 이미지 업로드용 Presigned URL 발급
+      tags:
+      - s3
+swagger: "2.0"
