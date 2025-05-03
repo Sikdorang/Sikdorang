@@ -18,6 +18,8 @@ type MenuService interface {
 	GetDescription(storeID, menuID uint) (dto.GetDescriptionResponseDTO, error)
 	UpdateDescription(storeID, menuID uint, body dto.UpdateDescriptionRequestDTO) (error)
 	UpdateMenuOrder(storeID uint, body []dto.UpdateMenuOrderRequestDTO) error
+	GetAdminMenuBoard(storeID uint) ([]dto.AdminMenuBoardDTO, error)
+
 }
 
 type menuService struct {
@@ -275,4 +277,57 @@ func (s *menuService) UpdateMenuOrder(storeID uint, body []dto.UpdateMenuOrderRe
 	}
 
 	return s.repo.UpdateMenuOrder(storeID, menus)
+}
+
+func (s *menuService) GetAdminMenuBoard(storeID uint) ([]dto.AdminMenuBoardDTO, error) {
+	categories, err := s.repo.GetCategoriesWithMenus(storeID)
+	if err != nil {
+		return nil, fmt.Errorf("failed to get categories: %w", err)
+	}
+
+	var result []dto.AdminMenuBoardDTO
+
+	for _, category := range categories {
+		var menuDTOs []dto.AdminMenuItemDTO
+
+		for _, menu := range category.Menus {
+			// 이미지 조회
+			images, err := s.repo.FindImages(storeID, menu.ID)
+			if err != nil {
+				return nil, fmt.Errorf("failed to get images for menu %d: %w", menu.ID, err)
+			}
+			imageURLs := make([]string, len(images))
+			for i, img := range images {
+				imageURLs[i] = img.ImageURL
+			}
+
+			// 태그 조회
+			tags, err := s.repo.FindTags(storeID, menu.ID)
+			if err != nil {
+				return nil, fmt.Errorf("failed to get tags for menu %d: %w", menu.ID, err)
+			}
+			tagNames := make([]string, len(tags))
+			for i, tag := range tags {
+				tagNames[i] = tag.Tag
+			}
+
+			menuDTOs = append(menuDTOs, dto.AdminMenuItemDTO{
+				MenuID: menu.ID,
+				Name:   menu.Menu,
+				Price:  menu.Price,
+				Order:  menu.Order,
+				Tags:   tagNames,
+				Images: imageURLs,
+			})
+		}
+
+		result = append(result, dto.AdminMenuBoardDTO{
+			CategoryID:   category.ID,
+			CategoryName: category.Category,
+			Order:        category.Order,
+			Menus:        menuDTOs,
+		})
+	}
+
+	return result, nil
 }
