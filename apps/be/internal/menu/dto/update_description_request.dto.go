@@ -13,7 +13,7 @@ type TagDTO struct {
 }
 
 type ImageDTO struct {
-	ID         uint                  `json:"id"`
-	ImageURL   string                `json:"image_url"`
-	Order      string                `json:"order"`
+	ID       uint   `json:"id"`
+	ImageURL string `json:"image_url"`
+	Order    string `json:"order"`
 }

@@ -9,9 +9,10 @@ import (
 	"be/config"
 	"be/internal/models"
 	"be/internal/routes"
+	"log"
+
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/cors"
-	"log"
 )
 
 func main() {

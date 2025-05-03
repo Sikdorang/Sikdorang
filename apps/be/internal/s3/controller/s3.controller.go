@@ -1,12 +1,13 @@
 package controller
 
 import (
-	"strconv"
-	"github.com/gofiber/fiber/v2"
-	"be/internal/s3/service"
+	errorDto "be/internal/common/dto"
 	"be/internal/middleware"
 	"be/internal/s3/dto"
-	errorDto "be/internal/common/dto"
+	"be/internal/s3/service"
+	"strconv"
+
+	"github.com/gofiber/fiber/v2"
 )
 
 type S3Controller struct {
@@ -56,7 +57,7 @@ func (c *S3Controller) GeneratePresignedURL(ctx *fiber.Ctx) error {
 	}
 
 	// 서비스에 presigned URL 생성 요청
-	url, err := c.service.GeneratePresignedURL(int(storeID), menuID, body.Filename)  // storeID를 int로 변환
+	url, err := c.service.GeneratePresignedURL(int(storeID), menuID, body.Filename) // storeID를 int로 변환
 	if err != nil {
 		return ctx.Status(500).JSON(errorDto.ErrorResponse{Error: "failed to generate URL"})
 	}
