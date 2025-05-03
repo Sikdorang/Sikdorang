@@ -137,20 +137,46 @@ func (s *menuService) GetMenuBoard(storeID, categoryID uint) ([]dto.GetMenuBoard
 
 	return result, nil
 }
-
 func (s *menuService) GetDescription(storeID, menuID uint) (dto.GetDescriptionResponseDTO, error) {
-	description, err := s.repo.FindDescription(storeID, menuID)
+	// 메뉴 정보 조회
+	menu, err := s.repo.FindDescription(storeID, menuID)
 	if err != nil {
 		return dto.GetDescriptionResponseDTO{}, err
 	}
 
-	menuResponse := s.buildMenuResponse(description, storeID)
+	// 태그 조회
+	tags, err := s.repo.FindTags(storeID, menuID)
+	if err != nil {
+		return dto.GetDescriptionResponseDTO{}, fmt.Errorf("failed to get tags: %v", err)
+	}
+	var tagDTOs []dto.TagsDTO
+	for _, tag := range tags {
+		tagDTOs = append(tagDTOs, dto.TagsDTO{
+			ID:  tag.ID,
+			Tag: tag.Tag,
+		})
+	}
 
+	// 이미지 조회
+	images, err := s.repo.FindImages(storeID, menuID)
+	if err != nil {
+		return dto.GetDescriptionResponseDTO{}, fmt.Errorf("failed to get images: %v", err)
+	}
+	var imageDTOs []dto.ImagesDTO
+	for _, img := range images {
+		imageDTOs = append(imageDTOs, dto.ImagesDTO{
+			ID:    img.ID,
+			URL:   img.ImageURL,
+			Order: img.Order,
+		})
+	}
+
+	// 최종 반환 DTO 생성
 	return dto.GetDescriptionResponseDTO{
-		Preview: description.Preview,
-		Details: description.Details,
-		Tags:    menuResponse.Tags,
-		Images:  menuResponse.ImageURLs,
+		Preview: menu.Preview,
+		Details: menu.Details,
+		Tags:    tagDTOs,
+		Images:  imageDTOs,
 	}, nil
 }
 
