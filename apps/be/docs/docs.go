@@ -204,6 +204,69 @@ const docTemplate = `{
                 }
             }
         },
+        "/categories/order": {
+            "patch": {
+                "description": "storeID와 menuID로 여러 메뉴 항목의 순서를 수정합니다.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "category"
+                ],
+                "summary": "카테고리 순서 수정",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "메뉴 ID",
+                        "name": "category",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "수정할 메뉴 주문 정보 (JSON 형식)",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/dto.UpdateCategoryOrderRequestDTO"
+                            }
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "수정 완료 메시지",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    },
+                    "400": {
+                        "description": "잘못된 요청 (invalid body)",
+                        "schema": {
+                            "$ref": "#/definitions/dto.ErrorResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "인증 실패",
+                        "schema": {
+                            "$ref": "#/definitions/dto.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "서버 에러",
+                        "schema": {
+                            "$ref": "#/definitions/dto.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/categories/{categoryId}": {
             "delete": {
                 "description": "카테고리 ID와 storeID로 카테고리를 삭제합니다.",
@@ -457,6 +520,69 @@ const docTemplate = `{
                     },
                     "500": {
                         "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/dto.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/menus/order": {
+            "patch": {
+                "description": "storeID와 menuID로 여러 메뉴 항목의 순서를 수정합니다.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "menu"
+                ],
+                "summary": "메뉴 순서 수정",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "메뉴 ID",
+                        "name": "menuID",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "수정할 메뉴 주문 정보 (JSON 형식)",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/dto.UpdateMenuOrderRequestDTO"
+                            }
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "수정 완료 메시지",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    },
+                    "400": {
+                        "description": "잘못된 요청 (invalid body)",
+                        "schema": {
+                            "$ref": "#/definitions/dto.ErrorResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "인증 실패",
+                        "schema": {
+                            "$ref": "#/definitions/dto.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "서버 에러",
                         "schema": {
                             "$ref": "#/definitions/dto.ErrorResponse"
                         }
@@ -889,6 +1015,17 @@ const docTemplate = `{
                 }
             }
         },
+        "dto.UpdateCategoryOrderRequestDTO": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "integer"
+                },
+                "order": {
+                    "type": "string"
+                }
+            }
+        },
         "dto.UpdateCategoryRequestDTO": {
             "type": "object",
             "required": [
@@ -938,6 +1075,17 @@ const docTemplate = `{
                     "items": {
                         "$ref": "#/definitions/dto.TagDTO"
                     }
+                }
+            }
+        },
+        "dto.UpdateMenuOrderRequestDTO": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "integer"
+                },
+                "order": {
+                    "type": "string"
                 }
             }
         }

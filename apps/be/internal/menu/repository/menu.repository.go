@@ -3,8 +3,10 @@ package repository
 import (
 	"be/internal/models"
 	"context"
-	"gorm.io/gorm"
+	"fmt"
 	"strings"
+
+	"gorm.io/gorm"
 
 	"be/config"
 
@@ -28,6 +30,8 @@ type MenuRepository interface {
 
 	DeleteAllTags(storeID, menuID uint) error
 	CreateTags(tags []models.Tag) error
+
+	UpdateMenuOrder(storeID uint, menus []models.Menu) error
 }
 
 type menuRepository struct {
@@ -138,4 +142,17 @@ func (r *menuRepository) CreateTags(tags []models.Tag) error {
 
 func (r *menuRepository) DeleteAllTags(storeID, menuID uint) error {
 	return r.db.Where("store_id = ? AND menu_id = ?", storeID, menuID).Delete(&models.Tag{}).Error
+}
+
+func (r *menuRepository) UpdateMenuOrder(storeID uint, menus []models.Menu) error {
+	for _, menu := range menus {
+		err := r.db.Model(&models.Menu{}).
+			Where("id = ? AND store_id = ?", menu.ID, storeID).
+			Update("order", menu.Order).Error
+
+		if err != nil {
+			return fmt.Errorf("failed to update menu id %d: %w", menu.ID, err)
+		}
+	}
+	return nil
 }

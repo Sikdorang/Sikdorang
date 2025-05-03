@@ -5,10 +5,11 @@ import (
 	"gorm.io/gorm"
 
 	_ "be/docs"
-	"be/internal/auth/route"
-	"be/internal/category/route"
-	"be/internal/menu/route"
-	"be/internal/s3/route"
+	auth "be/internal/auth/route"
+	category "be/internal/category/route"
+	menu "be/internal/menu/route"
+	s3 "be/internal/s3/route"
+
 	swagger "github.com/gofiber/swagger"
 )
 

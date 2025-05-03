@@ -17,6 +17,7 @@ type MenuService interface {
 	GetMenuBoard(storeID, categoryID uint) ([]dto.GetMenuBoardResponseDTO, error)
 	GetDescription(storeID, menuID uint) (dto.GetDescriptionResponseDTO, error)
 	UpdateDescription(storeID, menuID uint, body dto.UpdateDescriptionRequestDTO) (error)
+	UpdateMenuOrder(storeID uint, body []dto.UpdateMenuOrderRequestDTO) error
 }
 
 type menuService struct {
@@ -260,6 +261,18 @@ func (s *menuService) UpdateDescription(storeID, menuID uint, body dto.UpdateDes
 	if len(execErrs) > 0 {
 		return fmt.Errorf("일부 작업에서 오류가 발생했습니다: %v", execErrs)
 	}
+	return nil
+}
+func (s *menuService) UpdateMenuOrder(storeID uint, body []dto.UpdateMenuOrderRequestDTO) error {
+	var menus []models.Menu
 
-	return nil // 성공
+	for _, item := range body {
+		menus = append(menus, models.Menu{
+			ID:     item.ID,
+			Order:  item.Order,
+			StoreID: storeID, // 명시적으로 세팅해주는 게 좋음
+		})
+	}
+
+	return s.repo.UpdateMenuOrder(storeID, menus)
 }

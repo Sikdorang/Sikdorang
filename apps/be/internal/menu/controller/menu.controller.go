@@ -190,3 +190,37 @@ func (c *MenuController) UpdateDescription(ctx *fiber.Ctx) error {
 		"message": "update completed successfully",
 	})
 }
+
+// UpdateMenuOrder godoc
+// @Summary      메뉴 순서 수정
+// @Description  storeID와 menuID로 여러 메뉴 항목의 순서를 수정합니다.
+// @Tags         menu
+// @Accept       application/json
+// @Produce      json
+// @Param        menuID path int true "메뉴 ID"
+// @Param        request body []dto.UpdateMenuOrderRequestDTO true "수정할 메뉴 주문 정보 (JSON 형식)"
+// @Success      200 {object} map[string]interface{} "수정 완료 메시지"
+// @Failure      400 {object} errorDto.ErrorResponse "잘못된 요청 (invalid body)"
+// @Failure      401 {object} errorDto.ErrorResponse "인증 실패"
+// @Failure      500 {object} errorDto.ErrorResponse "서버 에러"
+// @Router       /menus/order [patch]
+func (c *MenuController) UpdateMenuOrder(ctx *fiber.Ctx) error {
+	storeID, err := middleware.ExtractStoreID(ctx)
+	if err != nil {
+		return ctx.Status(401).JSON(errorDto.ErrorResponse{Error: "unauthorized"})
+	}
+
+	var body []dto.UpdateMenuOrderRequestDTO
+	if err := ctx.BodyParser(&body); err != nil {
+		return ctx.Status(400).JSON(errorDto.ErrorResponse{Error: "invalid body"})
+	}
+
+	err = c.service.UpdateMenuOrder(storeID, body)
+	if err != nil {
+		return ctx.Status(500).JSON(errorDto.ErrorResponse{Error: "failed to update"})
+	}
+
+	return ctx.JSON(fiber.Map{
+		"message": "order updated successfully",
+	})
+}

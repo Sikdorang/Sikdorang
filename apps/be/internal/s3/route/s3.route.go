@@ -4,10 +4,10 @@ import (
 	"github.com/gofiber/fiber/v2"
 	"gorm.io/gorm"
 
+	"be/internal/middleware"
 	"be/internal/s3/controller"
 	"be/internal/s3/repository"
 	"be/internal/s3/service"
-	"be/internal/middleware"
 )
 
 func InitS3Routes(router fiber.Router, db *gorm.DB) {

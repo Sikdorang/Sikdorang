@@ -7,6 +7,7 @@ import (
 
 	"be/internal/category/repository"
 	"be/internal/models"
+	"be/internal/category/dto"
 )
 
 var ErrCategoryNotFound = errors.New("category not found")
@@ -16,6 +17,7 @@ type CategoryService interface {
 	GetAllByStoreID(storeID uint) ([]models.Category, error)
 	Update(categoryID uint, storeID uint, newCategory string) (models.Category, error)
 	Delete(categoryID uint, storeID uint) error
+	UpdateCategoryOrder(storeID uint, body []dto.UpdateCategoryOrderRequestDTO) error
 }
 
 type categoryService struct {
@@ -82,4 +84,18 @@ func (s *categoryService) Delete(categoryID uint, storeID uint) error {
 	}
 
 	return nil
+}
+
+func (s *categoryService) UpdateCategoryOrder(storeID uint, body []dto.UpdateCategoryOrderRequestDTO) error {
+	var categories []models.Category
+
+	// body에서 받은 데이터를 categories 배열에 추가
+	for _, item := range body {
+		categories = append(categories, models.Category{
+			ID:      item.ID,
+			Order:   item.Order,
+			StoreID: storeID, // 명시적으로 StoreID를 설정
+		})
+	}
+	return s.repo.UpdateCategoryOrder(storeID, categories)
 }
