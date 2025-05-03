@@ -32,6 +32,7 @@ type MenuRepository interface {
 	CreateTags(tags []models.Tag) error
 
 	UpdateMenuOrder(storeID uint, menus []models.Menu) error
+	GetCategoriesWithMenus(storeID uint) ([]models.Category, error)
 }
 
 type menuRepository struct {
@@ -155,4 +156,17 @@ func (r *menuRepository) UpdateMenuOrder(storeID uint, menus []models.Menu) erro
 		}
 	}
 	return nil
+}
+
+func (r *menuRepository) GetCategoriesWithMenus(storeID uint) ([]models.Category, error) {
+	var categories []models.Category
+	err := r.db.
+		Preload("Menus", func(db *gorm.DB) *gorm.DB {
+			return db.Order("`order` ASC")
+		}).
+		Where("store_id = ?", storeID).
+		Order("`order` ASC").
+		Find(&categories).Error
+
+	return categories, err
 }

@@ -224,3 +224,25 @@ func (c *MenuController) UpdateMenuOrder(ctx *fiber.Ctx) error {
 		"message": "order updated successfully",
 	})
 }
+// GetAdminMenuBoard godoc
+// @Summary      관리자용 메뉴판 조회
+// @Description  storeID를 기반으로 모든 카테고리와 해당 카테고리의 메뉴 목록을 조회합니다.
+// @Tags         menu
+// @Produce      json
+// @Success      200 {array} dto.AdminMenuBoardDTO
+// @Failure      401 {object} errorDto.ErrorResponse "인증 실패"
+// @Failure      500 {object} errorDto.ErrorResponse "서버 에러"
+// @Router       /menus/board/admin [get]
+func (c *MenuController) GetAdminMenuBoard(ctx *fiber.Ctx) error {
+	storeID, err := middleware.ExtractStoreID(ctx)
+	if err != nil {
+		return ctx.Status(401).JSON(errorDto.ErrorResponse{Error: "unauthorized"})
+	}
+
+	result, err := c.service.GetAdminMenuBoard(storeID)
+	if err != nil {
+		return ctx.Status(500).JSON(errorDto.ErrorResponse{Error: "failed to fetch admin menu board"})
+	}
+
+	return ctx.JSON(result)
+}

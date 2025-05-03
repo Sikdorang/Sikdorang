@@ -477,6 +477,41 @@ const docTemplate = `{
                 }
             }
         },
+        "/menus/board/admin": {
+            "get": {
+                "description": "storeID를 기반으로 모든 카테고리와 해당 카테고리의 메뉴 목록을 조회합니다.",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "menu"
+                ],
+                "summary": "관리자용 메뉴판 조회",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/dto.AdminMenuBoardDTO"
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "인증 실패",
+                        "schema": {
+                            "$ref": "#/definitions/dto.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "서버 에러",
+                        "schema": {
+                            "$ref": "#/definitions/dto.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/menus/board/{categoryID}": {
             "get": {
                 "description": "카테고리 ID로 메뉴, 이미지, 태그를 함께 조회합니다.",
@@ -766,6 +801,55 @@ const docTemplate = `{
         }
     },
     "definitions": {
+        "dto.AdminMenuBoardDTO": {
+            "type": "object",
+            "properties": {
+                "category_id": {
+                    "type": "integer"
+                },
+                "category_name": {
+                    "type": "string"
+                },
+                "menus": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/dto.AdminMenuItemDTO"
+                    }
+                },
+                "order": {
+                    "type": "string"
+                }
+            }
+        },
+        "dto.AdminMenuItemDTO": {
+            "type": "object",
+            "properties": {
+                "images": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "menu_id": {
+                    "type": "integer"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "order": {
+                    "type": "string"
+                },
+                "price": {
+                    "type": "integer"
+                },
+                "tags": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                }
+            }
+        },
         "dto.CreateCategoryRequestDTO": {
             "type": "object",
             "required": [

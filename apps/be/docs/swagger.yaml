@@ -1,5 +1,37 @@
 basePath: /api
 definitions:
+  dto.AdminMenuBoardDTO:
+    properties:
+      category_id:
+        type: integer
+      category_name:
+        type: string
+      menus:
+        items:
+          $ref: '#/definitions/dto.AdminMenuItemDTO'
+        type: array
+      order:
+        type: string
+    type: object
+  dto.AdminMenuItemDTO:
+    properties:
+      images:
+        items:
+          type: string
+        type: array
+      menu_id:
+        type: integer
+      name:
+        type: string
+      order:
+        type: string
+      price:
+        type: integer
+      tags:
+        items:
+          type: string
+        type: array
+    type: object
   dto.CreateCategoryRequestDTO:
     properties:
       category:
@@ -633,6 +665,29 @@ paths:
           schema:
             $ref: '#/definitions/dto.ErrorResponse'
       summary: 메뉴판 조회
+      tags:
+      - menu
+  /menus/board/admin:
+    get:
+      description: storeID를 기반으로 모든 카테고리와 해당 카테고리의 메뉴 목록을 조회합니다.
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/dto.AdminMenuBoardDTO'
+            type: array
+        "401":
+          description: 인증 실패
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+        "500":
+          description: 서버 에러
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+      summary: 관리자용 메뉴판 조회
       tags:
       - menu
   /menus/order:
