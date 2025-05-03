@@ -275,7 +275,6 @@ func (s *menuService) UpdateMenuOrder(storeID uint, body []dto.UpdateMenuOrderRe
 			StoreID: storeID, // 명시적으로 세팅해주는 게 좋음
 		})
 	}
-
 	return s.repo.UpdateMenuOrder(storeID, menus)
 }
 

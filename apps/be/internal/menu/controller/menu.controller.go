@@ -224,7 +224,6 @@ func (c *MenuController) UpdateMenuOrder(ctx *fiber.Ctx) error {
 		"message": "order updated successfully",
 	})
 }
-
 // GetAdminMenuBoard godoc
 // @Summary      관리자용 메뉴판 조회
 // @Description  storeID를 기반으로 모든 카테고리와 해당 카테고리의 메뉴 목록을 조회합니다.
