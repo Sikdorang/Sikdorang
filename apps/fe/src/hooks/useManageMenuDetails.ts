@@ -1,7 +1,8 @@
 import axios from 'axios';
 import { useState } from 'react';
 import { MESSAGES } from '@/constants/messages';
-import { DetailsAPI } from '@/services/manageMenuDetails';
+import { toast } from 'react-toastify';
+import { DetailsAPI, PatchMenuDetailsRequest } from '@/services/manageMenuDetails';
 import { handelError } from '@/services/handleError';
 import { IMenuDetailsItem } from '@/types/model/menu';
 
@@ -27,5 +28,20 @@ export const useManageMenuDetails = () => {
     }
   };
 
-  return { menusDetails, isLoading, error, fetchMenusDetails };
+  const updateMenuDetails = async (menuId: number, data: PatchMenuDetailsRequest) => {
+    try {
+      const response = await DetailsAPI.updateMenuDetails(menuId, data);
+      toast.success(MESSAGES.syncMenuDetailsSuccess);
+      return response;
+    } catch (error) {
+      if (axios.isAxiosError(error) && error.response?.status === 401) {
+        setError(MESSAGES.emailRequired);
+      } else {
+        handelError(error);
+      }
+      throw error;
+    }
+  };
+
+  return { menusDetails, isLoading, error, fetchMenusDetails, updateMenuDetails };
 };

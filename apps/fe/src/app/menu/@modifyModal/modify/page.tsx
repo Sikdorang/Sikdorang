@@ -5,8 +5,9 @@ import { useState, useEffect } from 'react';
 import { isEqual } from 'lodash';
 import MDEditor, { commands } from '@uiw/react-md-editor';
 import { useManageMenuDetails } from '@/hooks/useManageMenuDetails';
-import { IMenuDetailsItem } from '@/types/model/menu';
+import { IMenuDetailsItem, IMenuImageItem } from '@/types/model/menu';
 import { MESSAGES } from '@/constants/messages';
+import { PatchMenuDetailsRequest } from '@/services/manageMenuDetails';
 
 import TextInput from '@/components/common/inputs/TextInput';
 import BaseButton from '@/components/common/buttons/BaseButton';
@@ -15,7 +16,7 @@ import ImageGallery from '@/components/pages/menu/MenuImageGallery';
 import Spinner from '@/components/common/loadings/Spinner';
 
 export default function ManageMenuModal() {
-  const { menusDetails, isLoading, fetchMenusDetails } = useManageMenuDetails();
+  const { menusDetails, isLoading, fetchMenusDetails, updateMenuDetails } = useManageMenuDetails();
 
   useEffect(() => {
     fetchMenusDetails(Number(queryId));
@@ -65,10 +66,10 @@ export default function ManageMenuModal() {
         setTagError(MESSAGES.maximumTagError);
         return;
       }
-      if (!tags.includes(inputTagValue.trim())) {
+      if (!tags.some((t) => t.tag === inputTagValue.trim())) {
         setTemporaryMenuDetails((prev) => ({
           ...prev,
-          tags: [...(prev.tags || []), inputTagValue.trim()],
+          tags: [...(prev.tags || []), { id: 0, tag: inputTagValue.trim() }],
         }));
         setInputTagValue('');
         setTagError('');
@@ -79,26 +80,72 @@ export default function ManageMenuModal() {
   const handleDeleteTag = (tagToDelete: string) => {
     setTemporaryMenuDetails((prev) => ({
       ...prev,
-      tags: prev.tags.filter((tag) => tag !== tagToDelete),
+      tags: prev.tags.filter((tag) => tag.tag !== tagToDelete),
     }));
   };
 
+  const getChangedData = (original: IMenuDetailsItem, updated: IMenuDetailsItem) => {
+    const result = {} as PatchMenuDetailsRequest;
+
+    if (original.preview !== updated.preview) {
+      result.preview = updated.preview;
+    }
+
+    if (original.details !== updated.details) {
+      result.details = updated.details;
+    }
+
+    if (!isEqual(original.tags, updated.tags)) {
+      const originalTags = original.tags || [];
+      const updatedTags = updated.tags || [];
+      const originalTagIds = new Set(originalTags.map((t) => t.id));
+      result.tags = updatedTags.map((tag) =>
+        originalTagIds.has(tag.id) ? { id: tag.id, tag: tag.tag } : { id: 0, tag: tag.tag },
+      );
+    }
+
+    if (!isEqual(original.images, updated.images)) {
+      const originalImages = original.images || [];
+      const updatedImages = updated.images || [];
+      const originalImageIds = new Set(originalImages.map((img) => img.id));
+      result.images = updatedImages.map((img) =>
+        originalImageIds.has(img.id)
+          ? {
+              id: img.id,
+              image_url: img.image_url,
+              order: img.order,
+            }
+          : {
+              id: 0,
+              image_url: img.image_url,
+              order: img.order,
+            },
+      );
+    }
+
+    return result;
+  };
   const handleConfirm = async () => {
     if (isEqual(menusDetails, temporaryMenuDetails)) {
       router.back();
       return;
     }
-    try {
-      // await updateMenuDetails(Number(queryId), temporaryMenuDetails);
-      router.back();
-    } catch (error) {
-      console.error('메뉴 수정 실패:', error);
+
+    if (menusDetails) {
+      const changedData = getChangedData(menusDetails, temporaryMenuDetails);
+      try {
+        await updateMenuDetails(Number(queryId), changedData);
+        router.back();
+      } catch (error) {}
     }
   };
 
   return (
-    <div className="fixed inset-0 backdrop-blur-md flex items-center justify-center z-50 h-screen">
-      <div className="bg-white p-6 rounded-lg shadow-lg w-[600px]">
+    <div
+      className="fixed inset-0 backdrop-blur-md flex items-center justify-center z-50 h-screen"
+      onClick={() => router.back()}
+    >
+      <div className="bg-white p-6 rounded-lg shadow-lg w-[600px]" onClick={(e) => e.stopPropagation()}>
         <div className="text-title-sm mb-4">이미지 및 설명 관리</div>
 
         {isLoading ? (
@@ -110,7 +157,7 @@ export default function ManageMenuModal() {
             <div className="space-y-4 max-h-[70vh] p-1">
               <ImageGallery
                 images={temporaryMenuDetails.images || []}
-                setImages={(updater: ((prev: string[]) => string[]) | string[]) => {
+                setImages={(updater: ((prev: IMenuImageItem[]) => IMenuImageItem[]) | IMenuImageItem[]) => {
                   setTemporaryMenuDetails((prev) => ({
                     ...prev,
                     images:
@@ -167,8 +214,8 @@ export default function ManageMenuModal() {
                   <h2 className="text-label-xs-m text-gray-700">입력한 태그</h2>
                   <div className="flex flex-wrap w-full gap-1 mt-2">
                     {temporaryMenuDetails?.tags.map((tag) => (
-                      <ProductTag key={tag} variant="deletable" onDelete={() => handleDeleteTag(tag)}>
-                        {tag}
+                      <ProductTag key={tag.tag} variant="deletable" onDelete={() => handleDeleteTag(tag.tag)}>
+                        {tag.tag}
                       </ProductTag>
                     ))}
                   </div>

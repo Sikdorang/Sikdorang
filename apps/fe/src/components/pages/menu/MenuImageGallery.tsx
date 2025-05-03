@@ -3,14 +3,16 @@ import { DndContext, closestCenter, PointerSensor, useSensor, useSensors, DragEn
 import { SortableContext, arrayMove, useSortable, verticalListSortingStrategy } from '@dnd-kit/sortable';
 import { restrictToHorizontalAxis } from '@dnd-kit/modifiers';
 import { CSS } from '@dnd-kit/utilities';
+import { v4 as uuidv4 } from 'uuid';
+import { IMenuImageItem } from '@/types/model/menu';
 
 import DeleteIcon from '@public/icons/ic_x.svg';
 import AddIcon from '@public/icons/ic_plus.svg';
 import DraggableIcon from '@public/icons/ic_3_lines.svg';
 
 interface MenuImageGalleryProps {
-  images?: string[];
-  setImages: React.Dispatch<React.SetStateAction<string[]>>;
+  images?: IMenuImageItem[];
+  setImages: React.Dispatch<React.SetStateAction<IMenuImageItem[]>>;
   maxImages?: number;
 }
 
@@ -24,14 +26,14 @@ export default function MenuImageGallery({ images = [], setImages, maxImages = 1
         if (!Array.isArray(prevImages)) {
           return [];
         }
-        const oldIndex = prevImages.findIndex((img) => img === active.id);
-        const newIndex = prevImages.findIndex((img) => img === over.id);
+        const oldIndex = prevImages.findIndex((img) => img.id === active.id);
+        const newIndex = prevImages.findIndex((img) => img.id === over.id);
         return arrayMove(prevImages, oldIndex, newIndex);
       });
     }
   };
 
-  const [selectedImage, setSelectedImage] = useState<string | null>((images || [])[0] || null);
+  const [selectedImage, setSelectedImage] = useState<IMenuImageItem | null>((images || [])[0] || null);
   useEffect(() => {
     if (images.length > 0 && !selectedImage) {
       setSelectedImage(images[0]);
@@ -39,12 +41,18 @@ export default function MenuImageGallery({ images = [], setImages, maxImages = 1
   }, [images, selectedImage]);
   const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(event.target.files || []);
-    setImages((prevImages: string[]) => {
+    setImages((prevImages: IMenuImageItem[] = []) => {
       const validImages = Array.isArray(prevImages) ? prevImages : [];
       if (validImages.length + files.length > maxImages) {
         return validImages;
       }
-      const uploadedImages = files.map((file) => URL.createObjectURL(file));
+
+      const uploadedImages: IMenuImageItem[] = files.map((file, index) => ({
+        id: 0,
+        image_url: uuidv4(),
+        order: String(validImages.length + index + 1),
+      }));
+
       const updatedImages = [...validImages, ...uploadedImages];
       return updatedImages;
     });
@@ -63,7 +71,7 @@ export default function MenuImageGallery({ images = [], setImages, maxImages = 1
     <div>
       <div className="w-full h-64 border border-blue-200 rounded-md flex items-center justify-center mb-4">
         {selectedImage ? (
-          <img src={selectedImage} alt="선택된 이미지" className="w-full h-full object-cover rounded-md" />
+          <img src={selectedImage.image_url} alt="선택된 이미지" className="w-full h-full object-cover rounded-md" />
         ) : (
           <p className="text-gray-400 text-body-xs select-none">이미지를 업로드해 주세요</p>
         )}
@@ -80,10 +88,10 @@ export default function MenuImageGallery({ images = [], setImages, maxImages = 1
             {Array.isArray(images) &&
               images.map((image, index) => (
                 <SortableItem
-                  key={image}
-                  id={image}
-                  image={image}
-                  selectedImage={selectedImage}
+                  key={image.image_url}
+                  id={image.image_url}
+                  image={image.image_url}
+                  selectedImage={selectedImage?.image_url ?? null}
                   onSelect={() => setSelectedImage(image)}
                   onDelete={() => handleDeleteImage(index)}
                 />
