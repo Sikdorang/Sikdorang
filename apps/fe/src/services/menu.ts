@@ -4,6 +4,7 @@ import { axiosInstance } from '.';
 export const MenuyAPI = {
   getMenus: async () => {
     const res = await axiosInstance.get('/menus');
+    console.log(res.data);
     return res.data;
   },
   syncMenus: async (syncData: ISyncMenuRequest[]) => {
