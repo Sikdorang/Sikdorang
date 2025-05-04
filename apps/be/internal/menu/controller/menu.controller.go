@@ -181,32 +181,68 @@ func (c *MenuController) UpdateDescription(ctx *fiber.Ctx) error {
 		return ctx.Status(400).JSON(errorDto.ErrorResponse{Error: "invalid body"})
 	}
 
-	// 멀티파트 파일 처리 (추가적인 파일 업로드 있을 시)
-	form, err := ctx.MultipartForm()
-	if err == nil && form.File != nil {
-		files := form.File["file"]
-
-		fileIdx := 0
-		for i := range body.Images {
-			if body.Images[i].ID == 0 && fileIdx < len(files) {
-				body.Images[i].UploadFile = files[fileIdx]
-				fileIdx++
-			}
-		}
-	}
-
 	// 서비스 호출
-	uploadTargets, err := c.service.UpdateDescription(storeID, uint(menuID), body)
-	if err != nil {
-		return ctx.Status(207).JSON(fiber.Map{
-			"message":       "partial success",
-			"uploadTargets": uploadTargets,
-			"error":         err.Error(),
-		})
+	if err := c.service.UpdateDescription(storeID, uint(menuID), body); err != nil {
+		return ctx.Status(500).JSON(errorDto.ErrorResponse{Error: err.Error()})
 	}
 
 	return ctx.JSON(fiber.Map{
-		"message":       "update completed successfully",
-		"uploadTargets": uploadTargets,
+		"message": "update completed successfully",
 	})
+}
+
+// UpdateMenuOrder godoc
+// @Summary      메뉴 순서 수정
+// @Description  storeID와 menuID로 여러 메뉴 항목의 순서를 수정합니다.
+// @Tags         menu
+// @Accept       application/json
+// @Produce      json
+// @Param        menuID path int true "메뉴 ID"
+// @Param        request body []dto.UpdateMenuOrderRequestDTO true "수정할 메뉴 주문 정보 (JSON 형식)"
+// @Success      200 {object} map[string]interface{} "수정 완료 메시지"
+// @Failure      400 {object} errorDto.ErrorResponse "잘못된 요청 (invalid body)"
+// @Failure      401 {object} errorDto.ErrorResponse "인증 실패"
+// @Failure      500 {object} errorDto.ErrorResponse "서버 에러"
+// @Router       /menus/order [patch]
+func (c *MenuController) UpdateMenuOrder(ctx *fiber.Ctx) error {
+	storeID, err := middleware.ExtractStoreID(ctx)
+	if err != nil {
+		return ctx.Status(401).JSON(errorDto.ErrorResponse{Error: "unauthorized"})
+	}
+
+	var body []dto.UpdateMenuOrderRequestDTO
+	if err := ctx.BodyParser(&body); err != nil {
+		return ctx.Status(400).JSON(errorDto.ErrorResponse{Error: "invalid body"})
+	}
+
+	err = c.service.UpdateMenuOrder(storeID, body)
+	if err != nil {
+		return ctx.Status(500).JSON(errorDto.ErrorResponse{Error: "failed to update"})
+	}
+
+	return ctx.JSON(fiber.Map{
+		"message": "order updated successfully",
+	})
+}
+// GetAdminMenuBoard godoc
+// @Summary      관리자용 메뉴판 조회
+// @Description  storeID를 기반으로 모든 카테고리와 해당 카테고리의 메뉴 목록을 조회합니다.
+// @Tags         menu
+// @Produce      json
+// @Success      200 {array} dto.AdminMenuBoardDTO
+// @Failure      401 {object} errorDto.ErrorResponse "인증 실패"
+// @Failure      500 {object} errorDto.ErrorResponse "서버 에러"
+// @Router       /menus/board/admin [get]
+func (c *MenuController) GetAdminMenuBoard(ctx *fiber.Ctx) error {
+	storeID, err := middleware.ExtractStoreID(ctx)
+	if err != nil {
+		return ctx.Status(401).JSON(errorDto.ErrorResponse{Error: "unauthorized"})
+	}
+
+	result, err := c.service.GetAdminMenuBoard(storeID)
+	if err != nil {
+		return ctx.Status(500).JSON(errorDto.ErrorResponse{Error: "failed to fetch admin menu board"})
+	}
+
+	return ctx.JSON(result)
 }

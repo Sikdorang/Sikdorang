@@ -8,7 +8,6 @@ import (
 	"github.com/google/uuid"
 )
 
-
 func GenerateFileName(originalName string) string {
 	return fmt.Sprintf("%s_%s", originalName, uuid.New().String())
 }

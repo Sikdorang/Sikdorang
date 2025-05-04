@@ -204,6 +204,69 @@ const docTemplate = `{
                 }
             }
         },
+        "/categories/order": {
+            "patch": {
+                "description": "storeID와 menuID로 여러 메뉴 항목의 순서를 수정합니다.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "category"
+                ],
+                "summary": "카테고리 순서 수정",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "메뉴 ID",
+                        "name": "category",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "수정할 메뉴 주문 정보 (JSON 형식)",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/dto.UpdateCategoryOrderRequestDTO"
+                            }
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "수정 완료 메시지",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    },
+                    "400": {
+                        "description": "잘못된 요청 (invalid body)",
+                        "schema": {
+                            "$ref": "#/definitions/dto.ErrorResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "인증 실패",
+                        "schema": {
+                            "$ref": "#/definitions/dto.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "서버 에러",
+                        "schema": {
+                            "$ref": "#/definitions/dto.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/categories/{categoryId}": {
             "delete": {
                 "description": "카테고리 ID와 storeID로 카테고리를 삭제합니다.",
@@ -414,6 +477,41 @@ const docTemplate = `{
                 }
             }
         },
+        "/menus/board/admin": {
+            "get": {
+                "description": "storeID를 기반으로 모든 카테고리와 해당 카테고리의 메뉴 목록을 조회합니다.",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "menu"
+                ],
+                "summary": "관리자용 메뉴판 조회",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/dto.AdminMenuBoardDTO"
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "인증 실패",
+                        "schema": {
+                            "$ref": "#/definitions/dto.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "서버 에러",
+                        "schema": {
+                            "$ref": "#/definitions/dto.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/menus/board/{categoryID}": {
             "get": {
                 "description": "카테고리 ID로 메뉴, 이미지, 태그를 함께 조회합니다.",
@@ -457,6 +555,69 @@ const docTemplate = `{
                     },
                     "500": {
                         "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/dto.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/menus/order": {
+            "patch": {
+                "description": "storeID와 menuID로 여러 메뉴 항목의 순서를 수정합니다.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "menu"
+                ],
+                "summary": "메뉴 순서 수정",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "메뉴 ID",
+                        "name": "menuID",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "수정할 메뉴 주문 정보 (JSON 형식)",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/dto.UpdateMenuOrderRequestDTO"
+                            }
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "수정 완료 메시지",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    },
+                    "400": {
+                        "description": "잘못된 요청 (invalid body)",
+                        "schema": {
+                            "$ref": "#/definitions/dto.ErrorResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "인증 실패",
+                        "schema": {
+                            "$ref": "#/definitions/dto.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "서버 에러",
                         "schema": {
                             "$ref": "#/definitions/dto.ErrorResponse"
                         }
@@ -575,9 +736,120 @@ const docTemplate = `{
                     }
                 }
             }
+        },
+        "/s3/{menuID}": {
+            "post": {
+                "description": "storeID (토큰에서 추출)와 menuID, filename을 기반으로 S3 Presigned URL을 발급합니다.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "s3"
+                ],
+                "summary": "이미지 업로드용 Presigned URL 발급",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "메뉴 ID",
+                        "name": "menuID",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "파일명",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.GeneratePresignedURLRequestDTO"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Presigned URL 반환",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "잘못된 요청",
+                        "schema": {
+                            "$ref": "#/definitions/dto.ErrorResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "인증 실패",
+                        "schema": {
+                            "$ref": "#/definitions/dto.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "서버 에러",
+                        "schema": {
+                            "$ref": "#/definitions/dto.ErrorResponse"
+                        }
+                    }
+                }
+            }
         }
     },
     "definitions": {
+        "dto.AdminMenuBoardDTO": {
+            "type": "object",
+            "properties": {
+                "category_id": {
+                    "type": "integer"
+                },
+                "category_name": {
+                    "type": "string"
+                },
+                "menus": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/dto.AdminMenuItemDTO"
+                    }
+                },
+                "order": {
+                    "type": "string"
+                }
+            }
+        },
+        "dto.AdminMenuItemDTO": {
+            "type": "object",
+            "properties": {
+                "images": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "menu_id": {
+                    "type": "integer"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "order": {
+                    "type": "string"
+                },
+                "price": {
+                    "type": "integer"
+                },
+                "tags": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                }
+            }
+        },
         "dto.CreateCategoryRequestDTO": {
             "type": "object",
             "required": [
@@ -621,6 +893,17 @@ const docTemplate = `{
                 "error": {
                     "type": "string",
                     "example": "unauthorized"
+                }
+            }
+        },
+        "dto.GeneratePresignedURLRequestDTO": {
+            "type": "object",
+            "required": [
+                "filename"
+            ],
+            "properties": {
+                "filename": {
+                    "type": "string"
                 }
             }
         },
@@ -816,6 +1099,17 @@ const docTemplate = `{
                 }
             }
         },
+        "dto.UpdateCategoryOrderRequestDTO": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "integer"
+                },
+                "order": {
+                    "type": "string"
+                }
+            }
+        },
         "dto.UpdateCategoryRequestDTO": {
             "type": "object",
             "required": [
@@ -865,6 +1159,17 @@ const docTemplate = `{
                     "items": {
                         "$ref": "#/definitions/dto.TagDTO"
                     }
+                }
+            }
+        },
+        "dto.UpdateMenuOrderRequestDTO": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "integer"
+                },
+                "order": {
+                    "type": "string"
                 }
             }
         }

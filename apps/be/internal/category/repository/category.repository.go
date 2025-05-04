@@ -2,6 +2,8 @@ package repository
 
 import (
 	"be/internal/models"
+
+	"fmt"
 	"gorm.io/gorm"
 )
 
@@ -11,6 +13,7 @@ type CategoryRepository interface {
 	FindByIDAndStoreID(id uint, storeID uint) (models.Category, error)
 	Update(category models.Category) error
 	Delete(categoryID uint, storeID uint) error
+	UpdateCategoryOrder(storeID uint, categories []models.Category) error
 }
 
 type categoryRepository struct {
@@ -45,4 +48,17 @@ func (r *categoryRepository) Update(category models.Category) error {
 
 func (r *categoryRepository) Delete(categoryID uint, storeID uint) error {
 	return r.db.Where("id = ? AND store_id = ?", categoryID, storeID).Delete(&models.Category{}).Error
+}
+
+func (r *categoryRepository) UpdateCategoryOrder(storeID uint, categories []models.Category) error {
+	for _, category := range categories {
+		err := r.db.Model(&models.Category{}).
+			Where("id = ? AND store_id = ?", category.ID, storeID).
+			Update("order", category.Order).Error
+
+		if err != nil {
+			return fmt.Errorf("failed to update category id %d: %w", category.ID, err)
+		}
+	}
+	return nil
 }

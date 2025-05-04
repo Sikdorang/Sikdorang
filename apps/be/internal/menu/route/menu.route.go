@@ -18,6 +18,8 @@ func InitMenuRoutes(router fiber.Router, db *gorm.DB) {
 	group := router.Group("/menus", middleware.JWTProtected())
 
 	// ✅ 여기에 API들 등록
+	group.Get("/board/admin", ctrl.GetAdminMenuBoard)
+	group.Patch("/order", ctrl.UpdateMenuOrder)
 	group.Get("/", ctrl.GetMenus)   // GET /api/menus
 	group.Post("/", ctrl.SyncMenus) // POST /api/menus/
 	group.Get("/board/:categoryID", ctrl.GetMenuBoard)

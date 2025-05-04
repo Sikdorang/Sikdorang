@@ -1,7 +1,9 @@
 package utils
 
-import "be/internal/models"
-import "be/internal/menu/dto"
+import (
+	"be/internal/menu/dto"
+	"be/internal/models"
+)
 
 func ConvertTagDTOsToTags(tagDTOs []dto.TagDTO, storeID, menuID uint) []models.Tag {
 	var tags []models.Tag

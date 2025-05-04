@@ -8,4 +8,5 @@ type Image struct {
 	StoreID  uint
 	Store    Store
 	Order    string
+	Deleted  bool `gorm:"default:false"`
 }

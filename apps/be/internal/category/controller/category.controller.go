@@ -164,3 +164,38 @@ func (c *CategoryController) DeleteCategory(ctx *fiber.Ctx) error {
 
 	return ctx.Status(200).JSON(dto.DeleteCategoryResponseDTO{Message: "category deleted successfully"})
 }
+
+
+// UpdateMenuOrder godoc
+// @Summary      카테고리 순서 수정
+// @Description  storeID와 menuID로 여러 메뉴 항목의 순서를 수정합니다.
+// @Tags         category
+// @Accept       application/json
+// @Produce      json
+// @Param        category path int true "메뉴 ID"
+// @Param        request body []dto.UpdateCategoryOrderRequestDTO true "수정할 메뉴 주문 정보 (JSON 형식)"
+// @Success      200 {object} map[string]interface{} "수정 완료 메시지"
+// @Failure      400 {object} errorDto.ErrorResponse "잘못된 요청 (invalid body)"
+// @Failure      401 {object} errorDto.ErrorResponse "인증 실패"
+// @Failure      500 {object} errorDto.ErrorResponse "서버 에러"
+// @Router       /categories/order [patch]
+func (c *CategoryController) UpdateCategoryOrder(ctx *fiber.Ctx) error {
+	storeID, err := middleware.ExtractStoreID(ctx)
+	if err != nil {
+		return ctx.Status(401).JSON(errorDto.ErrorResponse{Error: "unauthorized"})
+	}
+
+	var body []dto.UpdateCategoryOrderRequestDTO
+	if err := ctx.BodyParser(&body); err != nil {
+		return ctx.Status(400).JSON(errorDto.ErrorResponse{Error: "invalid body"})
+	}
+
+	err = c.service.UpdateCategoryOrder(storeID, body)
+	if err != nil {
+		return ctx.Status(500).JSON(errorDto.ErrorResponse{Error: "failed to update"})
+	}
+
+	return ctx.JSON(fiber.Map{
+		"message": "order updated successfully",
+	})
+}

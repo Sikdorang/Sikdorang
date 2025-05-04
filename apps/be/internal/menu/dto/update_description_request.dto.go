@@ -1,7 +1,5 @@
 package dto
 
-import "mime/multipart"
-
 type UpdateDescriptionRequestDTO struct {
 	Preview string     `json:"preview"`
 	Details string     `json:"details"`
@@ -15,8 +13,7 @@ type TagDTO struct {
 }
 
 type ImageDTO struct {
-	ID         uint                  `json:"id"`
-	ImageURL   string                `json:"image_url"`
-	Order      string                `json:"order"`
-	UploadFile *multipart.FileHeader `json:"-" form:"file"`
+	ID       uint   `json:"id"`
+	ImageURL string `json:"image_url"`
+	Order    string `json:"order"`
 }
