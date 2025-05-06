@@ -1,7 +1,7 @@
 import { useState, useRef } from 'react';
 import { arrayMove } from '@dnd-kit/sortable';
 import { LexoRank } from 'lexorank';
-import { OrderUpdatePayload } from '@/services/order';
+import { OrderUpdatePayload } from '@/types/model/payload';
 
 export function useSortableItems<T extends { id: number }>(initial: T[]) {
   const [items, setItems] = useState<T[]>(initial);
@@ -13,7 +13,6 @@ export function useSortableItems<T extends { id: number }>(initial: T[]) {
 
   const getChangedItems = () => {
     const ranks = generateLexoRanks(items.length);
-    console.log(ranks);
     return items.reduce((acc, item, index) => {
       const originalIndex = initialRef.current.findIndex((i) => i.id === item.id);
       if (originalIndex !== index) {

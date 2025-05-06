@@ -1,13 +1,13 @@
-import { MenuyAPI } from '@/services/menu';
-import { ICategoryItem } from '@/types/model/category';
+import { MenuAPI } from '@/services/menu';
+import { ICategoryWithMenus } from '@/types/model/category';
 import { useSuspenseQuery } from '@tanstack/react-query';
 
 export const useQueryCategoriesAndMenus = () => {
-  const { data: categories } = useSuspenseQuery<ICategoryItem[] | null>({
+  const { data: categoriesAndMenus } = useSuspenseQuery<ICategoryWithMenus[] | null>({
     queryKey: ['menus'],
-    queryFn: () => MenuyAPI.getMenus(),
+    queryFn: () => MenuAPI.getMenusWithCategories(),
     staleTime: 1000 * 60 * 10,
   });
 
-  return { categories };
+  return { categoriesAndMenus };
 };

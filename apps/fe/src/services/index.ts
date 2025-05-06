@@ -26,22 +26,26 @@ axiosInstance.interceptors.request.use(
 axiosInstance.interceptors.response.use(
   (response) => response,
   async (error) => {
-    console.log('만료됨');
     const originalRequest = error.config;
 
     if (error.response?.status === 401 && !originalRequest._retry && originalRequest.url !== '/auth/refresh') {
+      console.log('accessToken이 만료되었습니다.');
       originalRequest._retry = true;
 
       try {
         const newAccessToken = await AuthAPI.refresh();
-        localStorage.setItem(KEYS.ACCESS_TOKEN, newAccessToken);
-        document.cookie = `${KEYS.ACCESS_TOKEN}=${newAccessToken}; path=/; SameSite=Lax;`;
+        if (typeof window !== 'undefined') {
+          localStorage.setItem(KEYS.ACCESS_TOKEN, newAccessToken);
+          document.cookie = `${KEYS.ACCESS_TOKEN}=${newAccessToken}; path=/; SameSite=Lax;`;
+        }
         return axiosInstance(attachAccessToken(originalRequest, newAccessToken));
       } catch (refreshError) {
         console.error('Refresh Token 실패', refreshError);
-        localStorage.removeItem(KEYS.ACCESS_TOKEN);
-        document.cookie = `${KEYS.ACCESS_TOKEN}=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT`;
-        window.location.href = '/'; // 로그인 페이지로 redirect
+        if (typeof window !== 'undefined') {
+          localStorage.removeItem(KEYS.ACCESS_TOKEN);
+          document.cookie = `${KEYS.ACCESS_TOKEN}=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT`;
+          window.location.href = '/'; // 로그인 페이지로 redirect
+        }
         return Promise.reject(refreshError);
       }
     }

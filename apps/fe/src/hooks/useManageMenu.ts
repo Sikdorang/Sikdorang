@@ -2,9 +2,9 @@ import axios from 'axios';
 import { useState } from 'react';
 import { toast } from 'react-toastify';
 import { MESSAGES } from '@/constants/messages';
-import { MenuyAPI } from '@/services/menu';
 import { handelError } from '@/services/handleError';
 import { IManageMenuItem, ISyncMenuRequest } from '@/types/model/menu';
+import { MenuAPI } from '@/services/menu';
 
 export const useManageMenu = () => {
   const [menus, setMenus] = useState<IManageMenuItem[]>([]);
@@ -15,7 +15,7 @@ export const useManageMenu = () => {
     setIsLoading(true);
     setError(null);
     try {
-      const response = await MenuyAPI.getMenus();
+      const response = await MenuAPI.getMenus();
       if (Array.isArray(response)) {
         setMenus(response);
       } else {
@@ -36,7 +36,7 @@ export const useManageMenu = () => {
     setIsLoading(true);
     setError(null);
     try {
-      const response = await MenuyAPI.syncMenus(syncData);
+      const response = await MenuAPI.syncMenus(syncData);
       toast.success(MESSAGES.syncMenusSuccess);
       fetchMenus();
       return response;

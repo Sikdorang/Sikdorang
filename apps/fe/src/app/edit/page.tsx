@@ -6,30 +6,59 @@ import MenuSection from '@/components/pages/preview/MenuSection';
 import SortableCategoryList from '@/components/pages/edit/SortableCategoryList';
 import SidebarWithContentContainer from '@/components/layout/containers/SidebarWithContentContainer';
 import SortableMenuList from '@/components/pages/edit/SortableMenuList';
-
-import { OrderAPI } from '@/services/order';
 import { useSortableItems } from '@/hooks/useSortableItems';
-import { Suspense } from 'react';
+import { Suspense, useEffect, useState } from 'react';
 import CategoryListSkeleton from '@/components/pages/preview/CategoryListSkeleton';
-import { useQueryCategories } from '@/hooks/useQueryCategories';
 import { useQueryCategoriesAndMenus } from '@/hooks/useQueryCategoriesAndMenus';
+import { CategoryAPI } from '@/services/category';
+import { toast } from 'react-toastify';
+import { MESSAGES } from '@/constants/messages';
+import EditSaveButton from '@/components/pages/edit/EditSaveButton';
+import { MenuAPI } from '@/services/menu';
+import MenuListSkeleton from '@/components/pages/preview/MenuListSkeleton';
+import { useMenuOrderStore } from '@/stores/useMenuOrderStore';
+import { useQueryClient } from '@tanstack/react-query';
 
 export default function Page() {
-  const { categories } = useQueryCategoriesAndMenus();
-  const categoryState = useSortableItems(categories!);
+  const queryClient = useQueryClient();
+  const { categoriesAndMenus } = useQueryCategoriesAndMenus();
+  const setInitialData = useMenuOrderStore((s) => s.setInitialData);
+  const menusMap = useMenuOrderStore((s) => s.menus);
+  const handleMenuReorder = useMenuOrderStore((s) => s.handleReorder);
+  const getChangedMenuItems = useMenuOrderStore.getState().getChangedItems;
+
+  const categoriesAndMenusState = useSortableItems(categoriesAndMenus ?? []);
+  const [selectedCategoryId, setSelectedCategoryId] = useState<number | null>(null);
+
+  useEffect(() => {
+    if (categoriesAndMenus) {
+      setInitialData(categoriesAndMenus);
+      if (selectedCategoryId === null && categoriesAndMenus.length > 0) {
+        setSelectedCategoryId(categoriesAndMenus[0].id);
+      }
+    }
+  }, [categoriesAndMenus]);
+
+  const selectedMenus = selectedCategoryId ? (menusMap.get(selectedCategoryId) ?? []) : [];
 
   const handleSave = async () => {
-    const categoryChanges = categoryState.getChangedItems();
+    const categoryChanges = categoriesAndMenusState.getChangedItems();
+    const menuChanges = getChangedMenuItems();
 
     try {
       if (categoryChanges.length > 0) {
-        await OrderAPI.updateOrder('categories', categoryChanges);
+        await CategoryAPI.updateCategoriesOrder(categoryChanges);
+        queryClient.invalidateQueries({ queryKey: ['categories'] });
+      }
+      if (menuChanges.length > 0) {
+        await MenuAPI.updateMenusOrder(menuChanges);
+        queryClient.invalidateQueries({ queryKey: ['menus'] });
       }
 
-      alert('저장 완료!');
+      toast.success(MESSAGES.OrderSaveSuccess);
     } catch (error) {
+      toast.error(MESSAGES.orderSaveFailureError);
       console.error(error);
-      alert('저장 실패');
     }
   };
 
@@ -39,25 +68,26 @@ export default function Page() {
       <SidebarWithContentContainer>
         <CategorySidebar>
           <Suspense fallback={<CategoryListSkeleton />}>
-            <SortableCategoryList items={categoryState.items} onReorder={categoryState.handleReorder} />
+            <SortableCategoryList
+              items={categoriesAndMenusState.items}
+              onReorder={categoriesAndMenusState.handleReorder}
+              selectedCategoryId={selectedCategoryId ?? 0}
+              onSelectCategory={(id) => setSelectedCategoryId(id)}
+            />
           </Suspense>
         </CategorySidebar>
         <MenuSection>
-          <SortableMenuList />
+          <Suspense fallback={<MenuListSkeleton />}>
+            <SortableMenuList
+              items={selectedMenus}
+              onReorder={(oldIndex, newIndex) =>
+                selectedCategoryId !== null && handleMenuReorder(selectedCategoryId, oldIndex, newIndex)
+              }
+            />
+          </Suspense>
         </MenuSection>
       </SidebarWithContentContainer>
-      <SaveButton onClick={handleSave} />
+      <EditSaveButton onClick={handleSave} />
     </>
-  );
-}
-
-function SaveButton({ onClick }: { onClick: () => void }) {
-  return (
-    <button
-      className="text-sm font-bold text-gray-800 fixed bottom-5 right-5 bg-white p-1 w-16 h-16 rounded-full shadow-2xl"
-      onClick={onClick}
-    >
-      저장
-    </button>
   );
 }
