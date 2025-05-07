@@ -16,10 +16,15 @@ export default function Page() {
       <MenuModal
         item={{
           id: 8,
-          name: '파스타',
-          images: ['/images/jiwhaja_dish_2.png'],
+          menu: '파스타',
+          images: [
+            '/images/jiwhaja_dish_1.png',
+            '/images/jiwhaja_dish_2.png',
+            '/images/jiwhaja_dish_3.png',
+            '/images/jiwhaja_dish_4.png',
+          ],
           tags: ['어쩌고', '어쩌고'],
-          description: '부드러운 크림 파스타',
+          details: '부드러운 크림 파스타',
           price: 13000,
           status: false,
         }}

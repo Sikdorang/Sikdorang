@@ -42,6 +42,43 @@ export function useCarousel(images: string[]) {
     setCurrentIndex(newIndex);
   };
 
+  const touchStartX = useRef(0);
+  const touchEndX = useRef(0);
+
+  const handleTouchStart = (e: TouchEvent) => {
+    touchStartX.current = e.touches[0].clientX;
+  };
+
+  const handleTouchMove = (e: TouchEvent) => {
+    touchEndX.current = e.touches[0].clientX;
+  };
+
+  const handleTouchEnd = () => {
+    const deltaX = touchStartX.current - touchEndX.current;
+    const threshold = 50;
+
+    if (deltaX > threshold) {
+      handleSlide(1);
+    } else if (deltaX < -threshold) {
+      handleSlide(-1);
+    }
+  };
+
+  useEffect(() => {
+    const carousel = carouselRef.current;
+    if (!carousel) return;
+
+    carousel.addEventListener('touchstart', handleTouchStart);
+    carousel.addEventListener('touchmove', handleTouchMove);
+    carousel.addEventListener('touchend', handleTouchEnd);
+
+    return () => {
+      carousel.removeEventListener('touchstart', handleTouchStart);
+      carousel.removeEventListener('touchmove', handleTouchMove);
+      carousel.removeEventListener('touchend', handleTouchEnd);
+    };
+  }, []);
+
   return {
     currentIndex,
     currentList,

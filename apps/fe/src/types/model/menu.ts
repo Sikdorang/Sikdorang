@@ -23,10 +23,12 @@ export interface ISyncMenuRequest {
 }
 export interface IMenuItem {
   id: number;
-  name: string;
-  description: string;
+  menu: string;
+  preview?: string;
+  order?: string;
+  images: string[];
+  details: string;
   price: number;
   status: boolean;
-  images: string[];
   tags?: string[];
 }

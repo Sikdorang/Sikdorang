@@ -1,3 +1,3 @@
-export const STORAGE_KEYS = {
-  accessToken: 'accessToken',
+export const KEYS = {
+  ACCESS_TOKEN: 'accessToken',
 };

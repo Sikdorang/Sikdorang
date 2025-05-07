@@ -1,4 +1,3 @@
-import { ISyncMenuRequest } from '@/types/model/menu';
 import { axiosInstance } from '.';
 
 export const CategoryAPI = {
@@ -23,17 +22,6 @@ export const CategoryAPI = {
 
   deleteCategory: async (categoryId: number) => {
     const res = await axiosInstance.delete(`/categories/${categoryId}`);
-    return res.data;
-  },
-};
-
-export const MenuyAPI = {
-  getMenus: async () => {
-    const res = await axiosInstance.get('/menus');
-    return res.data;
-  },
-  syncMenus: async (syncData: ISyncMenuRequest) => {
-    const res = await axiosInstance.post('/menus', syncData);
     return res.data;
   },
 };
