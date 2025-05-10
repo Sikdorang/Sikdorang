@@ -26,7 +26,7 @@ export interface IMenuItem {
   menu: string;
   preview?: string;
   order?: string;
-  images: string[];
+  image_urls: string[];
   details: string;
   price: number;
   status: boolean;

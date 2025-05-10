@@ -7,11 +7,15 @@ import CategoryListSkeleton from '@/components/pages/preview/CategoryListSkeleto
 import CategorySidebar from '@/components/pages/preview/CategorySidebar';
 import MenuList from '@/components/pages/preview/MenuList';
 import MenuListSkeleton from '@/components/pages/preview/MenuListSkeleton';
+import MenuModal from '@/components/pages/preview/MenuModal';
 import MenuSection from '@/components/pages/preview/MenuSection';
+import { IMenuItem } from '@/types/model/menu';
 import { Suspense, useState } from 'react';
 
 export default function Page() {
   const [selectedCategoryId, setSelectedCategoryId] = useState<number | null>(null);
+  const [selectedMenu, setSelectedMenu] = useState<IMenuItem | null>(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   return (
     <div className="relative">
@@ -29,12 +33,19 @@ export default function Page() {
             <MenuListSkeleton />
           ) : (
             <Suspense fallback={<MenuListSkeleton />}>
-              <MenuList selectedCategoryId={selectedCategoryId} />
+              <MenuList
+                selectedCategoryId={selectedCategoryId}
+                onClickItem={(item) => {
+                  setSelectedMenu(item);
+                  setIsModalOpen(true);
+                }}
+              />
             </Suspense>
           )}
         </MenuSection>
       </SidebarWithContentContainer>
       <AdminButton />
+      {isModalOpen && <MenuModal item={selectedMenu} isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />}
     </div>
   );
 }

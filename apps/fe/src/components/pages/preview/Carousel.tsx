@@ -6,11 +6,17 @@ interface CarouselProps {
 }
 
 export default function Carousel({ images }: CarouselProps) {
-  const { currentIndex, currentList, carouselRef } = useCarousel(images);
-
+  const { currentIndex, currentList, carouselRef, handleTouchStart, handleTouchMove, handleTouchEnd } =
+    useCarousel(images);
   return (
     <div className="relative overflow-hidden h-full w-full">
-      <div ref={carouselRef} className="flex scroll-smooth snap-x snap-mandatory ">
+      <div
+        ref={carouselRef}
+        onTouchStart={handleTouchStart}
+        onTouchMove={handleTouchMove}
+        onTouchEnd={handleTouchEnd}
+        className="flex scroll-smooth snap-x snap-mandatory "
+      >
         {currentList?.map((src, idx) => <CarouselImage key={idx} src={src} />)}
       </div>
       <div className="absolute bottom-0 w-full justify-center mb-4 flex flex-wrap gap-1">

@@ -5,9 +5,10 @@ import Image from 'next/image';
 interface MenuItemProps {
   item: IMenuItem;
   draggable?: boolean;
+  onClick?: () => void;
 }
 
-export default function MenuItem({ item, draggable = false }: MenuItemProps) {
+export default function MenuItem({ item, onClick, draggable = false }: MenuItemProps) {
   const isEditing = false;
 
   const cursorClass = (() => {
@@ -16,7 +17,7 @@ export default function MenuItem({ item, draggable = false }: MenuItemProps) {
   })();
 
   return (
-    <div className={`bg-white group relative overflow-hidden ${cursorClass}`}>
+    <div onClick={onClick} className={`bg-white group relative overflow-hidden ${cursorClass}`}>
       {draggable && (
         <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200 z-10">
           <DragHandleIcon className="text-white" />
