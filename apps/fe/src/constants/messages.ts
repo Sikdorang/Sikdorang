@@ -21,4 +21,5 @@ export const MESSAGES = {
   syncMenusSuccess: '변경사항 저장에 성공했습니다.',
   OrderSaveSuccess: '순서 변경 저장에 성공했습니다.',
   orderSaveFailureError: '순서 변경 저장에 실패했습니다.',
+  adminModeEnter: '관리자 모드로 전환합니다.',
 };
