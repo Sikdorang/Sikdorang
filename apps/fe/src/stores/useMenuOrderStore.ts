@@ -20,7 +20,6 @@ export const useMenuOrderStore = create<MenuState>((set, get) => ({
     const initial = new Map<number, IMenuItem[]>();
     const current = new Map<number, IMenuItem[]>();
     data.forEach(({ id, menus }) => {
-      console.log(data, id, menus);
       initial.set(id, menus !== null ? [...menus] : []);
       current.set(id, menus !== null ? [...menus] : []);
     });

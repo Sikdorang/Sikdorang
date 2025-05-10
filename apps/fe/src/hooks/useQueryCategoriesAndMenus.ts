@@ -4,7 +4,7 @@ import { useSuspenseQuery } from '@tanstack/react-query';
 
 export const useQueryCategoriesAndMenus = () => {
   const { data: categoriesAndMenus } = useSuspenseQuery<ICategoryWithMenus[] | null>({
-    queryKey: ['menus'],
+    queryKey: ['categoriesAndMenus'],
     queryFn: () => MenuAPI.getMenusWithCategories(),
     staleTime: 1000 * 60 * 10,
   });
