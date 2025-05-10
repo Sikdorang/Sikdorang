@@ -4,7 +4,7 @@ import { toast } from 'react-toastify';
 import { MESSAGES } from '@/constants/messages';
 import { AuthAPI } from '@/services/auth';
 import { handelError } from '@/services/handleError';
-import { STORAGE_KEYS } from '@/constants/storage';
+import { KEYS } from '@/constants/storage';
 import axios from 'axios';
 
 export const useLogin = () => {
@@ -18,8 +18,8 @@ export const useLogin = () => {
 
     try {
       const data = await AuthAPI.login(email, password);
-      document.cookie = `${STORAGE_KEYS.accessToken}=${data.accessToken}; path=/; SameSite=Lax;`;
-      localStorage.setItem(STORAGE_KEYS.accessToken, data.accessToken);
+      document.cookie = `${KEYS.ACCESS_TOKEN}=${data.accessToken}; path=/; SameSite=Lax;`;
+      localStorage.setItem(KEYS.ACCESS_TOKEN, data.accessToken);
       toast.success(MESSAGES.loginSuccess);
       router.push('/menu');
     } catch (error) {

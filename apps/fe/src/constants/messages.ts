@@ -18,6 +18,9 @@ export const MESSAGES = {
   updateCategorySuccess: '카테고리 수정에 성공했습니다.',
   deleteCategorySuccess: '카테고리 삭제에 성공했습니다.',
   invalidPriceError: '가격은 숫자만 입력할 수 있습니다.',
-  syncMenusSuccess: '메뉴 변경사항 저장에 성공했습니다.',
   syncMenuDetailsSuccess: '메뉴 상세설명 저장에 성공했습니다.',
+  syncMenusSuccess: '변경사항 저장에 성공했습니다.',
+  OrderSaveSuccess: '순서 변경 저장에 성공했습니다.',
+  orderSaveFailureError: '순서 변경 저장에 실패했습니다.',
+  adminModeEnter: '관리자 모드로 전환합니다.',
 };

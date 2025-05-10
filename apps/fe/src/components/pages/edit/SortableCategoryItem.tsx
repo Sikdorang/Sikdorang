@@ -20,8 +20,8 @@ export default function SortableCategoryItem({ id, isSelected, onClick, children
   };
 
   return (
-    <div ref={setNodeRef} style={style} {...attributes} {...listeners}>
-      <CategoryItem draggable={true} isSelected={isSelected} onClick={onClick}>
+    <div ref={setNodeRef} style={style} {...attributes}>
+      <CategoryItem draggable={true} isSelected={isSelected} onClick={onClick} dragHandleProps={listeners}>
         {children}
       </CategoryItem>
     </div>

@@ -5,9 +5,16 @@ interface CategoryItemProps extends PropsWithChildren {
   isSelected?: boolean;
   draggable?: boolean;
   onClick: () => void;
+  dragHandleProps?: React.HTMLAttributes<HTMLSpanElement>;
 }
 
-export default function CategoryItem({ children, isSelected = false, draggable = false, onClick }: CategoryItemProps) {
+export default function CategoryItem({
+  children,
+  isSelected = false,
+  draggable = false,
+  onClick,
+  dragHandleProps,
+}: CategoryItemProps) {
   return (
     <li
       onClick={onClick}
@@ -20,7 +27,11 @@ export default function CategoryItem({ children, isSelected = false, draggable =
       `}
     >
       <span className="whitespace-nowrap text-label-sm-m text-center truncate">{children}</span>
-      {draggable && <DragHandleIcon className="shrink-0" />}
+      {draggable && (
+        <span {...dragHandleProps}>
+          <DragHandleIcon className="shrink-0" />
+        </span>
+      )}
     </li>
   );
 }

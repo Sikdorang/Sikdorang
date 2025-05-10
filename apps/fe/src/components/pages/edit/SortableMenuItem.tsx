@@ -11,7 +11,7 @@ interface SortableMenuItemProps {
 
 export default function SortableMenuItem({ item }: SortableMenuItemProps) {
   const { attributes, listeners, setNodeRef, transform, transition } = useSortable({
-    id: item.id,
+    id: item.id.toString(),
   });
 
   const style = {
