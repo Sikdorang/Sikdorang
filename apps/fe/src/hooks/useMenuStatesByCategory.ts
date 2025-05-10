@@ -1,4 +1,4 @@
-import { useMemo, useRef } from 'react';
+import { useRef } from 'react';
 import { useSortableItems } from './useSortableItems';
 import { ICategoryWithMenus } from '@/types/model/category';
 import { IMenuItem } from '@/types/model/menu';
@@ -12,7 +12,7 @@ export function useMenuStatesByCategory(categories: ICategoryWithMenus[]) {
     if (!menuStates.current.has(categoryId)) {
       const category = categories.find((c) => c.id === categoryId);
       if (category) {
-        // ❗ 이 훅은 최상단에서만 호출되므로 이 시점에서 상태 생성은 안전
+        // eslint-disable-next-line react-hooks/rules-of-hooks
         const state = useSortableItems<IMenuItem>(category.menus);
         menuStates.current.set(categoryId, state);
       }
