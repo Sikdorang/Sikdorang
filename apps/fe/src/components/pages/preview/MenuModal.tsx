@@ -32,7 +32,7 @@ export default function MenuModal({ item, onClose }: MenuModalProps) {
         <div className="h-full">
           <Carousel
             images={[
-              '/images/jiwhaja_dish_5.png',
+              '/images/jiwhaja_dish_1.png',
               '/images/jiwhaja_dish_5.png',
               '/images/jiwhaja_dish_5.png',
               '/images/jiwhaja_dish_5.png',

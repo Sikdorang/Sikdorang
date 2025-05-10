@@ -24,6 +24,10 @@ export function useCarousel(images: string[]) {
     updateTransform(currentIndex);
   }, [currentIndex]);
 
+  const slideToIndex = (targetIndex: number) => {
+    handleSlide(targetIndex - currentIndex);
+  };
+
   const handleSlide = (direction: number) => {
     const element = carouselRef.current;
     if (!element || isTransitioning.current) return;
@@ -87,6 +91,7 @@ export function useCarousel(images: string[]) {
 
   return {
     currentIndex,
+    slideToIndex,
     carouselRef,
     currentList,
     handleTouchStart,
