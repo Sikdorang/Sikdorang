@@ -54,7 +54,7 @@ export default function Page() {
         await MenuAPI.updateMenusOrder(menuChanges);
         queryClient.invalidateQueries({ queryKey: ['menus'] });
       }
-
+      queryClient.invalidateQueries({ queryKey: ['categoriesAndMenus'] });
       toast.success(MESSAGES.OrderSaveSuccess);
     } catch (error) {
       toast.error(MESSAGES.orderSaveFailureError);
