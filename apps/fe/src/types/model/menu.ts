@@ -14,8 +14,11 @@ export interface IMenuTagItem {
 
 export interface IMenuImageItem {
   id: number;
+  url: string;
   image_url: string;
   order: string;
+  file?: File;
+  preview?: string;
 }
 
 export interface IManageMenuItem {

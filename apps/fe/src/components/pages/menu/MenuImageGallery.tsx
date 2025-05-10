@@ -18,6 +18,7 @@ interface MenuImageGalleryProps {
 
 export default function MenuImageGallery({ images = [], setImages, maxImages = 10 }: MenuImageGalleryProps) {
   const sensors = useSensors(useSensor(PointerSensor));
+  const CDN_URL = process.env.NEXT_PUBLIC_CDN_BASE_URL;
 
   const handleDragEnd = (event: DragEndEvent) => {
     const { active, over } = event;
@@ -31,6 +32,8 @@ export default function MenuImageGallery({ images = [], setImages, maxImages = 1
         return arrayMove(prevImages, oldIndex, newIndex);
       });
     }
+
+    // console.log("CDN_URL+'/'+url: ", CDN_URL + '/');
   };
 
   const [selectedImage, setSelectedImage] = useState<IMenuImageItem | null>((images || [])[0] || null);
@@ -47,11 +50,17 @@ export default function MenuImageGallery({ images = [], setImages, maxImages = 1
         return validImages;
       }
 
-      const uploadedImages: IMenuImageItem[] = files.map((file, index) => ({
-        id: 0,
-        image_url: uuidv4(),
-        order: String(validImages.length + index + 1),
-      }));
+      const uploadedImages: IMenuImageItem[] = files.map((file, index) => {
+        const uuid = uuidv4();
+        return {
+          id: 0,
+          url: uuid,
+          image_url: uuid,
+          order: String(validImages.length + index + 1),
+          preview: URL.createObjectURL(file),
+          file,
+        };
+      });
 
       const updatedImages = [...validImages, ...uploadedImages];
       return updatedImages;
@@ -71,7 +80,17 @@ export default function MenuImageGallery({ images = [], setImages, maxImages = 1
     <div>
       <div className="w-full h-64 border border-blue-200 rounded-md flex items-center justify-center mb-4">
         {selectedImage ? (
-          <img src={selectedImage.image_url} alt="선택된 이미지" className="w-full h-full object-cover rounded-md" />
+          <img
+            src={
+              selectedImage.id === 0
+                ? (selectedImage.preview ?? '')
+                : selectedImage.url
+                  ? CDN_URL + '/' + selectedImage.url
+                  : ''
+            }
+            alt="선택된 이미지"
+            className="w-full h-full object-cover rounded-md"
+          />
         ) : (
           <p className="text-gray-400 text-body-xs select-none">이미지를 업로드해 주세요</p>
         )}
@@ -86,16 +105,19 @@ export default function MenuImageGallery({ images = [], setImages, maxImages = 1
         <SortableContext items={Array.isArray(images) ? images : []} strategy={verticalListSortingStrategy}>
           <div className="flex items-center space-x-2 mb-3 overflow-x-auto">
             {Array.isArray(images) &&
-              images.map((image, index) => (
-                <SortableItem
-                  key={image.image_url}
-                  id={image.image_url}
-                  image={image.image_url}
-                  selectedImage={selectedImage?.image_url ?? null}
-                  onSelect={() => setSelectedImage(image)}
-                  onDelete={() => handleDeleteImage(index)}
-                />
-              ))}
+              images.map((image, index) => {
+                const image_path = CDN_URL + '/' + image.url;
+                return (
+                  <SortableItem
+                    key={image.id}
+                    id={image.id}
+                    image={image.id === 0 ? (image.preview ?? '') : image.url ? CDN_URL + '/' + image.url : ''}
+                    selectedImage={selectedImage?.id === 0 ? (selectedImage?.preview ?? '') : (image_path ?? '')}
+                    onSelect={() => setSelectedImage(image)}
+                    onDelete={() => handleDeleteImage(index)}
+                  />
+                );
+              })}
             {(images?.length || 0) < maxImages && (
               <label className="w-16 h-16 flex shrink-0 items-center justify-center bg-gray-100 hover:bg-gray-200 rounded-md cursor-pointer">
                 <AddIcon width={16} height={16} />
@@ -110,7 +132,7 @@ export default function MenuImageGallery({ images = [], setImages, maxImages = 1
 }
 
 interface SortableItemProps {
-  id: string;
+  id: number;
   image: string;
   selectedImage: string | null;
   onSelect: () => void;
@@ -140,6 +162,7 @@ function SortableItem({ id, image, selectedImage, onSelect, onDelete }: Sortable
         onClick={(e) => {
           e.stopPropagation();
           onSelect();
+          console.log('image: ', image);
         }}
       />
 

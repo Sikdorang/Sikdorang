@@ -131,7 +131,7 @@ export default function MenuPage() {
         menu: '',
         price: null,
         category: '',
-        status: '판매 예정',
+        status: '판매 중',
         order: newOrder.toString(),
       },
     ]);
@@ -153,7 +153,7 @@ export default function MenuPage() {
 
   const [showOnlyEmptyMenus, setShowOnlyEmptyMenus] = useState(false);
   const filteredMenuItems = showOnlyEmptyMenus
-    ? temporaryMenus.filter((item) => !item.menu || !item.price || !item.category)
+    ? temporaryMenus.filter((item) => !item.menu || item.price === undefined || item.price === null || !item.category)
     : temporaryMenus;
 
   return (

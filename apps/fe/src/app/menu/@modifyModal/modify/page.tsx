@@ -7,7 +7,6 @@ import MDEditor, { commands } from '@uiw/react-md-editor';
 import { useManageMenuDetails } from '@/hooks/useManageMenuDetails';
 import { IMenuDetailsItem, IMenuImageItem } from '@/types/model/menu';
 import { MESSAGES } from '@/constants/messages';
-import { PatchMenuDetailsRequest } from '@/services/manageMenuDetails';
 
 import TextInput from '@/components/common/inputs/TextInput';
 import BaseButton from '@/components/common/buttons/BaseButton';
@@ -25,6 +24,7 @@ export default function ManageMenuModal() {
   useEffect(() => {
     if (menusDetails) {
       setTemporaryMenuDetails(menusDetails);
+      console.log('menusDetails 디버깅: ', menusDetails);
     }
   }, [menusDetails]);
 
@@ -84,60 +84,17 @@ export default function ManageMenuModal() {
     }));
   };
 
-  const getChangedData = (original: IMenuDetailsItem, updated: IMenuDetailsItem) => {
-    const result = {} as PatchMenuDetailsRequest;
-
-    if (original.preview !== updated.preview) {
-      result.preview = updated.preview;
-    }
-
-    if (original.details !== updated.details) {
-      result.details = updated.details;
-    }
-
-    if (!isEqual(original.tags, updated.tags)) {
-      const originalTags = original.tags || [];
-      const updatedTags = updated.tags || [];
-      const originalTagIds = new Set(originalTags.map((t) => t.id));
-      result.tags = updatedTags.map((tag) =>
-        originalTagIds.has(tag.id) ? { id: tag.id, tag: tag.tag } : { id: 0, tag: tag.tag },
-      );
-    }
-
-    if (!isEqual(original.images, updated.images)) {
-      const originalImages = original.images || [];
-      const updatedImages = updated.images || [];
-      const originalImageIds = new Set(originalImages.map((img) => img.id));
-      result.images = updatedImages.map((img) =>
-        originalImageIds.has(img.id)
-          ? {
-              id: img.id,
-              image_url: img.image_url,
-              order: img.order,
-            }
-          : {
-              id: 0,
-              image_url: img.image_url,
-              order: img.order,
-            },
-      );
-    }
-
-    return result;
-  };
   const handleConfirm = async () => {
+    if (!menusDetails) return;
     if (isEqual(menusDetails, temporaryMenuDetails)) {
       router.back();
       return;
     }
 
-    if (menusDetails) {
-      const changedData = getChangedData(menusDetails, temporaryMenuDetails);
-      try {
-        await updateMenuDetails(Number(queryId), changedData);
-        router.back();
-      } catch (error) {}
-    }
+    try {
+      await updateMenuDetails(Number(queryId), menusDetails, temporaryMenuDetails);
+      router.back();
+    } catch (error) {}
   };
 
   return (
