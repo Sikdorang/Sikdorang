@@ -242,48 +242,51 @@ func (s *menuService) UpdateDescription(storeID, menuID uint, body dto.UpdateDes
 	}
 
 	// Images 처리
-	if body.Images != nil {
-		existingImages, _ := s.repo.FindImages(storeID, menuID)
-		existingImageMap := make(map[uint]models.Image)
-		for _, img := range existingImages {
-			existingImageMap[img.ID] = img
-		}
-
-		var updateImages []models.Image
-		var softDeleteImages []models.Image
-		requestImageMap := make(map[uint]bool)
-
-		for _, imgDTO := range body.Images {
-			if imgDTO.ID == 0 {
-				continue
-			}
-			requestImageMap[imgDTO.ID] = true
-			if existing, ok := existingImageMap[imgDTO.ID]; ok {
-				if existing.Order != imgDTO.Order {
-					existing.Order = imgDTO.Order
-					updateImages = append(updateImages, existing)
-				}
-			}
-		}
-
-		for _, img := range existingImages {
-			if !requestImageMap[img.ID] {
-				img.Deleted = true
-				softDeleteImages = append(softDeleteImages, img)
-			}
-		}
-
-		if len(updateImages) > 0 {
-			if err := s.repo.UpdateImages(updateImages); err != nil {
-				execErrs = append(execErrs, err)
-			}
-		}
-		if len(softDeleteImages) > 0 {
-			if err := s.repo.UpdateImages(softDeleteImages); err != nil {
-				execErrs = append(execErrs, err)
-			}
-		}
-	}
+    if body.Images != nil {
+        existingImages, _ := s.repo.FindImages(storeID, menuID)
+        // 기존 이미지: URL 그대로 map 구성
+        existingImageMap := make(map[string]models.Image)
+        for _, img := range existingImages {
+            existingImageMap[img.ImageURL] = img
+        }
+        var updateImages []models.Image
+        var softDeleteImages []models.Image
+        requestImageMap := make(map[string]bool)
+        for _, imgDTO := range body.Images {
+            var urlKey string
+            if imgDTO.ID == 0 {
+                // 새 이미지: storeID/menuID/ 붙여서 비교 키 생성
+                urlKey = fmt.Sprintf("%d/%d/%s", storeID, menuID, imgDTO.ImageURL)
+            } else {
+                // 기존 이미지: URL 그대로 사용
+                urlKey = imgDTO.ImageURL
+            }
+            requestImageMap[urlKey] = true
+            if existing, ok := existingImageMap[urlKey]; ok {
+                if existing.Order != imgDTO.Order {
+                    existing.Order = imgDTO.Order
+                    updateImages = append(updateImages, existing)
+                }
+            }
+        }
+        // 요청에 없는 기존 이미지를 soft delete 처리
+        for _, img := range existingImages {
+            if !requestImageMap[img.ImageURL] {
+                img.Deleted = true
+                softDeleteImages = append(softDeleteImages, img)
+            }
+        }
+        if len(updateImages) > 0 {
+            if err := s.repo.UpdateImages(updateImages); err != nil {
+                execErrs = append(execErrs, err)
+            }
+        }
+        if len(softDeleteImages) > 0 {
+            if err := s.repo.UpdateImages(softDeleteImages); err != nil {
+                execErrs = append(execErrs, err)
+            }
+        }
+    }
 
 	// 오류 모음 처리
 	if len(execErrs) > 0 {

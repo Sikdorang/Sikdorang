@@ -24,7 +24,6 @@ export default function ManageMenuModal() {
   useEffect(() => {
     if (menusDetails) {
       setTemporaryMenuDetails(menusDetails);
-      console.log('menusDetails 디버깅: ', menusDetails);
     }
   }, [menusDetails]);
 

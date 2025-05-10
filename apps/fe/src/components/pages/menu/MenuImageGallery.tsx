@@ -32,8 +32,6 @@ export default function MenuImageGallery({ images = [], setImages, maxImages = 1
         return arrayMove(prevImages, oldIndex, newIndex);
       });
     }
-
-    // console.log("CDN_URL+'/'+url: ", CDN_URL + '/');
   };
 
   const [selectedImage, setSelectedImage] = useState<IMenuImageItem | null>((images || [])[0] || null);

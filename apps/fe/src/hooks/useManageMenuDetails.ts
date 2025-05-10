@@ -19,7 +19,6 @@ export const useManageMenuDetails = () => {
     try {
       const response = await DetailsAPI.getMenuDetails(menuId);
       setMenusDetails(response);
-      console.log('여긴가? : ', response);
     } catch (error) {
       if (axios.isAxiosError(error) && error.response?.status === 401) {
         setError(MESSAGES.emailRequired);
@@ -48,7 +47,7 @@ export const useManageMenuDetails = () => {
         // 2. Presigned URL 요청 (API 서비스 사용)
         const { url } = await DetailsAPI.getPresignedUrl(menuId, uuidFileName);
 
-        // 3. S3 업로드 (API 서비스 사용)
+        // 3. S3 업로드
         await DetailsAPI.uploadToS3(url, file);
 
         uploadedImages.push({
@@ -90,8 +89,6 @@ export const useManageMenuDetails = () => {
             order: i.order,
           })),
         };
-
-        console.log('patchData : ', patchData);
 
         // 4. 메뉴 정보 업데이트
         await DetailsAPI.updateMenuDetails(menuId, patchData);
