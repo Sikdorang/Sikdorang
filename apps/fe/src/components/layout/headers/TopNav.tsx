@@ -3,13 +3,12 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 
-import ProfileImage from '@public/icons/ic_circle.svg';
-
 const navItems = [
   { name: '메뉴', path: '/menu' },
   // { name: '이벤트', path: '/events' },
   { name: '메뉴 순서 편집', path: '/edit' },
   { name: '손님용으로 전환', path: '/preview' },
+  { name: '마이페이지', path: '/mypage' },
 ];
 
 export default function TopNav() {
@@ -35,7 +34,6 @@ export default function TopNav() {
                 </Link>
               </li>
             ))}
-            <ProfileImage />
           </ul>
         </div>
       </div>

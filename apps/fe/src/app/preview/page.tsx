@@ -45,7 +45,9 @@ export default function Page() {
         </MenuSection>
       </SidebarWithContentContainer>
       <AdminButton />
-      {isModalOpen && <MenuModal item={selectedMenu} isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />}
+      {isModalOpen && selectedMenu && (
+        <MenuModal item={selectedMenu} isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
+      )}
     </div>
   );
 }
