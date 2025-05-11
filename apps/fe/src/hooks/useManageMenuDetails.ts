@@ -13,6 +13,8 @@ export const useManageMenuDetails = () => {
   const [isUploading, setIsUploading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  console.log(isUploading);
+
   const fetchMenusDetails = async (menuId: number) => {
     setIsLoading(true);
     setError(null);

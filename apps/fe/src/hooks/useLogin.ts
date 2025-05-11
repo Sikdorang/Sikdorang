@@ -1,4 +1,3 @@
-import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { toast } from 'react-toastify';
 import { MESSAGES } from '@/constants/messages';
@@ -8,7 +7,6 @@ import { KEYS } from '@/constants/storage';
 import axios from 'axios';
 
 export const useLogin = () => {
-  const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
   const [loginError, setLoginError] = useState<string | null>(null);
 

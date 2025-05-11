@@ -93,7 +93,9 @@ export default function ManageMenuModal() {
     try {
       await updateMenuDetails(Number(queryId), menusDetails, temporaryMenuDetails);
       router.back();
-    } catch (error) {}
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   return (
