@@ -3,8 +3,22 @@ import { SYNC_ACTIONS } from '@/constants/enums';
 export interface IMenuDetailsItem {
   preview: string;
   details: string;
-  tags: string[];
-  images: string[];
+  tags: IMenuTagItem[];
+  images: IMenuImageItem[];
+}
+
+export interface IMenuTagItem {
+  id: number;
+  tag: string;
+}
+
+export interface IMenuImageItem {
+  id: number;
+  url: string;
+  image_url: string;
+  order: string;
+  file?: File;
+  preview?: string;
 }
 
 export interface IManageMenuItem {

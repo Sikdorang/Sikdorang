@@ -131,7 +131,7 @@ export default function MenuPage() {
         menu: '',
         price: null,
         category: '',
-        status: '판매 예정',
+        status: '판매 중',
         order: newOrder.toString(),
       },
     ]);
@@ -149,12 +149,11 @@ export default function MenuPage() {
   const [status] = useState(['판매 중', '판매 중단', '판매 예정']);
   const handleStatusChange = (id: number, value: string) => {
     updateMenuItem(id, 'status', value);
-    console.log('value: ', value);
   };
 
   const [showOnlyEmptyMenus, setShowOnlyEmptyMenus] = useState(false);
   const filteredMenuItems = showOnlyEmptyMenus
-    ? temporaryMenus.filter((item) => !item.menu || !item.price || !item.category)
+    ? temporaryMenus.filter((item) => !item.menu || item.price === undefined || item.price === null || !item.category)
     : temporaryMenus;
 
   return (
@@ -179,13 +178,13 @@ export default function MenuPage() {
             <table className="w-full table-auto border-none">
               <thead className="bg-gray-100 text-gray-800 text-label-sm-sb border-b border-b-gray-400">
                 <tr>
-                  <th className="px-5 py-5 w-[10%]">번호</th>
-                  <th className="px-5 py-5 w-[35%] text-left">메뉴명</th>
-                  <th className="px-5 py-5 w-[10%]">가격</th>
-                  <th className="px-5 py-5 w-[15%]">카테고리</th>
-                  <th className="px-5 py-5 w-[10%]">상태</th>
-                  <th className="px-5 py-5 w-[10%]">이미지 및 설명</th>
-                  <th className="px-5 py-5 w-[10%]">삭제</th>
+                  <th className="px-5 py-5 w-[10%] whitespace-nowrap">번호</th>
+                  <th className="px-5 py-5 w-[35%] text-left whitespace-nowrap">메뉴명</th>
+                  <th className="px-5 py-5 w-[10%] whitespace-nowrap">가격</th>
+                  <th className="px-5 py-5 w-[15%] whitespace-nowrap">카테고리</th>
+                  <th className="px-5 py-5 w-[10%] whitespace-nowrap">상태</th>
+                  <th className="px-5 py-5 w-[10%] whitespace-nowrap">이미지 및 설명</th>
+                  <th className="px-5 py-5 w-[10%] whitespace-nowrap">삭제</th>
                 </tr>
               </thead>
               <tbody className="text-label-sm-m text-gray-700">
