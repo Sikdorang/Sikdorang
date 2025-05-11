@@ -27,13 +27,20 @@ export default function MenuItem({ item, onClick, draggable = false }: MenuItemP
       )}
 
       <div className="relative w-full overflow-hidden aspect-[6/5]">
-        <Image
-          className={`rounded-sm ${!draggable && !item.status && 'blur-xs grayscale'} object-cover w-full h-full transition-all duration-300 hover:scale-105`}
-          src={imgUrl}
-          width={400}
-          height={400}
-          alt={'이미지'}
-        />
+        {item.preview == '' || !item.preview ? (
+          <div className="bg-gray-100 w-full h-full flex items-center justify-center text-sm text-gray-400 ">
+            이미지가 없습니다
+          </div>
+        ) : (
+          <Image
+            className={`rounded-sm ${!draggable && !item.status && 'blur-xs grayscale'} object-cover w-full h-full transition-all duration-300 hover:scale-105`}
+            src={imgUrl}
+            width={400}
+            height={400}
+            alt={'이미지'}
+          />
+        )}
+
         {!draggable && !item.status && (
           <div className="absolute inset-0 flex items-center justify-center bg-white/80">
             <span className="text-body-sm text-gray-700">품절</span>
