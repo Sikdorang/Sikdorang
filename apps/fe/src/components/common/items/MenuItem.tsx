@@ -16,6 +16,8 @@ export default function MenuItem({ item, onClick, draggable = false }: MenuItemP
     return item.status ? (isEditing ? 'cursor-grab' : 'cursor-pointer') : 'cursor-not-allowed';
   })();
 
+  const imgUrl = `${process.env.NEXT_PUBLIC_CDN_BASE_URL}/${item.preview}`;
+
   return (
     <div onClick={onClick} className={`bg-white group relative overflow-hidden ${cursorClass}`}>
       {draggable && (
@@ -27,7 +29,7 @@ export default function MenuItem({ item, onClick, draggable = false }: MenuItemP
       <div className="relative w-full overflow-hidden aspect-[6/5]">
         <Image
           className={`rounded-sm ${!draggable && !item.status && 'blur-xs grayscale'} object-cover w-full h-full transition-all duration-300 hover:scale-105`}
-          src={'/images/jiwhaja_dish_5.png'}
+          src={imgUrl}
           width={400}
           height={400}
           alt={'이미지'}

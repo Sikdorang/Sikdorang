@@ -36,9 +36,10 @@ interface CarouselImageProps {
   src: string;
 }
 function CarouselImage({ src }: CarouselImageProps) {
+  const imgUrl = `${process.env.NEXT_PUBLIC_CDN_BASE_URL}/${src}`;
   return (
     <div className="relative w-full shrink-0 aspect-[5/3] overflow-hidden rounded-sm snap-center">
-      <Image src={src} alt={`carousel-image-%${src}`} fill className="object-cover" />
+      <Image src={imgUrl} alt={`carousel-image-%${src}`} fill className="object-cover" />
     </div>
   );
 }

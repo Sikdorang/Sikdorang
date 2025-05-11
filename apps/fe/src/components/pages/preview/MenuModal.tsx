@@ -30,16 +30,7 @@ export default function MenuModal({ item, onClose }: MenuModalProps) {
         className="gap-5 flex flex-col bg-white rounded-lg shadow-2xl p-4 z-60 w-[90%] max-w-xl min-h-1/3"
       >
         <div className="h-full">
-          <Carousel
-            images={[
-              '/images/jiwhaja_dish_1.png',
-              '/images/jiwhaja_dish_5.png',
-              '/images/jiwhaja_dish_5.png',
-              '/images/jiwhaja_dish_5.png',
-              '/images/jiwhaja_dish_5.png',
-              '/images/jiwhaja_dish_5.png',
-            ]}
-          />
+          <Carousel images={item.image_urls} />
         </div>
         <div className="flex flex-col flex-2 justify-between gap-2">
           <div className="flex flex-col gap-1">

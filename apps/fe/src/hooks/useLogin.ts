@@ -21,7 +21,7 @@ export const useLogin = () => {
       document.cookie = `${KEYS.ACCESS_TOKEN}=${data.accessToken}; path=/; SameSite=Lax;`;
       localStorage.setItem(KEYS.ACCESS_TOKEN, data.accessToken);
       toast.success(MESSAGES.loginSuccess);
-      router.push('/menu');
+      window.location.href = '/menu';
     } catch (error) {
       if (axios.isAxiosError(error) && error.response?.status === 401) {
         setLoginError(MESSAGES.invalidCredentials);
