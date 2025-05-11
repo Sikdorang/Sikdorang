@@ -13,8 +13,11 @@ import BaseButton from '@/components/common/buttons/BaseButton';
 import ProductTag from '@/components/common/labels/ProductTag';
 import ImageGallery from '@/components/pages/menu/MenuImageGallery';
 import Spinner from '@/components/common/loadings/Spinner';
+import { useQueryClient } from '@tanstack/react-query';
+import { invalidateQueries } from '@/utilities/invalidateQuery';
 
 export default function ManageMenuModal() {
+  const queryClient = useQueryClient();
   const { menusDetails, isLoading, fetchMenusDetails, updateMenuDetails } = useManageMenuDetails();
 
   useEffect(() => {
@@ -92,6 +95,7 @@ export default function ManageMenuModal() {
 
     try {
       await updateMenuDetails(Number(queryId), menusDetails, temporaryMenuDetails);
+      invalidateQueries(queryClient);
       router.back();
     } catch (error) {
       console.log(error);

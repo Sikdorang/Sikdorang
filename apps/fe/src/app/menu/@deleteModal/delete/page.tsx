@@ -3,9 +3,12 @@
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useDeleteMenuStore } from '@/stores/useDeleteMenuStore';
 import { useEffect } from 'react';
+import { useQueryClient } from '@tanstack/react-query';
+import { invalidateQueries } from '@/utilities/invalidateQuery';
 
 export default function DeleteMenuModal() {
   const router = useRouter();
+  const queryClient = useQueryClient();
   const searchParams = useSearchParams();
   const { deleteMenuItem } = useDeleteMenuStore();
 
@@ -15,6 +18,7 @@ export default function DeleteMenuModal() {
   const handleDelete = () => {
     if (deleteMenuItem && queryId) {
       deleteMenuItem(Number(queryId));
+      invalidateQueries(queryClient);
     }
     router.back();
   };
