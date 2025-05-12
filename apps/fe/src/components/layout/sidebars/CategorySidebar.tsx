@@ -69,6 +69,10 @@ export default function CategorySidebar({
         setCategoryError(MESSAGES.emptyCategoryError);
         return;
       }
+      if (categories.some((cat) => cat.category === inputValue)) {
+        setCategoryError(MESSAGES.duplicatedCategoryError);
+        return;
+      }
       const response: CreateCategoryResponse = await createCategory(inputValue);
       setTemporaryCategories((prevCategories) => [...prevCategories, { id: response.id, category: response.category }]);
       setNewCategory('');
