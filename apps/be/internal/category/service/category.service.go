@@ -13,7 +13,7 @@ import (
 var ErrCategoryNotFound = errors.New("category not found")
 
 type CategoryService interface {
-	Create(category string, storeID uint) (models.Category, error)
+	Create(category string, order string, storeID uint) (models.Category, error)
 	GetAllByStoreID(storeID uint) ([]models.Category, error)
 	Update(categoryID uint, storeID uint, newCategory string) (models.Category, error)
 	Delete(categoryID uint, storeID uint) error
@@ -28,9 +28,10 @@ func NewCategoryService(repo repository.CategoryRepository) CategoryService {
 	return &categoryService{repo: repo}
 }
 
-func (s *categoryService) Create(category string, storeID uint) (models.Category, error) {
+func (s *categoryService) Create(category string, order string, storeID uint) (models.Category, error) {
 	newCategory := &models.Category{
 		Category: category,
+		Order: order,
 		StoreID:  storeID,
 	}
 
