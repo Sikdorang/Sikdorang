@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useManageCategory } from '@/hooks/useManageCategory';
 import { MESSAGES } from '@/constants/messages';
 import { IManageMenuItem } from '@/types/model/menu';
+import { LexoRank } from 'lexorank';
 import { ICategoryItem } from '@/types/model/category';
 
 import TextInput from '@/components/common/inputs/TextInput';
@@ -69,8 +70,24 @@ export default function CategorySidebar({
         setCategoryError(MESSAGES.emptyCategoryError);
         return;
       }
-      const response: CreateCategoryResponse = await createCategory(inputValue);
-      setTemporaryCategories((prevCategories) => [...prevCategories, { id: response.id, category: response.category }]);
+      if (categories.some((cat) => cat.category === inputValue)) {
+        setCategoryError(MESSAGES.duplicatedCategoryError);
+        return;
+      }
+
+      let newOrder: string;
+      if (categories.length === 0) {
+        newOrder = LexoRank.middle().toString();
+      } else {
+        const lastOrder = categories[categories.length - 1].order;
+        newOrder = LexoRank.parse(lastOrder).genNext().toString();
+      }
+
+      const response: CreateCategoryResponse = await createCategory(inputValue, newOrder);
+      setTemporaryCategories((prevCategories) => [
+        ...prevCategories,
+        { id: response.id, category: response.category, order: newOrder },
+      ]);
       setNewCategory('');
       setCategoryError(null);
     }

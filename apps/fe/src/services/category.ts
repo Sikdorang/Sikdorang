@@ -6,9 +6,10 @@ export const CategoryAPI = {
     const res = await axiosInstance.get('/categories');
     return res.data;
   },
-  addCategory: async (category: string) => {
+  addCategory: async (category: string, order: string) => {
     const res = await axiosInstance.post('/categories', {
       category,
+      order,
     });
     return res.data;
   },

@@ -6,14 +6,13 @@ import { DetailsAPI, PatchMenuDetailsRequest } from '@/services/manageMenuDetail
 import { handelError } from '@/services/handleError';
 import { IMenuDetailsItem, IMenuImageItem } from '@/types/model/menu';
 import { isEqual } from 'lodash';
+import imageCompression from 'browser-image-compression';
 
 export const useManageMenuDetails = () => {
   const [menusDetails, setMenusDetails] = useState<IMenuDetailsItem>();
   const [isLoading, setIsLoading] = useState(true);
-  const [isUploading, setIsUploading] = useState(false);
+  const [, setIsUploading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-
-  console.log(isUploading);
 
   const fetchMenusDetails = async (menuId: number) => {
     setIsLoading(true);
@@ -42,15 +41,23 @@ export const useManageMenuDetails = () => {
         const file = img.file;
         if (!file || !img.image_url) continue;
 
-        // 1. 확장자 추출
-        const fileExtension = file.name.split('.').pop();
-        const uuidFileName = `${img.image_url}.${fileExtension}`;
+        // 1. 이미지 압축
+        const compressedFile = await imageCompression(file, {
+          maxSizeMB: 2, // 최대 용량
+          maxWidthOrHeight: 1920, // 최대 해상도
+          useWebWorker: true, // 웹 워커 사용
+          fileType: 'image/webp', // WebP 포맷
+          initialQuality: 0.75, // 품질 75%
+        });
 
-        // 2. Presigned URL 요청 (API 서비스 사용)
+        // 2. 파일명 변경 (확장자 → .webp)
+        const uuidFileName = `${img.image_url}.webp`;
+
+        // 3. Presigned URL 요청
         const { url } = await DetailsAPI.getPresignedUrl(menuId, uuidFileName);
 
-        // 3. S3 업로드
-        await DetailsAPI.uploadToS3(url, file);
+        // 4. S3 업로드
+        await DetailsAPI.uploadToS3(url, compressedFile);
 
         uploadedImages.push({
           ...img,
@@ -80,22 +87,26 @@ export const useManageMenuDetails = () => {
           return uploaded || existingImg;
         });
 
-        // 3. 변경 데이터 생성
-        const patchData: PatchMenuDetailsRequest = {
-          preview: updated.preview,
-          details: updated.details,
-          tags: (updated.tags || []).map((t) => ({ id: t.id, tag: t.tag })),
-          images: mergedImages.map((i) => ({
+        const patchData: PatchMenuDetailsRequest = {};
+        if (original.preview !== updated.preview) {
+          patchData.preview = updated.preview;
+        }
+        if (original.details !== updated.details) {
+          patchData.details = updated.details;
+        }
+        if (!isEqual(original.tags || [], updated.tags || [])) {
+          patchData.tags = (updated.tags || []).map((t) => ({ id: t.id, tag: t.tag }));
+        }
+        if (!isEqual(original.images || [], mergedImages)) {
+          patchData.images = mergedImages.map((i) => ({
             id: i.id || 0,
             image_url: i.image_url,
             order: i.order,
-          })),
-        };
+          }));
+        }
 
-        // 4. 메뉴 정보 업데이트
         await DetailsAPI.updateMenuDetails(menuId, patchData);
         setMenusDetails((prev) => ({ ...prev, ...updated, images: mergedImages }));
-
         toast.success(MESSAGES.syncMenuDetailsSuccess);
       } catch (error) {
         if (axios.isAxiosError(error) && error.response?.status === 401) {

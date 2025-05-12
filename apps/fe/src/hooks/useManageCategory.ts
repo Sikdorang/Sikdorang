@@ -11,13 +11,13 @@ export const useManageCategory = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const createCategory = async (categoryName: string) => {
+  const createCategory = async (categoryName: string, order: string) => {
     if (categories.some((cat) => cat.category === categoryName)) {
       toast.error(MESSAGES.duplicatedCategoryError);
       return;
     }
     try {
-      const newCategory = await CategoryAPI.addCategory(categoryName);
+      const newCategory = await CategoryAPI.addCategory(categoryName, order);
       setCategories((prev) => [...prev, newCategory]);
       toast.success(MESSAGES.createCategorySuccess);
       return newCategory;
