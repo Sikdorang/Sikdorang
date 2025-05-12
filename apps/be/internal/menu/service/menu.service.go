@@ -213,16 +213,16 @@ func (s *menuService) UpdateDescription(storeID, menuID uint, body dto.UpdateDes
 	}
 
 	// Preview 처리
-	if body.Preview != "" {
-		menu.Preview = body.Preview
+	if body.Preview != nil {
+		menu.Preview = *body.Preview
 		if err := s.repo.UpdateMenu(&menu); err != nil {
 			execErrs = append(execErrs, err)
 		}
 	}
 
 	// Details 처리
-	if body.Details != "" {
-		menu.Details = body.Details
+	if body.Details != nil {
+		menu.Details = *body.Details
 		if err := s.repo.UpdateMenu(&menu); err != nil {
 			execErrs = append(execErrs, err)
 		}

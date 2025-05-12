@@ -1,8 +1,8 @@
 package dto
 
 type UpdateDescriptionRequestDTO struct {
-	Preview string     `json:"preview"`
-	Details string     `json:"details"`
+	Preview *string     `json:"preview"`
+	Details *string     `json:"details"`
 	Tags    []TagDTO   `json:"tags"`
 	Images  []ImageDTO `json:"images"`
 }
