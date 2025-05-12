@@ -6,6 +6,7 @@ import { DetailsAPI, PatchMenuDetailsRequest } from '@/services/manageMenuDetail
 import { handelError } from '@/services/handleError';
 import { IMenuDetailsItem, IMenuImageItem } from '@/types/model/menu';
 import { isEqual } from 'lodash';
+import { ImagePool } from '@squoosh/lib';
 
 export const useManageMenuDetails = () => {
   const [menusDetails, setMenusDetails] = useState<IMenuDetailsItem>();
@@ -38,19 +39,33 @@ export const useManageMenuDetails = () => {
       const newImages = safeImages.filter((img) => !img.id || img.id === 0);
       const uploadedImages: IMenuImageItem[] = [];
 
+      // 1. Squoosh 이미지 풀 생성
+      const imagePool = new ImagePool();
+
       for (const img of newImages) {
         const file = img.file;
         if (!file || !img.image_url) continue;
 
-        // 1. 확장자 추출
-        const fileExtension = file.name.split('.').pop();
-        const uuidFileName = `${img.image_url}.${fileExtension}`;
+        // 2. 이미지 압축
+        const arrayBuffer = await file.arrayBuffer();
+        const image = imagePool.ingestImage(new Uint8Array(arrayBuffer));
+        await image.encode({
+          webp: { quality: 75 },
+        });
 
-        // 2. Presigned URL 요청 (API 서비스 사용)
+        const { binary } = await image.encodedWith.webp;
+        const compressedFile = new File([binary], file.name.replace(/\.\w+$/, '.webp'), {
+          type: 'image/webp',
+        });
+
+        // 3. 확장자 변경 (webp)
+        const uuidFileName = `${img.image_url}.webp`;
+
+        // 4. Presigned URL 요청
         const { url } = await DetailsAPI.getPresignedUrl(menuId, uuidFileName);
 
-        // 3. S3 업로드
-        await DetailsAPI.uploadToS3(url, file);
+        // 5. S3 업로드
+        await DetailsAPI.uploadToS3(url, compressedFile);
 
         uploadedImages.push({
           ...img,
@@ -58,6 +73,7 @@ export const useManageMenuDetails = () => {
         });
       }
 
+      await imagePool.close();
       return uploadedImages;
     } catch (error) {
       handelError(error);
@@ -80,22 +96,26 @@ export const useManageMenuDetails = () => {
           return uploaded || existingImg;
         });
 
-        // 3. 변경 데이터 생성
-        const patchData: PatchMenuDetailsRequest = {
-          preview: updated.preview,
-          details: updated.details,
-          tags: (updated.tags || []).map((t) => ({ id: t.id, tag: t.tag })),
-          images: mergedImages.map((i) => ({
+        const patchData: PatchMenuDetailsRequest = {};
+        if (original.preview !== updated.preview) {
+          patchData.preview = updated.preview;
+        }
+        if (original.details !== updated.details) {
+          patchData.details = updated.details;
+        }
+        if (!isEqual(original.tags || [], updated.tags || [])) {
+          patchData.tags = (updated.tags || []).map((t) => ({ id: t.id, tag: t.tag }));
+        }
+        if (!isEqual(original.images || [], mergedImages)) {
+          patchData.images = mergedImages.map((i) => ({
             id: i.id || 0,
             image_url: i.image_url,
             order: i.order,
-          })),
-        };
+          }));
+        }
 
-        // 4. 메뉴 정보 업데이트
         await DetailsAPI.updateMenuDetails(menuId, patchData);
         setMenusDetails((prev) => ({ ...prev, ...updated, images: mergedImages }));
-
         toast.success(MESSAGES.syncMenuDetailsSuccess);
       } catch (error) {
         if (axios.isAxiosError(error) && error.response?.status === 401) {
