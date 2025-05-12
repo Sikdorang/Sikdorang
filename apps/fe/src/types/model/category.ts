@@ -3,7 +3,7 @@ import { IMenuItem } from './menu';
 export interface ICategoryItem {
   id: number;
   category: string;
-  order?: string;
+  order: string;
 }
 
 export interface ICategoryWithMenus {
