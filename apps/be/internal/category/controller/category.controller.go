@@ -43,7 +43,7 @@ func (c *CategoryController) CreateCategory(ctx *fiber.Ctx) error {
 		return ctx.Status(400).JSON(errorDto.ErrorResponse{Error: "invalid body"})
 	}
 
-	created, err := c.service.Create(body.Category, storeID)
+	created, err := c.service.Create(body.Category, body.Order, storeID)
 	if err != nil {
 		return ctx.Status(500).JSON(errorDto.ErrorResponse{Error: "create failed"})
 	}
