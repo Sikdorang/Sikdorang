@@ -324,9 +324,9 @@ func (s *menuService) GetAdminMenuBoard(storeID uint) ([]dto.AdminMenuBoardDTO, 
 			if err != nil {
 				return nil, fmt.Errorf("failed to get images for menu %d: %w", menu.ID, err)
 			}
-			imageURLs := make([]string, len(images))
-			for i, img := range images {
-				imageURLs[i] = img.ImageURL
+			var imageURL string
+			if len(images) > 0 {
+				imageURL = images[0].ImageURL
 			}
 
 			// 태그 조회
@@ -345,7 +345,7 @@ func (s *menuService) GetAdminMenuBoard(storeID uint) ([]dto.AdminMenuBoardDTO, 
 				Price:  menu.Price,
 				Order:  menu.Order,
 				Tags:   tagNames,
-				Images: imageURLs,
+				Images: imageURL,
 			})
 		}
 
