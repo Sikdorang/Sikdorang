@@ -1,4 +1,4 @@
-import { InputHTMLAttributes, useState } from 'react';
+import { InputHTMLAttributes, useEffect, useState } from 'react';
 import ErrorMessage from '../labels/ErrorMessage';
 
 interface TextInputProps extends InputHTMLAttributes<HTMLInputElement> {
@@ -10,6 +10,10 @@ export default function TextInput({ label, errorMessage, maxLength, value, onCha
   const [charCount, setCharCount] = useState(value?.toString().length || 0);
   const baseClass =
     'w-full py-3 px-4 text-gray-800 text-label-sm-m rounded-sm focus:outline-none transition placeholder-gray-400 bg-white border border-gray-300';
+
+  useEffect(() => {
+    setCharCount(value?.toString().length || 0);
+  }, [value]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setCharCount(e.target.value.length);

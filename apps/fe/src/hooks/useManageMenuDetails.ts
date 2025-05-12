@@ -7,14 +7,13 @@ import { handelError } from '@/services/handleError';
 import { IMenuDetailsItem, IMenuImageItem } from '@/types/model/menu';
 import { isEqual } from 'lodash';
 import { ImagePool } from '@squoosh/lib';
+import imageCompression from 'browser-image-compression';
 
 export const useManageMenuDetails = () => {
   const [menusDetails, setMenusDetails] = useState<IMenuDetailsItem>();
   const [isLoading, setIsLoading] = useState(true);
-  const [isUploading, setIsUploading] = useState(false);
+  const [, setIsUploading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-
-  console.log(isUploading);
 
   const fetchMenusDetails = async (menuId: number) => {
     setIsLoading(true);
@@ -39,32 +38,26 @@ export const useManageMenuDetails = () => {
       const newImages = safeImages.filter((img) => !img.id || img.id === 0);
       const uploadedImages: IMenuImageItem[] = [];
 
-      // 1. Squoosh 이미지 풀 생성
-      const imagePool = new ImagePool();
-
       for (const img of newImages) {
         const file = img.file;
         if (!file || !img.image_url) continue;
 
-        // 2. 이미지 압축
-        const arrayBuffer = await file.arrayBuffer();
-        const image = imagePool.ingestImage(new Uint8Array(arrayBuffer));
-        await image.encode({
-          webp: { quality: 75 },
+        // 1. 이미지 압축
+        const compressedFile = await imageCompression(file, {
+          maxSizeMB: 2, // 최대 용량
+          maxWidthOrHeight: 1920, // 최대 해상도
+          useWebWorker: true, // 웹 워커 사용
+          fileType: 'image/webp', // WebP 포맷
+          initialQuality: 0.75, // 품질 75%
         });
 
-        const { binary } = await image.encodedWith.webp;
-        const compressedFile = new File([binary], file.name.replace(/\.\w+$/, '.webp'), {
-          type: 'image/webp',
-        });
-
-        // 3. 확장자 변경 (webp)
+        // 2. 파일명 변경 (확장자 → .webp)
         const uuidFileName = `${img.image_url}.webp`;
 
-        // 4. Presigned URL 요청
+        // 3. Presigned URL 요청
         const { url } = await DetailsAPI.getPresignedUrl(menuId, uuidFileName);
 
-        // 5. S3 업로드
+        // 4. S3 업로드
         await DetailsAPI.uploadToS3(url, compressedFile);
 
         uploadedImages.push({
@@ -73,7 +66,6 @@ export const useManageMenuDetails = () => {
         });
       }
 
-      await imagePool.close();
       return uploadedImages;
     } catch (error) {
       handelError(error);
