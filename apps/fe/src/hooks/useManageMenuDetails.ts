@@ -6,7 +6,6 @@ import { DetailsAPI, PatchMenuDetailsRequest } from '@/services/manageMenuDetail
 import { handelError } from '@/services/handleError';
 import { IMenuDetailsItem, IMenuImageItem } from '@/types/model/menu';
 import { isEqual } from 'lodash';
-import { ImagePool } from '@squoosh/lib';
 import imageCompression from 'browser-image-compression';
 
 export const useManageMenuDetails = () => {
