@@ -5,7 +5,7 @@ import { useState, useEffect } from 'react';
 import { isEqual } from 'lodash';
 import { useManageMenuDetails } from '@/hooks/useManageMenuDetails';
 import { IMenuDetailsItem, IMenuImageItem } from '@/types/model/menu';
-import { MESSAGES } from '@/constants/messages';
+// import { MESSAGES } from '@/constants/messages';
 
 import TextInput from '@/components/common/inputs/TextInput';
 import BaseButton from '@/components/common/buttons/BaseButton';
@@ -36,9 +36,9 @@ export default function ManageMenuModal() {
     images: [],
   });
 
-  const [isComposing] = useState(false);
-  const [inputTagValue, setInputTagValue] = useState('');
-  const [, setTagError] = useState<string | null>(null);
+  // const [isComposing] = useState(false);
+  // const [inputTagValue, setInputTagValue] = useState('');
+  // const [, setTagError] = useState<string | null>(null);
 
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
@@ -52,34 +52,34 @@ export default function ManageMenuModal() {
     };
   }, [router]);
 
-  const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
-    if (isComposing) return;
+  // const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
+  //   if (isComposing) return;
 
-    if (event.key === 'Enter' && inputTagValue.trim()) {
-      event.preventDefault();
+  //   if (event.key === 'Enter' && inputTagValue.trim()) {
+  //     event.preventDefault();
 
-      const tags = temporaryMenuDetails.tags || [];
-      if (tags.length >= 10) {
-        setTagError(MESSAGES.maximumTagError);
-        return;
-      }
-      if (!tags.some((t) => t.tag === inputTagValue.trim())) {
-        setTemporaryMenuDetails((prev) => ({
-          ...prev,
-          tags: [...(prev.tags || []), { id: 0, tag: inputTagValue.trim() }],
-        }));
-        setInputTagValue('');
-        setTagError('');
-      }
-    }
-  };
+  //     const tags = temporaryMenuDetails.tags || [];
+  //     if (tags.length >= 10) {
+  //       setTagError(MESSAGES.maximumTagError);
+  //       return;
+  //     }
+  //     if (!tags.some((t) => t.tag === inputTagValue.trim())) {
+  //       setTemporaryMenuDetails((prev) => ({
+  //         ...prev,
+  //         tags: [...(prev.tags || []), { id: 0, tag: inputTagValue.trim() }],
+  //       }));
+  //       setInputTagValue('');
+  //       setTagError('');
+  //     }
+  //   }
+  // };
 
-  const handleDeleteTag = (tagToDelete: string) => {
-    setTemporaryMenuDetails((prev) => ({
-      ...prev,
-      tags: prev.tags.filter((tag) => tag.tag !== tagToDelete),
-    }));
-  };
+  // const handleDeleteTag = (tagToDelete: string) => {
+  //   setTemporaryMenuDetails((prev) => ({
+  //     ...prev,
+  //     tags: prev.tags.filter((tag) => tag.tag !== tagToDelete),
+  //   }));
+  // };
 
   const handleConfirm = async () => {
     if (!menusDetails) return;
