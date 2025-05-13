@@ -6,7 +6,8 @@ export const useQueryCategoriesAndMenus = () => {
   const { data: categoriesAndMenus } = useSuspenseQuery<ICategoryWithMenus[] | null>({
     queryKey: ['categoriesAndMenus'],
     queryFn: () => MenuAPI.getMenusWithCategories(),
-    staleTime: 1000 * 60 * 10,
+    staleTime: 0,
+    gcTime: 0,
   });
 
   return { categoriesAndMenus };

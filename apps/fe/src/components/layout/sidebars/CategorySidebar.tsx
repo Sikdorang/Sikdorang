@@ -10,6 +10,8 @@ import MenuTextInput from '@/components/pages/menu/cells/MenuTextInput';
 import Spinner from '@/components/common/loadings/Spinner';
 
 import TrashcanIcon from '@public/icons/ic_trashcan.svg';
+import { useQueryClient } from '@tanstack/react-query';
+import { invalidateQueries } from '@/utilities/invalidateQuery';
 
 interface CreateCategoryResponse {
   id: number;
@@ -36,6 +38,8 @@ export default function CategorySidebar({
   const [isComposing, setIsComposing] = useState(false);
   const [newCategory, setNewCategory] = useState('');
   const [categoryError, setCategoryError] = useState<string | null>(null);
+
+  const queryClient = useQueryClient();
 
   useEffect(() => {
     if (isOpen) {
@@ -90,10 +94,12 @@ export default function CategorySidebar({
       ]);
       setNewCategory('');
       setCategoryError(null);
+      invalidateQueries(queryClient);
     }
   };
 
   const handleDeleteCategory = async (categoryId: number) => {
+    invalidateQueries(queryClient);
     await removeCategory(categoryId);
     const deletedCategory = categories.find((category) => category.id === categoryId)?.category;
     if (deletedCategory) {
@@ -110,7 +116,7 @@ export default function CategorySidebar({
     updatedCategory: string,
   ) => {
     if (isComposing) return;
-
+    invalidateQueries(queryClient);
     if ((event.type === 'keydown' && (event as React.KeyboardEvent).key === 'Enter') || event.type === 'blur') {
       if (event.type === 'keydown') {
         (event.target as HTMLInputElement).blur();

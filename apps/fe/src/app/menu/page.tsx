@@ -16,8 +16,11 @@ import Spinner from '@/components/common/loadings/Spinner';
 import MenuTableElement from '@/components/pages/menu/MenuTableElement';
 import MainControlButton from '@/components/pages/menu/cells/MainControlButton';
 import CategorySidebar from '@/components/layout/sidebars/CategorySidebar';
+import { useQueryClient } from '@tanstack/react-query';
+import { invalidateQueries } from '@/utilities/invalidateQuery';
 
 export default function MenuPage() {
+  const queryClient = useQueryClient();
   const { menus, isLoading, fetchMenus, syncMenus } = useManageMenu();
   const { categories, fetchCategories } = useManageCategory();
   const { setDeleteHandler, clearDeleteHandler } = useDeleteMenuStore();
@@ -114,6 +117,7 @@ export default function MenuPage() {
       await syncMenus(syncDatas);
       setChangeLogIds(new Set());
       setMenuErrors({});
+      invalidateQueries(queryClient);
       fetchMenus();
     } catch (error) {
       console.error('Sync error:', error);
