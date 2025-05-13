@@ -86,11 +86,12 @@ func (r *menuRepository) FindTags(storeID, menuID uint) ([]models.Tag, error) {
 func (r *menuRepository) FindMenuBoard(storeID, categoryID uint) ([]models.Menu, error) {
 	var menus []models.Menu
 	result := r.db.Preload("Category").
-		Where("store_id = ? AND category_id = ?", storeID, categoryID).
+		Where("store_id = ? AND category_id = ? AND status = ?", storeID, categoryID, "판매 중"). // status 조건 추가
 		Order("`order` ASC").
 		Find(&menus)
 	return menus, result.Error
 }
+
 
 func (r *menuRepository) FindDescription(storeID, menuID uint) (models.Menu, error) {
 	var menu models.Menu
@@ -162,7 +163,9 @@ func (r *menuRepository) GetCategoriesWithMenus(storeID uint) ([]models.Category
 	var categories []models.Category
 	err := r.db.
 		Preload("Menus", func(db *gorm.DB) *gorm.DB {
-			return db.Order("`order` ASC")
+			return db.
+				Where("status = ?", "판매 중"). // status 조건 추가
+				Order("`order` ASC")
 		}).
 		Where("store_id = ?", storeID).
 		Order("`order` ASC").

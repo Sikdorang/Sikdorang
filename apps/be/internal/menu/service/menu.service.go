@@ -213,16 +213,16 @@ func (s *menuService) UpdateDescription(storeID, menuID uint, body dto.UpdateDes
 	}
 
 	// Preview 처리
-	if body.Preview != "" {
-		menu.Preview = body.Preview
+	if body.Preview != nil {
+		menu.Preview = *body.Preview
 		if err := s.repo.UpdateMenu(&menu); err != nil {
 			execErrs = append(execErrs, err)
 		}
 	}
 
 	// Details 처리
-	if body.Details != "" {
-		menu.Details = body.Details
+	if body.Details != nil {
+		menu.Details = *body.Details
 		if err := s.repo.UpdateMenu(&menu); err != nil {
 			execErrs = append(execErrs, err)
 		}
@@ -319,6 +319,16 @@ func (s *menuService) GetAdminMenuBoard(storeID uint) ([]dto.AdminMenuBoardDTO, 
 		var menuDTOs []dto.AdminMenuItemDTO
 
 		for _, menu := range category.Menus {
+			// 이미지 조회
+			images, err := s.repo.FindImages(storeID, menu.ID)
+			if err != nil {
+				return nil, fmt.Errorf("failed to get images for menu %d: %w", menu.ID, err)
+			}
+			var imageURL string
+			if len(images) > 0 {
+				imageURL = images[0].ImageURL
+			}
+
 			// 태그 조회
 			tags, err := s.repo.FindTags(storeID, menu.ID)
 			if err != nil {
@@ -330,12 +340,12 @@ func (s *menuService) GetAdminMenuBoard(storeID uint) ([]dto.AdminMenuBoardDTO, 
 			}
 
 			menuDTOs = append(menuDTOs, dto.AdminMenuItemDTO{
-				MenuID:  menu.ID,
-				Name:    menu.Menu,
-				Price:   menu.Price,
-				Order:   menu.Order,
-				Preview: menu.Preview,
-				Tags:    tagNames,
+				MenuID: menu.ID,
+				Name:   menu.Menu,
+				Price:  menu.Price,
+				Order:  menu.Order,
+				Tags:   tagNames,
+				Images: imageURL,
 			})
 		}
 
