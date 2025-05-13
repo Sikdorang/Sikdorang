@@ -13,5 +13,5 @@ type AdminMenuItemDTO struct {
 	Price   int      `json:"price"`
 	Order   string   `json:"order"`
 	Tags    []string `json:"tags"`
-	ImageURLs  []string `json:"ImageURLs"`
+	ImageURLs  []string `json:"image_urls"`
 }

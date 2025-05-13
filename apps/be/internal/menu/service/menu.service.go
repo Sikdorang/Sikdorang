@@ -318,8 +318,8 @@ func (s *menuService) GetAdminMenuBoard(storeID uint) ([]dto.AdminMenuBoardDTO, 
 	var result []dto.AdminMenuBoardDTO
 
 	for _, category := range categories {
-		var menuDTOs []dto.AdminMenuItemDTO
-
+		menuDTOs := make([]dto.AdminMenuItemDTO, 0)
+		
 		for _, menu := range category.Menus {
 			// 이미지 조회
 			images, err := s.repo.FindImages(storeID, menu.ID)
