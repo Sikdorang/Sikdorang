@@ -326,7 +326,7 @@ func (s *menuService) GetAdminMenuBoard(storeID uint) ([]dto.AdminMenuBoardDTO, 
 			if err != nil {
 				return nil, fmt.Errorf("failed to get images for menu %d: %w", menu.ID, err)
 			}
-			var imageURLs []string
+			imageURLs := make([]string, 0)
 			if len(images) > 0 {
 				imageURLs = append(imageURLs, images[0].ImageURL)
 			}
