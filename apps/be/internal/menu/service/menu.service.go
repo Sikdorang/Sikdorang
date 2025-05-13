@@ -223,9 +223,11 @@ func (s *menuService) UpdateDescription(storeID, menuID uint, body dto.UpdateDes
 	// Details 처리
 	if body.Details != nil {
 		menu.Details = *body.Details
-		if err := s.repo.UpdateMenu(&menu); err != nil {
-			execErrs = append(execErrs, err)
-		}
+	} else {
+		menu.Details = ""
+	}
+	if err := s.repo.UpdateMenu(&menu); err != nil {
+		execErrs = append(execErrs, err)
 	}
 
 	// Tags 처리
@@ -324,9 +326,9 @@ func (s *menuService) GetAdminMenuBoard(storeID uint) ([]dto.AdminMenuBoardDTO, 
 			if err != nil {
 				return nil, fmt.Errorf("failed to get images for menu %d: %w", menu.ID, err)
 			}
-			var imageURL string
+			var imageURLs []string
 			if len(images) > 0 {
-				imageURL = images[0].ImageURL
+				imageURLs = append(imageURLs, images[0].ImageURL)
 			}
 
 			// 태그 조회
@@ -345,7 +347,7 @@ func (s *menuService) GetAdminMenuBoard(storeID uint) ([]dto.AdminMenuBoardDTO, 
 				Price:  menu.Price,
 				Order:  menu.Order,
 				Tags:   tagNames,
-				Images: imageURL,
+				ImageURLs: imageURLs,
 			})
 		}
 
