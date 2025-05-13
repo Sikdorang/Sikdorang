@@ -16,7 +16,8 @@ export default function MenuItem({ item, onClick, draggable = false }: MenuItemP
     return item.status ? (isEditing ? 'cursor-grab' : 'cursor-pointer') : 'cursor-not-allowed';
   })();
 
-  const imgUrl = `${process.env.NEXT_PUBLIC_CDN_BASE_URL}/${item.preview}`;
+  const imgUrl =
+    item.image_urls.length != 0 ? `${process.env.NEXT_PUBLIC_CDN_BASE_URL}/${item.image_urls[0]}` : undefined;
 
   return (
     <div onClick={onClick} className={`bg-white group relative overflow-hidden ${cursorClass}`}>
@@ -27,7 +28,7 @@ export default function MenuItem({ item, onClick, draggable = false }: MenuItemP
       )}
 
       <div className="relative w-full overflow-hidden aspect-[6/5]">
-        {item.preview == '' || !item.preview ? (
+        {!imgUrl ? (
           <div className="bg-gray-100 w-full h-full flex items-center justify-center text-sm text-gray-400 ">
             이미지가 없습니다
           </div>
