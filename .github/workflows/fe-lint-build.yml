@@ -13,10 +13,6 @@ jobs:
     name: Lint and Build Frontend
     runs-on: ubuntu-latest
 
-    defaults:
-      run:
-        working-directory: app/fe
-
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
@@ -44,12 +40,15 @@ jobs:
 
       - name: Run Lint
         run: pnpm run lint
+        working-directory: app/fe
         if: ${{ always() }}
 
       - name: Type Check
         run: pnpm exec tsc --noEmit
+        working-directory: app/fe
         if: ${{ always() }}
 
       - name: Build Project
         run: pnpm run build
+        working-directory: app/fe
         if: ${{ always() }}
