@@ -41,7 +41,6 @@ export default function MenuItem({ item, onClick, draggable = false }: MenuItemP
             alt={'이미지'}
           />
         )}
-
         {!draggable && !item.status && (
           <div className="absolute inset-0 flex items-center justify-center bg-white/80">
             <span className="text-body-sm text-gray-700">품절</span>
