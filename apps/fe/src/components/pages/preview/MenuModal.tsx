@@ -37,7 +37,7 @@ export default function MenuModal({ item, onClose }: MenuModalProps) {
             <h3 className="font-semibold text-xl tracking-tight text-gray-900 line-clamp-1">
               {item.menu || '메뉴 이름'}
             </h3>
-            <p className="font-base text-base text-gray-600 tracking-tight line-clamp-1">{item.details}</p>
+            <p className="font-base text-base text-gray-600 tracking-tight max-h-24 overflow-y-auto">{item.details}</p>
           </div>
 
           <p className="font-bold text-2xl tracking-tight text-gray-900 mb-6">{item.price.toLocaleString()}원</p>

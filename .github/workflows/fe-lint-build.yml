@@ -1,0 +1,51 @@
+name: FE Lint and Build
+
+on:
+  pull_request:
+    branches:
+      - main
+    paths:
+      - 'app/fe/**'
+      - '.github/workflows/fe-lint-build.yml'
+
+jobs:
+  lint-and-build:
+    name: Lint and Build Frontend
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+
+      - name: Set up pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 8.6.0
+
+      - name: Cache pnpm modules
+        uses: actions/cache@v4
+        with:
+          path: ~/.pnpm-store
+          key: pnpm-store-${{ runner.os }}-${{ hashFiles('**/pnpm-lock.yaml') }}
+          restore-keys: |
+            pnpm-store-${{ runner.os }}-
+
+      - name: Install dependencies
+        run: pnpm install
+
+      - name: Run Lint
+        run: pnpm --filter ./app/fe run lint
+        if: ${{ always() }}
+
+      - name: Type Check
+        run: pnpm --filter ./app/fe exec tsc --noEmit
+        if: ${{ always() }}
+
+      - name: Build Project
+        run: pnpm --filter ./app/fe run build
+        if: ${{ always() }}
