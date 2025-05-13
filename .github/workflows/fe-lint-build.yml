@@ -39,16 +39,13 @@ jobs:
         run: pnpm install
 
       - name: Run Lint
-        run: pnpm run lint
-        working-directory: app/fe
+        run: pnpm --filter ./app/fe run lint
         if: ${{ always() }}
 
       - name: Type Check
-        run: pnpm exec tsc --noEmit
-        working-directory: app/fe
+        run: pnpm --filter ./app/fe exec tsc --noEmit
         if: ${{ always() }}
 
       - name: Build Project
-        run: pnpm run build
-        working-directory: app/fe
+        run: pnpm --filter ./app/fe run build
         if: ${{ always() }}
