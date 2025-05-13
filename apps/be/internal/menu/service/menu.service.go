@@ -318,15 +318,15 @@ func (s *menuService) GetAdminMenuBoard(storeID uint) ([]dto.AdminMenuBoardDTO, 
 	var result []dto.AdminMenuBoardDTO
 
 	for _, category := range categories {
-		var menuDTOs []dto.AdminMenuItemDTO
-
+		menuDTOs := make([]dto.AdminMenuItemDTO, 0)
+		
 		for _, menu := range category.Menus {
 			// 이미지 조회
 			images, err := s.repo.FindImages(storeID, menu.ID)
 			if err != nil {
 				return nil, fmt.Errorf("failed to get images for menu %d: %w", menu.ID, err)
 			}
-			var imageURLs []string
+			imageURLs := make([]string, 0)
 			if len(images) > 0 {
 				imageURLs = append(imageURLs, images[0].ImageURL)
 			}
