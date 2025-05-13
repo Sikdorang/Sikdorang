@@ -14,4 +14,5 @@ type AdminMenuItemDTO struct {
 	Order   string   `json:"order"`
 	Tags    []string `json:"tags"`
 	ImageURLs  []string `json:"image_urls"`
+
 }
