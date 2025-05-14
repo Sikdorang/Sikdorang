@@ -24,7 +24,11 @@ func MapToMenu(storeID uint, data map[string]any) *models.Menu {
 	}
 	if v, ok := data["categoryId"].(float64); ok {
 		categoryID := uint(v)
-		menu.CategoryID = &categoryID
+		if categoryID == 0 {
+			menu.CategoryID = nil
+		} else {
+			menu.CategoryID = &categoryID
+		}
 	}
 
 	return menu
