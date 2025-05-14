@@ -32,10 +32,6 @@ export default function ManageMenuModal() {
         ...menusDetails,
         images: mappedImages,
       });
-      console.log('temporary: ', {
-        ...menusDetails,
-        images: mappedImages,
-      });
     }
   }, [menusDetails]);
 

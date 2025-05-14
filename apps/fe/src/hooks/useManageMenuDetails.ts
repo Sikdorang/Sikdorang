@@ -19,7 +19,6 @@ export const useManageMenuDetails = () => {
     setError(null);
     try {
       const response = await DetailsAPI.getMenuDetails(menuId);
-      console.log('fetchMenusDetails: ', response);
       setMenusDetails(response);
     } catch (error) {
       if (axios.isAxiosError(error) && error.response?.status === 401) {
@@ -42,7 +41,6 @@ export const useManageMenuDetails = () => {
         const file = img.file;
         if (!file || !img.image_url) continue;
 
-        // 1. 이미지 압축
         const compressedFile = await imageCompression(file, {
           maxSizeMB: 2, // 최대 용량
           maxWidthOrHeight: 1920, // 최대 해상도
@@ -51,13 +49,9 @@ export const useManageMenuDetails = () => {
           initialQuality: 0.75, // 품질 75%
         });
 
-        // 2. 파일명 변경 (확장자 → .webp)
         const uuidFileName = `${img.image_url}.webp`;
 
-        // 3. Presigned URL 요청
         const { url } = await DetailsAPI.getPresignedUrl(menuId, uuidFileName);
-        console.log('s3 url: ', url);
-        // 4. S3 업로드
         await DetailsAPI.uploadToS3(url, compressedFile);
 
         uploadedImages.push({
@@ -79,10 +73,8 @@ export const useManageMenuDetails = () => {
 
       setIsUploading(true);
       try {
-        // 1. 새 이미지 업로드
         const uploadedImages = await uploadImagesToS3(menuId, updated.images);
 
-        // 2. 업로드 결과 반영
         const mergedImages = (updated.images || []).map((existingImg) => {
           const uploaded = uploadedImages.find((u) => u.order === existingImg.order);
           return uploaded || existingImg;
@@ -98,8 +90,6 @@ export const useManageMenuDetails = () => {
             order: i.order,
           })),
         };
-
-        console.log('patchData: ', patchData);
 
         await DetailsAPI.updateMenuDetails(menuId, patchData);
         setMenusDetails((prev) => ({ ...prev, ...updated, images: mergedImages }));

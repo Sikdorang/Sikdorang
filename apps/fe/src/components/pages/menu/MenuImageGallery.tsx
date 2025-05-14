@@ -30,7 +30,7 @@ export default function MenuImageGallery({ images = [], setImages, maxImages = 1
         const reorderedImages = arrayMove(prevImages, oldIndex, newIndex);
 
         let lastOrder = LexoRank.middle();
-        return reorderedImages.map((img, index) => {
+        return reorderedImages.map((img) => {
           const newOrder = lastOrder.genNext();
           lastOrder = newOrder;
           return { ...img, order: newOrder.toString() };

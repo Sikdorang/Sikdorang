@@ -115,7 +115,6 @@ export default function MenuPage() {
     });
     try {
       await syncMenus(syncDatas);
-      console.log('Menu syncDatas:', syncDatas);
       setChangeLogIds(new Set());
       setMenuErrors({});
       invalidateQueries(queryClient);
@@ -220,6 +219,7 @@ export default function MenuPage() {
           onClose={() => setIsSidebarOpen(false)}
           setTemporaryMenus={setTemporaryMenus}
           setTemporaryCategories={setTemporaryCategories}
+          temporaryCategories={temporaryCategories}
         />
       </div>
     </>

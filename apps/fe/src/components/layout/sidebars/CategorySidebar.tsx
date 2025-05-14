@@ -13,14 +13,10 @@ import TrashcanIcon from '@public/icons/ic_trashcan.svg';
 import { useQueryClient } from '@tanstack/react-query';
 import { invalidateQueries } from '@/utilities/invalidateQuery';
 
-interface CreateCategoryResponse {
-  id: number;
-  category: string;
-}
-
 interface CategorySidebarProps {
   isOpen: boolean;
   onClose: () => void;
+  temporaryCategories: ICategoryItem[];
   setTemporaryMenus: React.Dispatch<React.SetStateAction<IManageMenuItem[]>>;
   setTemporaryCategories: React.Dispatch<React.SetStateAction<ICategoryItem[]>>;
 }
@@ -28,6 +24,7 @@ interface CategorySidebarProps {
 export default function CategorySidebar({
   isOpen,
   onClose,
+  temporaryCategories,
   setTemporaryMenus,
   setTemporaryCategories,
 }: CategorySidebarProps) {
@@ -79,28 +76,16 @@ export default function CategorySidebar({
         return;
       }
 
-      setTemporaryCategories((prevCategories) => {
-        let newOrder: string;
-        if (prevCategories.length === 0) {
-          newOrder = LexoRank.middle().toString();
-        } else {
-          console.log('prevCategories: ', prevCategories);
-          const lastOrder = prevCategories[prevCategories.length - 1].order;
-          newOrder = LexoRank.parse(lastOrder).genNext().toString();
-        }
+      let newOrder: string;
+      if (temporaryCategories.length === 0) {
+        newOrder = LexoRank.middle().toString();
+      } else {
+        const lastOrder = temporaryCategories[temporaryCategories.length - 1].order;
+        newOrder = LexoRank.parse(lastOrder).genNext().toString();
+      }
 
-        const tempCategory = {
-          id: 0, // 임시 ID
-          category: inputValue,
-          order: newOrder,
-        };
-
-        createCategory(inputValue, newOrder).then((response) => {
-          setTemporaryCategories((prev) => prev.map((cat) => (cat.id === 0 ? { ...response, order: newOrder } : cat)));
-        });
-
-        return [...prevCategories, tempCategory];
-      });
+      const response = await createCategory(inputValue, newOrder);
+      setTemporaryCategories((prev) => [...prev, { id: response.id, category: response.category, order: newOrder }]);
       setNewCategory('');
       setCategoryError(null);
       invalidateQueries(queryClient);

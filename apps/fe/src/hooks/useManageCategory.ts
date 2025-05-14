@@ -42,7 +42,6 @@ export const useManageCategory = () => {
     try {
       const response = await CategoryAPI.getCategories();
       setCategories(response);
-      console.log('해치웠나: ', response);
     } catch (error) {
       if (axios.isAxiosError(error) && error.response?.status === 401) {
         setError(MESSAGES.authenticationError);
