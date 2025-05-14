@@ -80,6 +80,7 @@ func (c *CategoryController) GetCategories(ctx *fiber.Ctx) error {
 		result = append(result, dto.GetCategoryResponseDTO{
 			ID:       cat.ID,
 			Category: cat.Category,
+			Order: cat.Order,
 		})
 	}
 
