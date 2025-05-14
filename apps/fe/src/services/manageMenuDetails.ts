@@ -1,11 +1,12 @@
 import axios from 'axios';
 import { axiosInstance } from '.';
+import { IMenuImageItem, IMenuTagItem } from '../types/model/menu';
 
 export type PatchMenuDetailsRequest = {
   preview?: string;
   details?: string;
-  tags?: Array<{ id: number; tag: string }>;
-  images?: Array<{ id: number; image_url: string; order: string }>;
+  tags?: IMenuTagItem[];
+  images?: IMenuImageItem[];
 };
 
 export type PresignedResponse = {

@@ -13,14 +13,10 @@ import TrashcanIcon from '@public/icons/ic_trashcan.svg';
 import { useQueryClient } from '@tanstack/react-query';
 import { invalidateQueries } from '@/utilities/invalidateQuery';
 
-interface CreateCategoryResponse {
-  id: number;
-  category: string;
-}
-
 interface CategorySidebarProps {
   isOpen: boolean;
   onClose: () => void;
+  temporaryCategories: ICategoryItem[];
   setTemporaryMenus: React.Dispatch<React.SetStateAction<IManageMenuItem[]>>;
   setTemporaryCategories: React.Dispatch<React.SetStateAction<ICategoryItem[]>>;
 }
@@ -28,6 +24,7 @@ interface CategorySidebarProps {
 export default function CategorySidebar({
   isOpen,
   onClose,
+  temporaryCategories,
   setTemporaryMenus,
   setTemporaryCategories,
 }: CategorySidebarProps) {
@@ -80,18 +77,15 @@ export default function CategorySidebar({
       }
 
       let newOrder: string;
-      if (categories.length === 0) {
+      if (temporaryCategories.length === 0) {
         newOrder = LexoRank.middle().toString();
       } else {
-        const lastOrder = categories[categories.length - 1].order;
+        const lastOrder = temporaryCategories[temporaryCategories.length - 1].order;
         newOrder = LexoRank.parse(lastOrder).genNext().toString();
       }
 
-      const response: CreateCategoryResponse = await createCategory(inputValue, newOrder);
-      setTemporaryCategories((prevCategories) => [
-        ...prevCategories,
-        { id: response.id, category: response.category, order: newOrder },
-      ]);
+      const response = await createCategory(inputValue, newOrder);
+      setTemporaryCategories((prev) => [...prev, { id: response.id, category: response.category, order: newOrder }]);
       setNewCategory('');
       setCategoryError(null);
       invalidateQueries(queryClient);

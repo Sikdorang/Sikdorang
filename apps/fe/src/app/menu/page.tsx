@@ -88,7 +88,7 @@ export default function MenuPage() {
           data: {
             menu: current?.menu || '',
             price: current?.price || 0,
-            categoryId: categories.find((c) => c.category === current?.category)?.id || 0,
+            categoryId: temporaryCategories.find((c) => c.category === current?.category)?.id || 0,
             status: current?.status,
             order: current?.order,
           },
@@ -107,7 +107,7 @@ export default function MenuPage() {
         data: {
           menu: current.menu,
           price: current.price,
-          categoryId: categories.find((c) => c.category === current.category)?.id || 0,
+          categoryId: temporaryCategories.find((c) => c.category === current.category)?.id || 0,
           status: current.status,
           order: current.order,
         },
@@ -219,6 +219,7 @@ export default function MenuPage() {
           onClose={() => setIsSidebarOpen(false)}
           setTemporaryMenus={setTemporaryMenus}
           setTemporaryCategories={setTemporaryCategories}
+          temporaryCategories={temporaryCategories}
         />
       </div>
     </>

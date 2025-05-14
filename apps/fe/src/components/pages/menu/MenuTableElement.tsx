@@ -97,8 +97,15 @@ export default function MenuTableElement({
               id: item.id,
             },
           }}
+          tabIndex={item.id < 0 ? -1 : 0}
+          onClick={(e) => {
+            if (item.id < 0) e.preventDefault();
+          }}
+          style={item.id < 0 ? { pointerEvents: 'none', opacity: 0.5 } : {}}
         >
-          <ManageButton variant="modify">편집하기</ManageButton>
+          <ManageButton variant="modify" disabled={item.id < 0}>
+            편집하기
+          </ManageButton>
         </Link>
       </td>
 

@@ -7,7 +7,7 @@ import { useManageMenuDetails } from '@/hooks/useManageMenuDetails';
 import { IMenuDetailsItem, IMenuImageItem } from '@/types/model/menu';
 // import { MESSAGES } from '@/constants/messages';
 
-import TextInput from '@/components/common/inputs/TextInput';
+import DetailsTextArea from '@/components/pages/menu/DetailsTextArea';
 import BaseButton from '@/components/common/buttons/BaseButton';
 import ImageGallery from '@/components/pages/menu/MenuImageGallery';
 import Spinner from '@/components/common/loadings/Spinner';
@@ -24,7 +24,14 @@ export default function ManageMenuModal() {
 
   useEffect(() => {
     if (menusDetails) {
-      setTemporaryMenuDetails(menusDetails);
+      const mappedImages = (menusDetails.images || []).map((img) => ({
+        ...img,
+        image_url: img.image_url ?? img.url,
+      }));
+      setTemporaryMenuDetails({
+        ...menusDetails,
+        images: mappedImages,
+      });
     }
   }, [menusDetails]);
 
@@ -139,12 +146,13 @@ export default function ManageMenuModal() {
                 maxLength={20}
               /> */}
 
-              <TextInput
+              <DetailsTextArea
                 label="상세 설명"
+                rows={6}
                 placeholder="메뉴 클릭 시 보일 상세 설명을 입력해 주세요"
                 value={temporaryMenuDetails.details}
                 onChange={(e) => setTemporaryMenuDetails((prev) => ({ ...prev, details: e.target.value }))}
-                maxLength={20}
+                maxLength={200}
               />
 
               {/* <TextInput
