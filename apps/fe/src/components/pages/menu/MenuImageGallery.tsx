@@ -68,6 +68,7 @@ export default function MenuImageGallery({ images = [], setImages, maxImages = 1
         const uuid = uuidv4();
         uploadedImages.push({
           id: 0,
+          url: uuid,
           image_url: uuid,
           order: currentRank.toString(),
           preview: URL.createObjectURL(file),
