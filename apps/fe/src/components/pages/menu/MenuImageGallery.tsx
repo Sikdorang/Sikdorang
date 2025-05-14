@@ -25,8 +25,8 @@ export default function MenuImageGallery({ images = [], setImages, maxImages = 1
     const { active, over } = event;
     if (active.id !== over?.id && over) {
       setImages((prevImages) => {
-        const oldIndex = prevImages.findIndex((img) => img.id === active.id);
-        const newIndex = prevImages.findIndex((img) => img.id === over.id);
+        const oldIndex = prevImages.findIndex((img) => img.image_url === active.id);
+        const newIndex = prevImages.findIndex((img) => img.image_url === over.id);
         const reorderedImages = arrayMove(prevImages, oldIndex, newIndex);
 
         let lastOrder = LexoRank.middle();
@@ -115,15 +115,18 @@ export default function MenuImageGallery({ images = [], setImages, maxImages = 1
         sensors={sensors}
         modifiers={[restrictToHorizontalAxis]}
       >
-        <SortableContext items={Array.isArray(images) ? images : []} strategy={verticalListSortingStrategy}>
+        <SortableContext
+          items={Array.isArray(images) ? images.map((img) => img.image_url) : []}
+          strategy={verticalListSortingStrategy}
+        >
           <div className="flex items-center space-x-2 mb-3 overflow-x-auto">
             {Array.isArray(images) &&
               images.map((image, index) => {
                 const image_path = CDN_URL + '/' + image.image_url;
                 return (
                   <SortableItem
-                    key={image.id !== 0 ? image.id : image.image_url}
-                    id={image.id}
+                    key={image.image_url}
+                    id={image.image_url}
                     image={image.id === 0 ? (image.preview ?? '') : image.image_url ? image_path : ''}
                     selectedImage={selectedImage?.id === 0 ? (selectedImage?.preview ?? '') : (image_path ?? '')}
                     onSelect={() => setSelectedImage(image)}
@@ -145,7 +148,7 @@ export default function MenuImageGallery({ images = [], setImages, maxImages = 1
 }
 
 interface SortableItemProps {
-  id: number;
+  id: string;
   image: string;
   selectedImage: string | null;
   onSelect: () => void;

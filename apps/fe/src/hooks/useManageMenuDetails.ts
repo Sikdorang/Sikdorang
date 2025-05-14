@@ -84,7 +84,7 @@ export const useManageMenuDetails = () => {
           preview: updated.preview,
           details: updated.details,
           tags: (updated.tags || []).map((t) => ({ id: t.id, tag: t.tag })),
-          images: (updated.images || []).map((i) => ({
+          images: mergedImages.map((i) => ({
             id: i.id || 0,
             image_url: i.image_url,
             order: i.order,
