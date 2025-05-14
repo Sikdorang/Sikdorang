@@ -19,6 +19,7 @@ export const useManageMenuDetails = () => {
     setError(null);
     try {
       const response = await DetailsAPI.getMenuDetails(menuId);
+      console.log('fetchMenusDetails: ', response);
       setMenusDetails(response);
     } catch (error) {
       if (axios.isAxiosError(error) && error.response?.status === 401) {
@@ -55,7 +56,7 @@ export const useManageMenuDetails = () => {
 
         // 3. Presigned URL 요청
         const { url } = await DetailsAPI.getPresignedUrl(menuId, uuidFileName);
-
+        console.log('s3 url: ', url);
         // 4. S3 업로드
         await DetailsAPI.uploadToS3(url, compressedFile);
 
@@ -87,23 +88,18 @@ export const useManageMenuDetails = () => {
           return uploaded || existingImg;
         });
 
-        const patchData: PatchMenuDetailsRequest = {};
-        if (original.preview !== updated.preview) {
-          patchData.preview = updated.preview;
-        }
-        if (original.details !== updated.details) {
-          patchData.details = updated.details;
-        }
-        if (!isEqual(original.tags || [], updated.tags || [])) {
-          patchData.tags = (updated.tags || []).map((t) => ({ id: t.id, tag: t.tag }));
-        }
-        if (!isEqual(original.images || [], mergedImages)) {
-          patchData.images = mergedImages.map((i) => ({
+        const patchData: PatchMenuDetailsRequest = {
+          preview: updated.preview,
+          details: updated.details,
+          tags: (updated.tags || []).map((t) => ({ id: t.id, tag: t.tag })),
+          images: (updated.images || []).map((i) => ({
             id: i.id || 0,
             image_url: i.image_url,
             order: i.order,
-          }));
-        }
+          })),
+        };
+
+        console.log('patchData: ', patchData);
 
         await DetailsAPI.updateMenuDetails(menuId, patchData);
         setMenusDetails((prev) => ({ ...prev, ...updated, images: mergedImages }));

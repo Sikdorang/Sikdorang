@@ -5,6 +5,7 @@ import { restrictToHorizontalAxis } from '@dnd-kit/modifiers';
 import { CSS } from '@dnd-kit/utilities';
 import { v4 as uuidv4 } from 'uuid';
 import { IMenuImageItem } from '@/types/model/menu';
+import { LexoRank } from 'lexorank';
 
 import DeleteIcon from '@public/icons/ic_x.svg';
 import AddIcon from '@public/icons/ic_plus.svg';
@@ -24,12 +25,16 @@ export default function MenuImageGallery({ images = [], setImages, maxImages = 1
     const { active, over } = event;
     if (active.id !== over?.id && over) {
       setImages((prevImages) => {
-        if (!Array.isArray(prevImages)) {
-          return [];
-        }
         const oldIndex = prevImages.findIndex((img) => img.id === active.id);
         const newIndex = prevImages.findIndex((img) => img.id === over.id);
-        return arrayMove(prevImages, oldIndex, newIndex);
+        const reorderedImages = arrayMove(prevImages, oldIndex, newIndex);
+
+        let lastOrder = LexoRank.middle();
+        return reorderedImages.map((img, index) => {
+          const newOrder = lastOrder.genNext();
+          lastOrder = newOrder;
+          return { ...img, order: newOrder.toString() };
+        });
       });
     }
   };
@@ -48,16 +53,26 @@ export default function MenuImageGallery({ images = [], setImages, maxImages = 1
         return validImages;
       }
 
-      const uploadedImages: IMenuImageItem[] = files.map((file, index) => {
+      const uploadedImages: IMenuImageItem[] = [];
+      let currentRank: LexoRank;
+
+      if (validImages.length > 0) {
+        const lastOrder = validImages[validImages.length - 1].order;
+        currentRank = LexoRank.parse(lastOrder);
+      } else {
+        currentRank = LexoRank.middle().genPrev();
+      }
+
+      files.forEach((file) => {
+        currentRank = currentRank.genNext();
         const uuid = uuidv4();
-        return {
+        uploadedImages.push({
           id: 0,
-          url: uuid,
           image_url: uuid,
-          order: String(validImages.length + index + 1),
+          order: currentRank.toString(),
           preview: URL.createObjectURL(file),
           file,
-        };
+        });
       });
 
       const updatedImages = [...validImages, ...uploadedImages];
@@ -82,8 +97,8 @@ export default function MenuImageGallery({ images = [], setImages, maxImages = 1
             src={
               selectedImage.id === 0
                 ? (selectedImage.preview ?? '')
-                : selectedImage.url
-                  ? CDN_URL + '/' + selectedImage.url
+                : selectedImage.image_url
+                  ? CDN_URL + '/' + selectedImage.image_url
                   : ''
             }
             alt="선택된 이미지"
@@ -104,12 +119,12 @@ export default function MenuImageGallery({ images = [], setImages, maxImages = 1
           <div className="flex items-center space-x-2 mb-3 overflow-x-auto">
             {Array.isArray(images) &&
               images.map((image, index) => {
-                const image_path = CDN_URL + '/' + image.url;
+                const image_path = CDN_URL + '/' + image.image_url;
                 return (
                   <SortableItem
-                    key={image.id}
+                    key={image.id !== 0 ? image.id : image.image_url}
                     id={image.id}
-                    image={image.id === 0 ? (image.preview ?? '') : image.url ? CDN_URL + '/' + image.url : ''}
+                    image={image.id === 0 ? (image.preview ?? '') : image.image_url ? image_path : ''}
                     selectedImage={selectedImage?.id === 0 ? (selectedImage?.preview ?? '') : (image_path ?? '')}
                     onSelect={() => setSelectedImage(image)}
                     onDelete={() => handleDeleteImage(index)}
@@ -160,7 +175,6 @@ function SortableItem({ id, image, selectedImage, onSelect, onDelete }: Sortable
         onClick={(e) => {
           e.stopPropagation();
           onSelect();
-          console.log('image: ', image);
         }}
       />
 

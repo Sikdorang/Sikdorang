@@ -14,8 +14,8 @@ export interface IMenuTagItem {
 
 export interface IMenuImageItem {
   id: number;
-  url: string;
   image_url: string;
+  url?: string;
   order: string;
   file?: File;
   preview?: string;

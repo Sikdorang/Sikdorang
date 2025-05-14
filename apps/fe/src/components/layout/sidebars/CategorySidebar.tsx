@@ -79,19 +79,28 @@ export default function CategorySidebar({
         return;
       }
 
-      let newOrder: string;
-      if (categories.length === 0) {
-        newOrder = LexoRank.middle().toString();
-      } else {
-        const lastOrder = categories[categories.length - 1].order;
-        newOrder = LexoRank.parse(lastOrder).genNext().toString();
-      }
+      setTemporaryCategories((prevCategories) => {
+        let newOrder: string;
+        if (prevCategories.length === 0) {
+          newOrder = LexoRank.middle().toString();
+        } else {
+          console.log('prevCategories: ', prevCategories);
+          const lastOrder = prevCategories[prevCategories.length - 1].order;
+          newOrder = LexoRank.parse(lastOrder).genNext().toString();
+        }
 
-      const response: CreateCategoryResponse = await createCategory(inputValue, newOrder);
-      setTemporaryCategories((prevCategories) => [
-        ...prevCategories,
-        { id: response.id, category: response.category, order: newOrder },
-      ]);
+        const tempCategory = {
+          id: 0, // 임시 ID
+          category: inputValue,
+          order: newOrder,
+        };
+
+        createCategory(inputValue, newOrder).then((response) => {
+          setTemporaryCategories((prev) => prev.map((cat) => (cat.id === 0 ? { ...response, order: newOrder } : cat)));
+        });
+
+        return [...prevCategories, tempCategory];
+      });
       setNewCategory('');
       setCategoryError(null);
       invalidateQueries(queryClient);
