@@ -1,3 +1,3 @@
 export const URLS = {
-  helpMenuManageUrl: 'https://www.notion.so/1c8e4c6f133f8008881ffda5240479ea',
+  helpMenuManageUrl: 'https://www.notion.so/1f4e4c6f133f80b5a9a1c8bcce4c07d2',
 };
