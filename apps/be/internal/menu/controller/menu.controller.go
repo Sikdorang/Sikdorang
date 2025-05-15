@@ -246,3 +246,36 @@ func (c *MenuController) GetAdminMenuBoard(ctx *fiber.Ctx) error {
 
 	return ctx.JSON(result)
 }
+
+// DeleteMenu godoc
+// @Summary      메뉴 삭제
+// @Description  storeID와 menuID를 기반으로 특정 메뉴를 삭제합니다.
+// @Tags         menu
+// @Param        menuID path int true "메뉴 ID"
+// @Produce      json
+// @Success      200 {object} map[string]bool "삭제 성공"
+// @Failure      400 {object} errorDto.ErrorResponse "유효하지 않은 menuID"
+// @Failure      401 {object} errorDto.ErrorResponse "인증 실패"
+// @Failure      500 {object} errorDto.ErrorResponse "서버 에러 또는 삭제 실패"
+// @Router       /menus/{menuID} [delete]
+func (c *MenuController) DeleteMenu(ctx *fiber.Ctx) error {
+	storeID, err := middleware.ExtractStoreID(ctx)
+	if err != nil {
+		return ctx.Status(401).JSON(errorDto.ErrorResponse{Error: "unauthorized"})
+	}
+
+	menuIDParam := ctx.Params("menuID")
+	menuID, err := strconv.Atoi(menuIDParam)
+	if err != nil {
+		return ctx.Status(400).JSON(errorDto.ErrorResponse{Error: "invalid menuID"})
+	}
+
+	err = c.service.DeleteMenu(uint(storeID), uint(menuID))
+	if err != nil {
+		return ctx.Status(500).JSON(errorDto.ErrorResponse{Error: "failed to delete menu"})
+	}
+
+	return ctx.Status(200).JSON(fiber.Map{
+		"success": true,
+	})
+}
