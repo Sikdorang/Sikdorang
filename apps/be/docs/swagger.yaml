@@ -2,10 +2,10 @@ basePath: /api
 definitions:
   dto.AdminMenuBoardDTO:
     properties:
-      category_id:
-        type: integer
-      category_name:
+      category:
         type: string
+      id:
+        type: integer
       menus:
         items:
           $ref: '#/definitions/dto.AdminMenuItemDTO'
@@ -15,13 +15,15 @@ definitions:
     type: object
   dto.AdminMenuItemDTO:
     properties:
-      images:
+      details:
+        type: string
+      id:
+        type: integer
+      image_urls:
         items:
           type: string
         type: array
-      menu_id:
-        type: integer
-      name:
+      menu:
         type: string
       order:
         type: string
@@ -37,8 +39,12 @@ definitions:
       category:
         example: 증류주
         type: string
+      order:
+        example: "111"
+        type: string
     required:
     - category
+    - order
     type: object
   dto.CreateCategoryResponseDTO:
     properties:
@@ -78,6 +84,9 @@ definitions:
       id:
         example: 1
         type: integer
+      order:
+        example: "1"
+        type: string
     type: object
   dto.GetDescriptionResponseDTO:
     properties:
@@ -85,13 +94,13 @@ definitions:
         type: string
       images:
         items:
-          type: string
+          $ref: '#/definitions/dto.ImagesDTO'
         type: array
       preview:
         type: string
       tags:
         items:
-          type: string
+          $ref: '#/definitions/dto.TagsDTO'
         type: array
     type: object
   dto.GetMenuBoardResponseDTO:
@@ -153,6 +162,15 @@ definitions:
       order:
         type: string
     type: object
+  dto.ImagesDTO:
+    properties:
+      id:
+        type: integer
+      order:
+        type: string
+      url:
+        type: string
+    type: object
   dto.LoginRequestDTO:
     properties:
       password:
@@ -191,6 +209,13 @@ definitions:
         type: integer
     type: object
   dto.TagDTO:
+    properties:
+      id:
+        type: integer
+      tag:
+        type: string
+    type: object
+  dto.TagsDTO:
     properties:
       id:
         type: integer
@@ -559,6 +584,38 @@ paths:
       tags:
       - menu
   /menus/{menuID}:
+    delete:
+      description: storeID와 menuID를 기반으로 특정 메뉴를 삭제합니다.
+      parameters:
+      - description: 메뉴 ID
+        in: path
+        name: menuID
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 삭제 성공
+          schema:
+            additionalProperties:
+              type: boolean
+            type: object
+        "400":
+          description: 유효하지 않은 menuID
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+        "401":
+          description: 인증 실패
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+        "500":
+          description: 서버 에러 또는 삭제 실패
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+      summary: 메뉴 삭제
+      tags:
+      - menu
     get:
       description: storeID와 menuID로 메뉴 상세 정보를 조회합니다. (Preview, Details, Tags, Images
         포함)

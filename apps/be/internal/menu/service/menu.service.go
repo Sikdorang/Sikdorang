@@ -19,7 +19,7 @@ type MenuService interface {
 	UpdateDescription(storeID, menuID uint, body dto.UpdateDescriptionRequestDTO) (error)
 	UpdateMenuOrder(storeID uint, body []dto.UpdateMenuOrderRequestDTO) error
 	GetAdminMenuBoard(storeID uint) ([]dto.AdminMenuBoardDTO, error)
-
+	DeleteMenu(storeID, menuID uint) (error)
 }
 
 type menuService struct {
@@ -348,6 +348,7 @@ func (s *menuService) GetAdminMenuBoard(storeID uint) ([]dto.AdminMenuBoardDTO, 
 				Order:  menu.Order,
 				Tags:   tagNames,
 				ImageURLs: imageURLs,
+				Details: menu.Details,
 			})
 		}
 
@@ -360,4 +361,8 @@ func (s *menuService) GetAdminMenuBoard(storeID uint) ([]dto.AdminMenuBoardDTO, 
 	}
 
 	return result, nil
+}
+
+func (s *menuService) DeleteMenu(storeID, menuID uint) error {
+	return s.repo.DeleteMenu(storeID, menuID)
 }
