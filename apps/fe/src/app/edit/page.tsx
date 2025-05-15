@@ -26,6 +26,8 @@ export default function Page() {
   const menusMap = useMenuOrderStore((s) => s.menus);
   const handleMenuReorder = useMenuOrderStore((s) => s.handleReorder);
   const getChangedMenuItems = useMenuOrderStore.getState().getChangedItems;
+  const isMenuItemChanged = useMenuOrderStore.getState().isChanged;
+  const resetMenuChange = useMenuOrderStore.getState().resetChangeState;
 
   const categoriesAndMenusState = useSortableItems(categoriesAndMenus ?? []);
   const [selectedCategoryId, setSelectedCategoryId] = useState<number | null>(null);
@@ -55,6 +57,8 @@ export default function Page() {
         queryClient.invalidateQueries({ queryKey: ['menus'] });
       }
       queryClient.invalidateQueries({ queryKey: ['categoriesAndMenus'] });
+      categoriesAndMenusState.resetInitial();
+      resetMenuChange();
       toast.success(MESSAGES.OrderSaveSuccess);
     } catch (error) {
       toast.error(MESSAGES.orderSaveFailureError);
@@ -87,7 +91,7 @@ export default function Page() {
           </Suspense>
         </MenuSection>
       </SidebarWithContentContainer>
-      <EditSaveButton onClick={handleSave} />
+      <EditSaveButton onClick={handleSave} disabled={!(categoriesAndMenusState.hasChanges || isMenuItemChanged)} />
     </>
   );
 }

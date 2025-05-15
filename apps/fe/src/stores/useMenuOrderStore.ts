@@ -7,14 +7,18 @@ import { OrderUpdatePayload } from '@/types/model/payload';
 interface MenuState {
   initialMenus: Map<number, IMenuItem[]>;
   menus: Map<number, IMenuItem[]>;
+  isChanged: boolean;
+
   setInitialData: (data: { id: number; menus: IMenuItem[] }[]) => void;
   handleReorder: (categoryId: number, oldIndex: number, newIndex: number) => void;
   getChangedItems: () => OrderUpdatePayload[];
+  resetChangeState: () => void;
 }
 
 export const useMenuOrderStore = create<MenuState>((set, get) => ({
   initialMenus: new Map(),
   menus: new Map(),
+  isChanged: false,
 
   setInitialData: (data) => {
     const initial = new Map<number, IMenuItem[]>();
@@ -32,7 +36,11 @@ export const useMenuOrderStore = create<MenuState>((set, get) => ({
     if (!categoryMenus) return;
     const newOrder = arrayMove(categoryMenus, oldIndex, newIndex);
     menus.set(categoryId, newOrder);
-    set({ menus });
+
+    const original = get().initialMenus.get(categoryId) ?? [];
+    const hasChanged = newOrder.some((item, idx) => item.id !== original[idx]?.id);
+
+    set({ menus, isChanged: get().isChanged || hasChanged });
   },
 
   getChangedItems: () => {
@@ -56,6 +64,14 @@ export const useMenuOrderStore = create<MenuState>((set, get) => ({
     });
 
     return result;
+  },
+  resetChangeState: () => {
+    const menus = get().menus;
+    const newInitial = new Map<number, IMenuItem[]>();
+    menus.forEach((list, id) => {
+      newInitial.set(id, [...list]);
+    });
+    set({ initialMenus: newInitial, isChanged: false });
   },
 }));
 
