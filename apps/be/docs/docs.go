@@ -671,6 +671,54 @@ const docTemplate = `{
                     }
                 }
             },
+            "delete": {
+                "description": "storeID와 menuID를 기반으로 특정 메뉴를 삭제합니다.",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "menu"
+                ],
+                "summary": "메뉴 삭제",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "메뉴 ID",
+                        "name": "menuID",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "삭제 성공",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "boolean"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "유효하지 않은 menuID",
+                        "schema": {
+                            "$ref": "#/definitions/dto.ErrorResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "인증 실패",
+                        "schema": {
+                            "$ref": "#/definitions/dto.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "서버 에러 또는 삭제 실패",
+                        "schema": {
+                            "$ref": "#/definitions/dto.ErrorResponse"
+                        }
+                    }
+                }
+            },
             "patch": {
                 "description": "storeID와 menuID로 메뉴 상세정보(Preview, Details, Tags, Images)를 수정합니다.",
                 "consumes": [
@@ -804,11 +852,11 @@ const docTemplate = `{
         "dto.AdminMenuBoardDTO": {
             "type": "object",
             "properties": {
-                "category_id": {
-                    "type": "integer"
-                },
-                "category_name": {
+                "category": {
                     "type": "string"
+                },
+                "id": {
+                    "type": "integer"
                 },
                 "menus": {
                     "type": "array",
@@ -824,16 +872,19 @@ const docTemplate = `{
         "dto.AdminMenuItemDTO": {
             "type": "object",
             "properties": {
-                "images": {
+                "details": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "image_urls": {
                     "type": "array",
                     "items": {
                         "type": "string"
                     }
                 },
-                "menu_id": {
-                    "type": "integer"
-                },
-                "name": {
+                "menu": {
                     "type": "string"
                 },
                 "order": {
@@ -853,12 +904,17 @@ const docTemplate = `{
         "dto.CreateCategoryRequestDTO": {
             "type": "object",
             "required": [
-                "category"
+                "category",
+                "order"
             ],
             "properties": {
                 "category": {
                     "type": "string",
                     "example": "증류주"
+                },
+                "order": {
+                    "type": "string",
+                    "example": "111"
                 }
             }
         },
@@ -917,6 +973,10 @@ const docTemplate = `{
                 "id": {
                     "type": "integer",
                     "example": 1
+                },
+                "order": {
+                    "type": "string",
+                    "example": "1"
                 }
             }
         },
@@ -929,7 +989,7 @@ const docTemplate = `{
                 "images": {
                     "type": "array",
                     "items": {
-                        "type": "string"
+                        "$ref": "#/definitions/dto.ImagesDTO"
                     }
                 },
                 "preview": {
@@ -938,7 +998,7 @@ const docTemplate = `{
                 "tags": {
                     "type": "array",
                     "items": {
-                        "type": "string"
+                        "$ref": "#/definitions/dto.TagsDTO"
                     }
                 }
             }
@@ -1033,6 +1093,20 @@ const docTemplate = `{
                 }
             }
         },
+        "dto.ImagesDTO": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "integer"
+                },
+                "order": {
+                    "type": "string"
+                },
+                "url": {
+                    "type": "string"
+                }
+            }
+        },
         "dto.LoginRequestDTO": {
             "type": "object",
             "properties": {
@@ -1089,6 +1163,17 @@ const docTemplate = `{
             }
         },
         "dto.TagDTO": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "integer"
+                },
+                "tag": {
+                    "type": "string"
+                }
+            }
+        },
+        "dto.TagsDTO": {
             "type": "object",
             "properties": {
                 "id": {
