@@ -1,5 +1,11 @@
 @import 'tailwindcss';
 
+@font-face {
+  font-family: 'Pretendard';
+  src: url('/fonts/PretendardVariable.woff2') format('woff2');
+  font-display: swap;
+}
+
 @theme {
   /* gray color platte */
   --color-gray-100: #f8f9fa;
@@ -50,6 +56,10 @@
 }
 
 @layer base {
+  body {
+    font-family: 'Pretendard', sans-serif;
+  }
+
   button {
     @apply cursor-pointer;
   }
@@ -122,5 +132,28 @@
 
   .drag-none {
     -webkit-user-drag: none;
+  }
+
+  .custom-scrollbar::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  .custom-scrollbar::-webkit-scrollbar-thumb {
+    outline: none;
+    background-color: #768797;
+    border-radius: 8px;
+  }
+
+  /* Chrome, Edge, Safari */
+  .custom-scrollbar::-webkit-scrollbar-button {
+    display: none;
+    height: 0;
+    width: 0;
+  }
+
+  /* Firefox */
+  .custom-scrollbar {
+    outline: none;
+    scrollbar-color: #768797 transparent;
   }
 }
