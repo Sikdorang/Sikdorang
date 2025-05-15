@@ -32,8 +32,8 @@ export default function manifest(): MetadataRoute.Manifest {
         type: 'image/png',
       },
       {
-        src: '/icons/logo/android-launchericon-144-144.png',
-        sizes: '144x144',
+        src: '/icons/logo/android-launchericon-128-128.png',
+        sizes: '128x128',
         type: 'image/png',
       },
       {
