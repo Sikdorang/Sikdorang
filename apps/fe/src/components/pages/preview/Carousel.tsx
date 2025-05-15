@@ -19,7 +19,7 @@ export default function Carousel({ images }: CarouselProps) {
       >
         {currentList?.map((src, idx) => <CarouselImage key={idx} src={src} />)}
       </div>
-      <div className="absolute bottom-0 w-full justify-center mb-4 flex flex-wrap gap-1">
+      <div className="absolute bottom-0 w-full justify-center mb-4 flex flex-wrap gap-1 ">
         {images.map((_, index) => (
           <div
             onClick={() => slideToIndex(index + 1)}
@@ -38,8 +38,8 @@ interface CarouselImageProps {
 function CarouselImage({ src }: CarouselImageProps) {
   const imgUrl = `${process.env.NEXT_PUBLIC_CDN_BASE_URL}/${src}`;
   return (
-    <div className="relative w-full shrink-0 aspect-[5/3] overflow-hidden rounded-sm snap-center">
-      <Image src={imgUrl} alt={`carousel-image-%${src}`} fill className="object-cover" />
+    <div className="relative w-full shrink-0 aspect-[5/3] overflow-hidden rounded-sm snap-center bg-gray-900">
+      <Image src={imgUrl} alt={`carousel-image-%${src}`} fill className="object-contain " />
     </div>
   );
 }

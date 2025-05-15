@@ -91,7 +91,7 @@ export default function MenuImageGallery({ images = [], setImages, maxImages = 1
 
   return (
     <div>
-      <div className="w-full h-64 border border-blue-200 rounded-md flex items-center justify-center mb-4">
+      <div className="w-full h-64 border border-blue-200 rounded-md flex items-center justify-center mb-4 bg-gray-900">
         {selectedImage ? (
           <img
             src={
@@ -102,10 +102,10 @@ export default function MenuImageGallery({ images = [], setImages, maxImages = 1
                   : ''
             }
             alt="선택된 이미지"
-            className="w-full h-full object-cover rounded-md"
+            className="w-full h-full object-contain rounded-md"
           />
         ) : (
-          <p className="text-gray-400 text-body-xs select-none">이미지를 업로드해 주세요</p>
+          <p className="text-gray-700 text-body-xs select-none">이미지를 업로드해 주세요</p>
         )}
       </div>
 
