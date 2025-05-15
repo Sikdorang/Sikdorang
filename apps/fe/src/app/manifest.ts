@@ -2,17 +2,17 @@ import type { MetadataRoute } from 'next';
 
 export default function manifest(): MetadataRoute.Manifest {
   return {
-    name: 'sikdorang',
-    short_name: 'sikdorang',
-    description: '디지털 메뉴판 올인원 솔루션',
+    name: '식도랑',
+    short_name: '식도랑',
+    description: '고민은 줄이고, 선택은 쉽게. 술자리 주문을 도와주는 메뉴판',
     id: 'sikdorang',
     start_url: '/',
     scope: '/',
     display: 'standalone',
     display_override: ['standalone', 'window-controls-overlay'],
     orientation: 'landscape',
-    background_color: '#10161a',
-    theme_color: '#3e84ff',
+    background_color: '#ffffff',
+    theme_color: '#10161a',
     lang: 'ko',
     dir: 'ltr',
     icons: [
