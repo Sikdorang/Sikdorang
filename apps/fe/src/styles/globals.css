@@ -1,11 +1,5 @@
 @import 'tailwindcss';
 
-@font-face {
-  font-family: 'Pretendard';
-  src: url('/fonts/PretendardVariable.woff2') format('woff2');
-  font-display: swap;
-}
-
 @theme {
   /* gray color platte */
   --color-gray-100: #f8f9fa;
@@ -56,11 +50,6 @@
 }
 
 @layer base {
-  body {
-    font-family: 'Pretendard', sans-serif;
-    overflow-behavior-x: none;
-  }
-
   button {
     @apply cursor-pointer;
   }

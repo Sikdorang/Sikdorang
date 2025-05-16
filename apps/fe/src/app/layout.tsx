@@ -7,7 +7,7 @@ import ToastProvider from '@/providers/toastProvider';
 import MSWProvider from '@/providers/mswProvider';
 
 const pretendard = localFont({
-  src: '../../public/fonts/PretendardVariable.woff2',
+  src: './fonts/PretendardVariable.woff2',
   display: 'swap',
 });
 
