@@ -10,7 +10,12 @@ import { MESSAGES } from '@/constants/messages';
 
 const TEMP_PASSWORD = '1234';
 
-export default function AdminModal({ onClose }: { onClose: () => void }) {
+interface AdminModalProps {
+  onClose: () => void;
+  onPass: () => void;
+}
+
+export default function AdminModal({ onClose, onPass }: AdminModalProps) {
   const router = useRouter();
   const [password, setPassword] = useState('');
   const [errorMessage, setErrorMessage] = useState<string | undefined>(undefined);
@@ -19,6 +24,7 @@ export default function AdminModal({ onClose }: { onClose: () => void }) {
 
   const handleSubmit = () => {
     if (validatePassword(password)) {
+      onPass();
       toast.success(MESSAGES.adminModeEnter);
       setTimeout(() => {
         router.push('/menu');

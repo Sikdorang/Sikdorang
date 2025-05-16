@@ -10,12 +10,28 @@ import MenuListSkeleton from '@/components/pages/preview/MenuListSkeleton';
 import MenuModal from '@/components/pages/preview/MenuModal';
 import MenuSection from '@/components/pages/preview/MenuSection';
 import { IMenuItem } from '@/types/model/menu';
-import { Suspense, useState } from 'react';
+import { Suspense, useCallback, useEffect, useState } from 'react';
+import AdminModal from '@/components/pages/preview/AdminModal';
 
 export default function Page() {
   const [selectedCategoryId, setSelectedCategoryId] = useState<number | null>(null);
   const [selectedMenu, setSelectedMenu] = useState<IMenuItem | null>(null);
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [showMenuModal, setShowMenuModal] = useState(false);
+  const [showAdminModal, setShowAdminModal] = useState(false);
+
+  const handlePopState = useCallback(() => {
+    history.pushState(null, '', location.href);
+  }, []);
+
+  useEffect(() => {
+    history.pushState(null, '', location.href);
+
+    window.addEventListener('popstate', handlePopState);
+
+    return () => {
+      window.removeEventListener('popstate', handlePopState);
+    };
+  }, [handlePopState]);
 
   return (
     <div className="relative">
@@ -37,16 +53,24 @@ export default function Page() {
                 selectedCategoryId={selectedCategoryId}
                 onClickItem={(item) => {
                   setSelectedMenu(item);
-                  setIsModalOpen(true);
+                  setShowMenuModal(true);
                 }}
               />
             </Suspense>
           )}
         </MenuSection>
       </SidebarWithContentContainer>
-      <AdminButton />
-      {isModalOpen && selectedMenu && (
-        <MenuModal item={selectedMenu} isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
+      <AdminButton onClick={() => setShowAdminModal(true)} />
+      {showAdminModal && (
+        <AdminModal
+          onClose={() => setShowAdminModal(false)}
+          onPass={() => {
+            setShowAdminModal(false);
+          }}
+        />
+      )}
+      {showMenuModal && selectedMenu && (
+        <MenuModal item={selectedMenu} isOpen={showMenuModal} onClose={() => setShowMenuModal(false)} />
       )}
     </div>
   );
