@@ -19,7 +19,10 @@ jobs:
         uses: tj-actions/changed-files@v44
         with:
           files: |
-            app/fe/**
+            apps/fe/**/*
+
+      - name: List changed files
+        run: echo "::notice title=Changed files::${{ steps.changed-files.outputs.all_changed_files }}"
 
   lint-and-build:
     name: Lint and Build Frontend
