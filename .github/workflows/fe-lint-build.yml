@@ -1,9 +1,12 @@
-name: FE Lint and Build
+name: FE Lint and Build # workflow 이름
 
 on:
   pull_request:
     branches:
       - main
+    paths:
+      - 'apps/fe/**' # fe 디렉토리 변경 시에만 작동
+      - '.github/workflows/fe-lint-build.yml' # 이 설정 파일 수정 시에도 작동
 
 jobs:
   check-fe-changes:
@@ -31,20 +34,20 @@ jobs:
     if: needs.check-fe-changes.outputs.fe-changed == 'true'
 
     steps:
-      - name: Checkout Repository
+      - name: Checkout Repository # Github Repository에서 코드를 가져옴
         uses: actions/checkout@v4
 
-      - name: Set up Node.js
+      - name: Set up Node.js # Node.js 환경 세팅
         uses: actions/setup-node@v4
         with:
-          node-version: 18
+          node-version: 18 # 배포 환경의 Node.js 버전과 동일하게 사용
 
-      - name: Set up pnpm
+      - name: Set up pnpm # pnpm 설치
         uses: pnpm/action-setup@v4
         with:
           version: 8.6.0
 
-      - name: Cache pnpm modules
+      - name: Cache pnpm modules # pnpm 캐시 설정
         uses: actions/cache@v4
         with:
           path: ~/.pnpm-store
@@ -52,7 +55,7 @@ jobs:
           restore-keys: |
             pnpm-store-${{ runner.os }}-
 
-      - name: Install dependencies
+      - name: Install dependencies # 의존성 패키지 설치
         run: pnpm install
 
       - name: Run Lint # ESLint 실행
