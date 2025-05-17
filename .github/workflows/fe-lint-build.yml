@@ -23,7 +23,7 @@ jobs:
         with:
           files: |
             apps/fe/**/*
-
+            
       - name: List changed files
         run: echo "::notice title=Changed files::${{ steps.changed-files.outputs.all_changed_files }}"
 
