@@ -23,7 +23,7 @@ jobs:
         with:
           files: |
             apps/fe/**/*
-            
+
       - name: List changed files
         run: echo "::notice title=Changed files::${{ steps.changed-files.outputs.all_changed_files }}"
 
@@ -59,13 +59,13 @@ jobs:
         run: pnpm install
 
       - name: Run Lint # ESLint 실행
-        run: pnpm --filter apps/fe run lint
+        run: pnpm --filter fe run lint
         if: ${{ always() }}
 
       - name: Type Check # 타입 체크
-        run: pnpm --filter apps/fe exec tsc --noEmit
+        run: pnpm --filter fe exec tsc --noEmit
         if: ${{ always() }}
 
       - name: Build Project # Next.js build 실행
-        run: pnpm --filter apps/fe run build
+        run: pnpm --filter fe run build
         if: ${{ always() }}
