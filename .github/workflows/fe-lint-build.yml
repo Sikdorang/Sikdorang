@@ -56,16 +56,16 @@ jobs:
             pnpm-store-${{ runner.os }}-
 
       - name: Install dependencies # 의존성 패키지 설치
-        run: pnpm install
+        run: pnpm install -r
 
       - name: Run Lint # ESLint 실행
-        run: pnpm --filter fe run lint
+        run: pnpm fe:lint
         if: ${{ always() }}
 
       - name: Type Check # 타입 체크
-        run: pnpm --filter fe exec tsc --noEmit
+        run: pnpm fe:type
         if: ${{ always() }}
 
       - name: Build Project # Next.js build 실행
-        run: pnpm --filter fe run build
+        run: pnpm fe:build
         if: ${{ always() }}
