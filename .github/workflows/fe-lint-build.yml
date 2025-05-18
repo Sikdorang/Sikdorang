@@ -44,18 +44,6 @@ jobs:
         with:
           version: 8.6.0
 
-      - name: Get pnpm store directory
-        id: pnpm-cache-dir
-        run: echo "STORE_PATH=$(pnpm config get store-dir)" >> $GITHUB_ENV
-
-      - name: Cache pnpm modules # pnpm 캐시 설정
-        uses: actions/cache@v4
-        with:
-          path: ${{ env.STORE_PATH }}
-          key: pnpm-store-${{ runner.os }}-${{ hashFiles('**/pnpm-lock.yaml') }}
-          restore-keys: |
-            pnpm-store-${{ runner.os }}-
-
       - name: Install dependencies # 의존성 패키지 설치
         run: pnpm install -r
 
