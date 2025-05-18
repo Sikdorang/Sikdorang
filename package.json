@@ -6,7 +6,10 @@
   "scripts": {
     "format": "prettier --write . && (cd apps/be && goimports -w .)",
     "setup": "pnpm install && pnpm setup:go",
-    "start": "turbo run dev"
+    "start": "turbo run dev",
+    "fe:lint": "pnpm --filter fe run lint",
+    "fe:type": "pnpm --filter fe exec tsc --noEmit",
+    "fe:build": "pnpm --filter fe run build"
   },
   "devDependencies": {
     "prettier": "^3.5.3",

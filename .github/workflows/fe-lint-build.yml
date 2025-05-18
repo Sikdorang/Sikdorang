@@ -23,7 +23,7 @@ jobs:
         with:
           files: |
             apps/fe/**/*
-            
+
       - name: List changed files
         run: echo "::notice title=Changed files::${{ steps.changed-files.outputs.all_changed_files }}"
 
@@ -40,7 +40,7 @@ jobs:
       - name: Set up Node.js # Node.js 환경 세팅
         uses: actions/setup-node@v4
         with:
-          node-version: 18 # 배포 환경의 Node.js 버전과 동일하게 사용
+          node-version-file: '.nvmrc' # 프로젝트에서 사용하는 Node.js 버전과 동일하게 사용
 
       - name: Set up pnpm # pnpm 설치
         uses: pnpm/action-setup@v4
@@ -56,16 +56,16 @@ jobs:
             pnpm-store-${{ runner.os }}-
 
       - name: Install dependencies # 의존성 패키지 설치
-        run: pnpm install
+        run: pnpm install -r
 
       - name: Run Lint # ESLint 실행
-        run: pnpm --filter apps/fe run lint
+        run: pnpm fe:lint
         if: ${{ always() }}
 
       - name: Type Check # 타입 체크
-        run: pnpm --filter apps/fe exec tsc --noEmit
+        run: pnpm fe:type
         if: ${{ always() }}
 
       - name: Build Project # Next.js build 실행
-        run: pnpm --filter apps/fe run build
+        run: pnpm fe:build
         if: ${{ always() }}
