@@ -4,9 +4,6 @@ on:
   pull_request:
     branches:
       - main
-    paths:
-      - 'apps/fe/**' # fe 디렉토리 변경 시에만 작동
-      - '.github/workflows/fe-lint-build.yml' # 이 설정 파일 수정 시에도 작동
 
 jobs:
   check-fe-changes:
