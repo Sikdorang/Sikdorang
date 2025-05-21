@@ -2,11 +2,12 @@ package service
 
 import (
 	"fmt"
-
+	"strconv"
 	"be/internal/menu/dto"
 	"be/internal/menu/repository"
 	"be/internal/models"
 	"be/internal/utils"
+	notification "be/internal/notification/service"
 )
 
 type MenuService interface {
@@ -24,11 +25,13 @@ type MenuService interface {
 
 type menuService struct {
 	repo repository.MenuRepository
+	notifySvc *notification.NotificationService
 }
 
-func NewMenuService(repo repository.MenuRepository) MenuService {
+func NewMenuService(repo repository.MenuRepository, notify *notification.NotificationService) MenuService {
 	return &menuService{
 		repo: repo,
+		notifySvc: notify,
 	}
 }
 
@@ -91,6 +94,8 @@ func (s *menuService) SyncMenus(storeID uint, syncDatas []dto.SyncMenuRequestDTO
 			})
 		}
 	}
+
+	s.notifySvc.InvalidateCategoryCache(strconv.Itoa(int(storeID)))
 
 	if len(errs) > 0 {
 		return errs, fmt.Errorf("one or more sync errors occurred")
@@ -290,6 +295,8 @@ func (s *menuService) UpdateDescription(storeID, menuID uint, body dto.UpdateDes
         }
     }
 
+	s.notifySvc.InvalidateCategoryCache(strconv.Itoa(int(storeID)))
+
 	// 오류 모음 처리
 	if len(execErrs) > 0 {
 		return fmt.Errorf("일부 작업에서 오류가 발생했습니다: %v", execErrs)
@@ -306,6 +313,9 @@ func (s *menuService) UpdateMenuOrder(storeID uint, body []dto.UpdateMenuOrderRe
 			StoreID: storeID, // 명시적으로 세팅해주는 게 좋음
 		})
 	}
+	
+	s.notifySvc.InvalidateCategoryCache(strconv.Itoa(int(storeID)))
+
 	return s.repo.UpdateMenuOrder(storeID, menus)
 }
 
@@ -364,5 +374,6 @@ func (s *menuService) GetAdminMenuBoard(storeID uint) ([]dto.AdminMenuBoardDTO, 
 }
 
 func (s *menuService) DeleteMenu(storeID, menuID uint) error {
+	s.notifySvc.InvalidateCategoryCache(strconv.Itoa(int(storeID)))
 	return s.repo.DeleteMenu(storeID, menuID)
 }
