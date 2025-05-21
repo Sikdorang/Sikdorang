@@ -13,6 +13,8 @@ import ImageGallery from '@/components/pages/menu/MenuImageGallery';
 import Spinner from '@/components/common/loadings/Spinner';
 import { useQueryClient } from '@tanstack/react-query';
 import { invalidateQueries } from '@/utilities/invalidateQuery';
+import { debounce } from 'lodash';
+import { useCallback } from 'react';
 
 export default function ManageMenuModal() {
   const queryClient = useQueryClient();
@@ -46,10 +48,6 @@ export default function ManageMenuModal() {
     images: [],
   });
 
-  // const [isComposing] = useState(false);
-  // const [inputTagValue, setInputTagValue] = useState('');
-  // const [, setTagError] = useState<string | null>(null);
-
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.key === 'Escape') {
@@ -61,6 +59,10 @@ export default function ManageMenuModal() {
       window.removeEventListener('keydown', handleKeyDown);
     };
   }, [router]);
+
+  // const [isComposing] = useState(false);
+  // const [inputTagValue, setInputTagValue] = useState('');
+  // const [, setTagError] = useState<string | null>(null);
 
   // const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
   //   if (isComposing) return;
@@ -91,7 +93,7 @@ export default function ManageMenuModal() {
   //   }));
   // };
 
-  const handleConfirm = async () => {
+  const handleConfirm = useCallback(async () => {
     if (!menusDetails) return;
     if (isEqual(menusDetails, temporaryMenuDetails)) {
       router.back();
@@ -105,7 +107,9 @@ export default function ManageMenuModal() {
     } catch (error) {
       console.log(error);
     }
-  };
+  }, [menusDetails, temporaryMenuDetails, queryId, queryClient, router]);
+
+  const debouncedHandleConfirm = useCallback(debounce(handleConfirm, 500), [handleConfirm]);
 
   return (
     <div
@@ -186,7 +190,7 @@ export default function ManageMenuModal() {
           <BaseButton onClick={() => router.back()} variant="cancel" className="flex-1">
             취소
           </BaseButton>
-          <BaseButton onClick={handleConfirm} className="flex-4">
+          <BaseButton onClick={debouncedHandleConfirm} className="flex-4">
             확인
           </BaseButton>
         </div>
