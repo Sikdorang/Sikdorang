@@ -9,19 +9,25 @@ import (
 	category "be/internal/category/route"
 	menu "be/internal/menu/route"
 	s3 "be/internal/s3/route"
+	notification "be/internal/notification/route" // ✅ 누락된 import
 
 	swagger "github.com/gofiber/swagger"
+
+	"be/internal/notification/gateway"
+	notificationService "be/internal/notification/service"
 )
 
 func SetupRoutes(app *fiber.App, db *gorm.DB) {
 	api := app.Group("/api")
 
-	app.Get("/swagger/*", swagger.HandlerDefault) // /swagger/index.html
+	app.Get("/swagger/*", swagger.HandlerDefault)
 
-	// 도메인별 Init 함수에서 DI + 라우팅까지 전부 처리
-	category.InitCategoryRoutes(api, db)
+	hub := gateway.NewHub()
+	notifySvc := notificationService.NewNotificationService(hub)
+
+	category.InitCategoryRoutes(api, db, notifySvc)
 	auth.InitAuthRoutes(api, db)
-	menu.InitMenuRoutes(api, db)
+	menu.InitMenuRoutes(api, db, notifySvc)
 	s3.InitS3Routes(api, db)
-
+	notification.InitNotificationRoutes(api, hub)
 }

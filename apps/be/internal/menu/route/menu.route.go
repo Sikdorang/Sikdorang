@@ -8,20 +8,20 @@ import (
 	"be/internal/menu/repository"
 	"be/internal/menu/service"
 	"be/internal/middleware"
+	notification "be/internal/notification/service"
 )
 
-func InitMenuRoutes(router fiber.Router, db *gorm.DB) {
+func InitMenuRoutes(router fiber.Router, db *gorm.DB, notify *notification.NotificationService) {
 	repo := repository.NewMenuRepository(db)
-	svc := service.NewMenuService(repo)
+	svc := service.NewMenuService(repo, notify) 
 	ctrl := controller.NewMenuController(svc)
 
 	group := router.Group("/menus", middleware.JWTProtected())
 
-	// ✅ 여기에 API들 등록
 	group.Get("/board/admin", ctrl.GetAdminMenuBoard)
 	group.Patch("/order", ctrl.UpdateMenuOrder)
-	group.Get("/", ctrl.GetMenus)   // GET /api/menus
-	group.Post("/", ctrl.SyncMenus) // POST /api/menus/
+	group.Get("/", ctrl.GetMenus)
+	group.Post("/", ctrl.SyncMenus)
 	group.Get("/board/:categoryID", ctrl.GetMenuBoard)
 	group.Get("/:menuID", ctrl.GetDescription)
 	group.Patch("/:menuID", ctrl.UpdateDescription)
