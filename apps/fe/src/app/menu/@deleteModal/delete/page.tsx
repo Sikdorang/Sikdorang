@@ -5,18 +5,21 @@ import { useDeleteMenuStore } from '@/stores/useDeleteMenuStore';
 import { useEffect } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
 import { invalidateQueries } from '@/utilities/invalidateQuery';
+import { useManageMenu } from '@/hooks/useManageMenu';
 
 export default function DeleteMenuModal() {
   const router = useRouter();
   const queryClient = useQueryClient();
   const searchParams = useSearchParams();
   const { deleteMenuItem } = useDeleteMenuStore();
+  const { isLoading, deleteMenu } = useManageMenu();
 
   const queryId = searchParams.get('id');
   const queryName = searchParams.get('name');
 
   const handleDelete = () => {
     if (deleteMenuItem && queryId) {
+      deleteMenu(Number(queryId));
       deleteMenuItem(Number(queryId));
       invalidateQueries(queryClient);
     }

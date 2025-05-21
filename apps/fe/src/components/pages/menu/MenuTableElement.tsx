@@ -17,6 +17,7 @@ interface MenuTableElementProps {
   handleStatusChange: (id: number, value: string) => void;
   setMenuErrors: React.Dispatch<React.SetStateAction<Record<number, string>>>;
   menuErrors: Record<number, string>;
+  onDeleteClick: () => void;
 }
 
 export default function MenuTableElement({
@@ -29,6 +30,7 @@ export default function MenuTableElement({
   handleStatusChange,
   setMenuErrors,
   menuErrors,
+  onDeleteClick,
 }: MenuTableElementProps) {
   return (
     <tr key={item.id}>
@@ -110,14 +112,19 @@ export default function MenuTableElement({
       </td>
 
       <td className="text-center">
-        <Link
-          href={{
-            pathname: '/menu/delete',
-            query: { id: item.id, name: item.menu },
+        <ManageButton
+          variant="delete"
+          disabled={item.id < 0}
+          onClick={(e) => {
+            if (item.id < 0) {
+              e.preventDefault();
+              return;
+            }
+            onDeleteClick();
           }}
         >
-          <ManageButton variant="delete">삭제</ManageButton>
-        </Link>
+          삭제
+        </ManageButton>
       </td>
     </tr>
   );

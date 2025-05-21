@@ -8,6 +8,10 @@ export const MenuAPI = {
     const res = await axiosInstance.get('/menus');
     return res.data;
   },
+  deleteMenu: async (menuId: number) => {
+    const res = await axiosInstance.delete(`/menus/${menuId}`);
+    return res.data;
+  },
   syncMenus: async (syncData: ISyncMenuRequest[]) => {
     const res = await axiosInstance.post('/menus', syncData);
     return res.data;

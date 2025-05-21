@@ -4,7 +4,7 @@ interface ManageButtonProps extends ButtonHTMLAttributes<HTMLButtonElement>, Pro
   variant?: 'default' | 'modify' | 'delete';
 }
 
-export default function ManageButton({ children, variant = 'default' }: ManageButtonProps) {
+export default function ManageButton({ children, variant = 'default', ...rest }: ManageButtonProps) {
   const baseClass = 'w-fit p-2 text-label-sm-sb rounded-md border border-gray-200 focus:outline-none transition';
 
   const variantClass =
@@ -13,8 +13,12 @@ export default function ManageButton({ children, variant = 'default' }: ManageBu
       : variant === 'modify'
         ? 'bg-blue-500 text-blue-100 hover:bg-blue-400 disabled:bg-blue-300'
         : variant === 'delete'
-          ? 'bg-gray-800 text-blue-100 hover:bg-gray-700 disabled:bg-blue-600'
+          ? 'bg-gray-800 text-gray-100 hover:bg-gray-700 disabled:bg-gray-300 disabled:cursor-auto'
           : '';
 
-  return <button className={`${baseClass} ${variantClass}`}>{children}</button>;
+  return (
+    <button className={`${baseClass} ${variantClass}`} {...rest}>
+      {children}
+    </button>
+  );
 }

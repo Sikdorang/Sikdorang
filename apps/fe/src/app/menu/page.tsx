@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { isEqual } from 'lodash';
 import { useManageMenu } from '@/hooks/useManageMenu';
 import { useManageCategory } from '@/hooks/useManageCategory';
@@ -16,12 +16,13 @@ import Spinner from '@/components/common/loadings/Spinner';
 import MenuTableElement from '@/components/pages/menu/MenuTableElement';
 import MainControlButton from '@/components/pages/menu/cells/MainControlButton';
 import CategorySidebar from '@/components/layout/sidebars/CategorySidebar';
+import DeleteMenuModal from '@/components/pages/menu/MenuDeleteModal';
 import { useQueryClient } from '@tanstack/react-query';
 import { invalidateQueries } from '@/utilities/invalidateQuery';
 
 export default function MenuPage() {
   const queryClient = useQueryClient();
-  const { menus, isLoading, fetchMenus, syncMenus } = useManageMenu();
+  const { menus, isLoading, fetchMenus, deleteMenu, syncMenus } = useManageMenu();
   const { categories, fetchCategories } = useManageCategory();
   const { setDeleteHandler, clearDeleteHandler } = useDeleteMenuStore();
 
@@ -29,15 +30,12 @@ export default function MenuPage() {
     fetchMenus();
     fetchCategories();
   }, []);
-
   useEffect(() => {
     setTemporaryMenus(menus);
   }, [menus]);
-
   useEffect(() => {
     setTemporaryCategories(categories);
   }, [categories]);
-
   useEffect(() => {
     setIsMenusLoading(isLoading);
   }, [isLoading]);
@@ -140,7 +138,10 @@ export default function MenuPage() {
       },
     ]);
   };
-  const deleteMenuItem = (id: number) => setTemporaryMenus((prev) => prev.filter((item) => item.id !== id));
+  const deleteMenuItem = useCallback(
+    (id: number) => setTemporaryMenus((prev) => prev.filter((item) => item.id !== id)),
+    [setTemporaryMenus],
+  );
   const updateMenuItem = (id: number, field: keyof IManageMenuItem, value: string | boolean | number) =>
     setTemporaryMenus((prev) => prev.map((item) => (item.id === id ? { ...item, [field]: value } : item)));
 
@@ -159,6 +160,9 @@ export default function MenuPage() {
   const filteredMenuItems = showOnlyEmptyMenus
     ? temporaryMenus.filter((item) => !item.menu || item.price === undefined || item.price === null || !item.category)
     : temporaryMenus;
+
+  const [deleteModalOpen, setDeleteModalOpen] = useState(false);
+  const [deletingMenu, setDeletingMenu] = useState<{ id: number; name: string } | null>(null);
 
   return (
     <>
@@ -204,6 +208,10 @@ export default function MenuPage() {
                     handleStatusChange={handleStatusChange}
                     setMenuErrors={setMenuErrors}
                     menuErrors={menuErrors}
+                    onDeleteClick={() => {
+                      setDeletingMenu({ id: item.id, name: item.menu });
+                      setDeleteModalOpen(true);
+                    }}
                   />
                 ))}
               </tbody>
@@ -221,6 +229,21 @@ export default function MenuPage() {
           setTemporaryCategories={setTemporaryCategories}
           temporaryCategories={temporaryCategories}
         />
+
+        {deleteModalOpen && deletingMenu && (
+          <DeleteMenuModal
+            id={deletingMenu.id}
+            name={deletingMenu.name}
+            onDelete={() => {
+              deleteMenu(deletingMenu.id);
+              setDeletingMenu(null);
+              setDeleteModalOpen(false);
+            }}
+            onCancel={() => {
+              setDeleteModalOpen(false);
+            }}
+          />
+        )}
       </div>
     </>
   );

@@ -32,6 +32,25 @@ export const useManageMenu = () => {
     }
   };
 
+  const deleteMenu = async (menuId: number) => {
+    setIsLoading(true);
+    setError(null);
+    try {
+      const response = await MenuAPI.deleteMenu(menuId);
+      toast.success(MESSAGES.deleteMenuSuccess);
+      fetchMenus();
+      return response;
+    } catch (error) {
+      if (axios.isAxiosError(error) && error.response?.status === 401) {
+        setError(MESSAGES.authenticationError);
+      } else {
+        handelError(error);
+      }
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   const syncMenus = async (syncData: ISyncMenuRequest[]) => {
     setIsLoading(true);
     setError(null);
@@ -49,5 +68,5 @@ export const useManageMenu = () => {
     }
   };
 
-  return { menus, isLoading, error, fetchMenus, syncMenus };
+  return { menus, isLoading, error, fetchMenus, deleteMenu, syncMenus };
 };
