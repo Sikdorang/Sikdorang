@@ -4,17 +4,16 @@ import (
 	"encoding/json"
 	"fmt"
 	"sync"
-	"io"
 )
 
 type SSEClient struct {
-	StoreID string
-	Writer io.Writer 
+	StoreID  string
+	Messages chan []byte
 }
 
 type Hub struct {
 	mu      sync.RWMutex
-	clients map[string][]*SSEClient // storeID → 클라이언트 목록
+	clients map[string][]*SSEClient
 }
 
 func NewHub() *Hub {
@@ -32,7 +31,6 @@ func (h *Hub) Register(storeID string, client *SSEClient) {
 func (h *Hub) Unregister(storeID string, target *SSEClient) {
 	h.mu.Lock()
 	defer h.mu.Unlock()
-
 	clients := h.clients[storeID]
 	newClients := make([]*SSEClient, 0, len(clients))
 	for _, c := range clients {
@@ -43,12 +41,20 @@ func (h *Hub) Unregister(storeID string, target *SSEClient) {
 	h.clients[storeID] = newClients
 }
 
+// SendToStore는 payload를 JSON으로 감싸서 invalidate-cache 이벤트로 전송합니다.
 func (h *Hub) SendToStore(storeID string, payload any) {
 	h.mu.RLock()
 	defer h.mu.RUnlock()
 
 	data, _ := json.Marshal(payload)
+	// invalidate-cache 이벤트명 사용
+	frame := fmt.Sprintf("event: invalidate-cache\ndata: %s\n\n", data)
+
 	for _, client := range h.clients[storeID] {
-		fmt.Fprintf(client.Writer, "data: %s\n\n", data)
+		select {
+		case client.Messages <- []byte(frame):
+		default:
+			// 채널이 가득 차 있으면 무시
+		}
 	}
 }
