@@ -9,7 +9,7 @@ import (
 	"be/internal/category/repository"
 	"be/internal/models"
 	"be/internal/category/dto"
-	notification "be/internal/notification/service"
+	"be/internal/ws/gateway"
 )
 
 var ErrCategoryNotFound = errors.New("category not found")
@@ -24,12 +24,11 @@ type CategoryService interface {
 
 type categoryService struct {
 	repo repository.CategoryRepository
-	notifySvc *notification.NotificationService
+	hub *gateway.Hub
 }
 
-func NewCategoryService(repo repository.CategoryRepository, notify *notification.NotificationService) CategoryService {
-	return &categoryService{repo: repo, notifySvc: notify,}
-}
+func NewCategoryService(repo repository.CategoryRepository, hub *gateway.Hub) CategoryService {
+	return &categoryService{repo: repo, hub: hub}
 
 func (s *categoryService) Create(category string, order string, storeID uint) (models.Category, error) {
 	newCategory := &models.Category{
@@ -42,7 +41,10 @@ func (s *categoryService) Create(category string, order string, storeID uint) (m
 		return models.Category{}, err
 	}
 
-	s.notifySvc.InvalidateCategoryCache(strconv.Itoa(int(storeID)))
+	s.hub.SendMessage(storeID, map[string]interface{}{
+		"type":   "invalidate",
+		"target": "category",
+	})
 
 	return *newCategory, nil
 }
@@ -74,7 +76,10 @@ func (s *categoryService) Update(categoryID uint, storeID uint, newCategory stri
 		return models.Category{}, err
 	}
 
-	s.notifySvc.InvalidateCategoryCache(strconv.Itoa(int(storeID)))
+	s.hub.SendMessage(storeID, map[string]interface{}{
+		"type":   "invalidate",
+		"target": "category",
+	})
 
 	return existingCategory, nil
 }
@@ -92,7 +97,10 @@ func (s *categoryService) Delete(categoryID uint, storeID uint) error {
 		return err
 	}
 
-	s.notifySvc.InvalidateCategoryCache(strconv.Itoa(int(storeID)))
+	s.hub.SendMessage(storeID, map[string]interface{}{
+		"type":   "invalidate",
+		"target": "category",
+	})
 
 	return nil
 }
@@ -109,7 +117,10 @@ func (s *categoryService) UpdateCategoryOrder(storeID uint, body []dto.UpdateCat
 		})
 	}
 
-	s.notifySvc.InvalidateCategoryCache(strconv.Itoa(int(storeID)))
-	
+	s.hub.SendMessage(storeID, map[string]interface{}{
+		"type":   "invalidate",
+		"target": "category",
+	})
+
 	return s.repo.UpdateCategoryOrder(storeID, categories)
 }

@@ -7,7 +7,7 @@ import (
 	"be/internal/menu/repository"
 	"be/internal/models"
 	"be/internal/utils"
-	notification "be/internal/notification/service"
+	"be/internal/ws/gateway"
 )
 
 type MenuService interface {
@@ -25,13 +25,12 @@ type MenuService interface {
 
 type menuService struct {
 	repo repository.MenuRepository
-	notifySvc *notification.NotificationService
+	hub *gateway.Hub
 }
 
-func NewMenuService(repo repository.MenuRepository, notify *notification.NotificationService) MenuService {
+func NewMenuService(repo repository.MenuRepository, hub *gateway.Hub) MenuService {
 	return &menuService{
-		repo: repo,
-		notifySvc: notify,
+		repo: repo, hub: hub,
 	}
 }
 
@@ -100,6 +99,12 @@ func (s *menuService) SyncMenus(storeID uint, syncDatas []dto.SyncMenuRequestDTO
 	if len(errs) > 0 {
 		return errs, fmt.Errorf("one or more sync errors occurred")
 	}
+
+	s.hub.SendMessage(storeID, map[string]interface{}{
+		"type":   "invalidate",
+		"target": "menus",
+	})
+
 	return nil, nil
 }
 
@@ -301,6 +306,12 @@ func (s *menuService) UpdateDescription(storeID, menuID uint, body dto.UpdateDes
 	if len(execErrs) > 0 {
 		return fmt.Errorf("일부 작업에서 오류가 발생했습니다: %v", execErrs)
 	}
+
+	s.hub.SendMessage(storeID, map[string]interface{}{
+		"type":   "invalidate",
+		"target": "menus",
+	})
+
 	return nil
 }
 func (s *menuService) UpdateMenuOrder(storeID uint, body []dto.UpdateMenuOrderRequestDTO) error {
@@ -313,8 +324,10 @@ func (s *menuService) UpdateMenuOrder(storeID uint, body []dto.UpdateMenuOrderRe
 			StoreID: storeID, // 명시적으로 세팅해주는 게 좋음
 		})
 	}
-	
-	s.notifySvc.InvalidateCategoryCache(strconv.Itoa(int(storeID)))
+	s.hub.SendMessage(storeID, map[string]interface{}{
+		"type":   "invalidate",
+		"target": "menus",
+	})
 
 	return s.repo.UpdateMenuOrder(storeID, menus)
 }
@@ -374,6 +387,9 @@ func (s *menuService) GetAdminMenuBoard(storeID uint) ([]dto.AdminMenuBoardDTO, 
 }
 
 func (s *menuService) DeleteMenu(storeID, menuID uint) error {
-	s.notifySvc.InvalidateCategoryCache(strconv.Itoa(int(storeID)))
+	s.hub.SendMessage(storeID, map[string]interface{}{
+		"type":   "invalidate",
+		"target": "menus",
+	})
 	return s.repo.DeleteMenu(storeID, menuID)
 }
