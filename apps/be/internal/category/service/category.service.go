@@ -2,6 +2,7 @@ package service
 
 import (
 	"errors"
+	"strconv"
 
 	"gorm.io/gorm"
 
@@ -28,7 +29,6 @@ type categoryService struct {
 
 func NewCategoryService(repo repository.CategoryRepository, hub *gateway.Hub) CategoryService {
 	return &categoryService{repo: repo, hub: hub}
-}
 
 func (s *categoryService) Create(category string, order string, storeID uint) (models.Category, error) {
 	newCategory := &models.Category{

@@ -19,7 +19,10 @@ import (
 func SetupRoutes(app *fiber.App, db *gorm.DB, hub *gateway.Hub) {
 	api := app.Group("/api")
 
-	app.Get("/swagger/*", swagger.HandlerDefault) // /swagger/index.html
+	app.Get("/swagger/*", swagger.HandlerDefault)
+
+	hub := gateway.NewHub()
+	notifySvc := notificationService.NewNotificationService(hub)
 
 	// 도메인별 Init 함수에서 DI + 라우팅까지 전부 처리
 	category.InitCategoryRoutes(api, db, hub)
