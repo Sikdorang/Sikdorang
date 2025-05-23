@@ -8,11 +8,12 @@ import (
 	"be/internal/menu/repository"
 	"be/internal/menu/service"
 	"be/internal/middleware"
+	"be/internal/ws/gateway"
 )
 
-func InitMenuRoutes(router fiber.Router, db *gorm.DB) {
+func InitMenuRoutes(router fiber.Router, db *gorm.DB, hub *gateway.Hub) {
 	repo := repository.NewMenuRepository(db)
-	svc := service.NewMenuService(repo)
+	svc := service.NewMenuService(repo, hub)
 	ctrl := controller.NewMenuController(svc)
 
 	group := router.Group("/menus", middleware.JWTProtected())
