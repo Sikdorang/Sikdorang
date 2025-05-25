@@ -1,13 +1,12 @@
 'use client';
 
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { isEqual } from 'lodash';
 import { useManageMenu } from '@/hooks/useManageMenu';
 import { useManageCategory } from '@/hooks/useManageCategory';
 import { useDeleteMenuStore } from '@/stores/useDeleteMenuStore';
-import { SYNC_ACTIONS } from '@/constants/enums';
 import { LexoRank } from 'lexorank';
-import { IManageMenuItem } from '@/types/model/menu';
+import { IManageMenuItem, ISyncMenuRequest } from '@/types/model/menu';
 import { ICategoryItem } from '@/types/model/category';
 
 import TopNav from '@/components/layout/headers/TopNav';
@@ -16,12 +15,13 @@ import Spinner from '@/components/common/loadings/Spinner';
 import MenuTableElement from '@/components/pages/menu/MenuTableElement';
 import MainControlButton from '@/components/pages/menu/cells/MainControlButton';
 import CategorySidebar from '@/components/layout/sidebars/CategorySidebar';
+import DeleteMenuModal from '@/components/pages/menu/MenuDeleteModal';
 import { useQueryClient } from '@tanstack/react-query';
 import { invalidateQueries } from '@/utilities/invalidateQuery';
 
 export default function MenuPage() {
   const queryClient = useQueryClient();
-  const { menus, isLoading, fetchMenus, syncMenus } = useManageMenu();
+  const { menus, isLoading, fetchMenus, deleteMenu, syncMenus } = useManageMenu();
   const { categories, fetchCategories } = useManageCategory();
   const { setDeleteHandler, clearDeleteHandler } = useDeleteMenuStore();
 
@@ -29,15 +29,12 @@ export default function MenuPage() {
     fetchMenus();
     fetchCategories();
   }, []);
-
   useEffect(() => {
     setTemporaryMenus(menus);
   }, [menus]);
-
   useEffect(() => {
     setTemporaryCategories(categories);
   }, [categories]);
-
   useEffect(() => {
     setIsMenusLoading(isLoading);
   }, [isLoading]);
@@ -77,42 +74,40 @@ export default function MenuPage() {
   }, [setDeleteHandler, clearDeleteHandler]);
   const handleSynchronize = async () => {
     const changedIds = Array.from(changeLogIds);
-    const syncDatas = changedIds.map((id) => {
-      const original = menus.find((m) => m.id === id);
-      const current = temporaryMenus.find((m) => m.id === id);
+    const syncDatas = changedIds
+      .map((id) => {
+        const original = menus.find((m) => m.id === id);
+        const current = temporaryMenus.find((m) => m.id === id);
 
-      if (id < 0 || !original) {
+        if (id < 0 || !original) {
+          return {
+            action: 'create',
+            id: -1,
+            data: {
+              menu: current?.menu ?? '',
+              price: current?.price ?? 0,
+              categoryId: temporaryCategories.find((c) => c.category === current?.category)?.id ?? 0,
+              status: current?.status ?? '',
+              order: current?.order ?? '',
+            },
+          } as ISyncMenuRequest;
+        }
+        if (!current) {
+          return null;
+        }
         return {
-          action: SYNC_ACTIONS.CREATE,
-          id: -1,
-          data: {
-            menu: current?.menu || '',
-            price: current?.price || 0,
-            categoryId: temporaryCategories.find((c) => c.category === current?.category)?.id || 0,
-            status: current?.status,
-            order: current?.order,
-          },
-        };
-      }
-      if (!current) {
-        return {
-          action: SYNC_ACTIONS.DELETE,
+          action: 'update',
           id,
-          data: {},
-        };
-      }
-      return {
-        action: SYNC_ACTIONS.UPDATE,
-        id,
-        data: {
-          menu: current.menu,
-          price: current.price,
-          categoryId: temporaryCategories.find((c) => c.category === current.category)?.id || 0,
-          status: current.status,
-          order: current.order,
-        },
-      };
-    });
+          data: {
+            menu: current.menu,
+            price: current.price ?? 0,
+            categoryId: temporaryCategories.find((c) => c.category === current.category)?.id ?? 0,
+            status: current.status ?? '',
+            order: current.order ?? '',
+          },
+        } as ISyncMenuRequest;
+      })
+      .filter((d): d is ISyncMenuRequest => d !== null);
     try {
       await syncMenus(syncDatas);
       setChangeLogIds(new Set());
@@ -140,7 +135,10 @@ export default function MenuPage() {
       },
     ]);
   };
-  const deleteMenuItem = (id: number) => setTemporaryMenus((prev) => prev.filter((item) => item.id !== id));
+  const deleteMenuItem = useCallback(
+    (id: number) => setTemporaryMenus((prev) => prev.filter((item) => item.id !== id)),
+    [setTemporaryMenus],
+  );
   const updateMenuItem = (id: number, field: keyof IManageMenuItem, value: string | boolean | number) =>
     setTemporaryMenus((prev) => prev.map((item) => (item.id === id ? { ...item, [field]: value } : item)));
 
@@ -159,6 +157,9 @@ export default function MenuPage() {
   const filteredMenuItems = showOnlyEmptyMenus
     ? temporaryMenus.filter((item) => !item.menu || item.price === undefined || item.price === null || !item.category)
     : temporaryMenus;
+
+  const [deleteModalOpen, setDeleteModalOpen] = useState(false);
+  const [deletingMenu, setDeletingMenu] = useState<{ id: number; name: string } | null>(null);
 
   return (
     <>
@@ -204,6 +205,10 @@ export default function MenuPage() {
                     handleStatusChange={handleStatusChange}
                     setMenuErrors={setMenuErrors}
                     menuErrors={menuErrors}
+                    onDeleteClick={() => {
+                      setDeletingMenu({ id: item.id, name: item.menu });
+                      setDeleteModalOpen(true);
+                    }}
                   />
                 ))}
               </tbody>
@@ -221,6 +226,21 @@ export default function MenuPage() {
           setTemporaryCategories={setTemporaryCategories}
           temporaryCategories={temporaryCategories}
         />
+
+        {deleteModalOpen && deletingMenu && (
+          <DeleteMenuModal
+            id={deletingMenu.id}
+            name={deletingMenu.name}
+            onDelete={() => {
+              deleteMenu(deletingMenu.id);
+              setDeletingMenu(null);
+              setDeleteModalOpen(false);
+            }}
+            onCancel={() => {
+              setDeleteModalOpen(false);
+            }}
+          />
+        )}
       </div>
     </>
   );
