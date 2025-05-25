@@ -3,6 +3,18 @@ description: 'Sikdorang Repo에 이슈를 생성하며, 생성된 이슈는 Jira
 labels: [order]
 title: '이슈 이름을 작성해주세요'
 body:
+  - type: dropdown
+    id: part
+    attributes:
+      label: '담당 파트'
+      description: '이슈가 해당되는 파트를 선택하세요'
+      options:
+        - FE
+        - BE
+        - ENTIRE
+    validations:
+      required: true
+
   - type: input
     id: parentKey
     attributes:
@@ -39,7 +51,7 @@ body:
         - [ ] Task1
         - [ ] Task2
     validations:
-      required: true
+      required: false
 
   - type: textarea
     id: references
