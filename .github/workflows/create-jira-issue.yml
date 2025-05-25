@@ -46,7 +46,7 @@ jobs:
         uses: atlassian/gajira-create@v3
         with:
           project: SCRUM
-          issuetype: Subtask
+          issuetype: 하위 작업
           summary: '${{ github.event.issue.title }}'
           description: '${{ steps.md2jira.outputs.output-text }}'
           fields: |
@@ -58,11 +58,6 @@ jobs:
 
       - name: Log created issue
         run: echo "Jira Issue ${{ steps.issue-parser.outputs.parentKey }}/${{ steps.create.outputs.issue }} was created"
-
-      - name: Checkout main code
-        uses: actions/checkout@v4
-        with:
-          ref: main
 
       - name: Create branch with Ticket number
         run: |
