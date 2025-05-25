@@ -110,6 +110,7 @@ export default function MenuPage() {
       })
       .filter((d): d is ISyncMenuRequest => d !== null);
     try {
+      console.log('Debug 1');
       await syncMenus(syncDatas);
       setChangeLogIds(new Set());
       setMenuErrors({});

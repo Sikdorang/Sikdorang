@@ -1,0 +1,1 @@
+pnpm dlx jira-prepare-commit-msg $1
