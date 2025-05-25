@@ -7,7 +7,7 @@ import { useManageCategory } from '@/hooks/useManageCategory';
 import { useDeleteMenuStore } from '@/stores/useDeleteMenuStore';
 import { SYNC_ACTIONS } from '@/constants/enums';
 import { LexoRank } from 'lexorank';
-import { IManageMenuItem } from '@/types/model/menu';
+import { IManageMenuItem, ISyncMenuRequest } from '@/types/model/menu';
 import { ICategoryItem } from '@/types/model/category';
 
 import TopNav from '@/components/layout/headers/TopNav';
@@ -75,42 +75,40 @@ export default function MenuPage() {
   }, [setDeleteHandler, clearDeleteHandler]);
   const handleSynchronize = async () => {
     const changedIds = Array.from(changeLogIds);
-    const syncDatas = changedIds.map((id) => {
-      const original = menus.find((m) => m.id === id);
-      const current = temporaryMenus.find((m) => m.id === id);
+    const syncDatas = changedIds
+      .map((id) => {
+        const original = menus.find((m) => m.id === id);
+        const current = temporaryMenus.find((m) => m.id === id);
 
-      if (id < 0 || !original) {
+        if (id < 0 || !original) {
+          return {
+            action: 'create',
+            id: -1,
+            data: {
+              menu: current?.menu ?? '',
+              price: current?.price ?? 0,
+              categoryId: temporaryCategories.find((c) => c.category === current?.category)?.id ?? 0,
+              status: current?.status ?? '',
+              order: current?.order ?? '',
+            },
+          } as ISyncMenuRequest;
+        }
+        if (!current) {
+          return null;
+        }
         return {
-          action: SYNC_ACTIONS.CREATE,
-          id: -1,
-          data: {
-            menu: current?.menu || '',
-            price: current?.price || 0,
-            categoryId: temporaryCategories.find((c) => c.category === current?.category)?.id || 0,
-            status: current?.status,
-            order: current?.order,
-          },
-        };
-      }
-      if (!current) {
-        return {
-          action: SYNC_ACTIONS.DELETE,
+          action: 'update',
           id,
-          data: {},
-        };
-      }
-      return {
-        action: SYNC_ACTIONS.UPDATE,
-        id,
-        data: {
-          menu: current.menu,
-          price: current.price,
-          categoryId: temporaryCategories.find((c) => c.category === current.category)?.id || 0,
-          status: current.status,
-          order: current.order,
-        },
-      };
-    });
+          data: {
+            menu: current.menu,
+            price: current.price ?? 0,
+            categoryId: temporaryCategories.find((c) => c.category === current.category)?.id ?? 0,
+            status: current.status ?? '',
+            order: current.order ?? '',
+          },
+        } as ISyncMenuRequest;
+      })
+      .filter((d): d is ISyncMenuRequest => d !== null);
     try {
       await syncMenus(syncDatas);
       setChangeLogIds(new Set());
