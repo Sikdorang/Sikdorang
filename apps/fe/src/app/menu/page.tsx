@@ -114,6 +114,7 @@ export default function MenuPage() {
       };
     });
     try {
+      console.log('Debug');
       await syncMenus(syncDatas);
       setChangeLogIds(new Set());
       setMenuErrors({});
