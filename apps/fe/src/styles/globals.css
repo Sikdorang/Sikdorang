@@ -50,6 +50,11 @@
 }
 
 @layer base {
+  body,
+  html {
+    font-synthesis: none;
+  }
+
   button {
     @apply cursor-pointer;
   }
