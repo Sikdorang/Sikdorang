@@ -12,6 +12,7 @@ const pretendard = localFont({
     { path: './fonts/PretendardVariable.ttf', weight: '400' },
   ],
   display: 'swap',
+  weight: '45 920',
 });
 
 export const metadata: Metadata = {
