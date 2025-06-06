@@ -2,14 +2,12 @@ package service
 
 import (
 	"errors"
-	"strconv"
 
 	"gorm.io/gorm"
 
 	"be/internal/category/repository"
 	"be/internal/models"
 	"be/internal/category/dto"
-	"be/internal/ws/gateway"
 )
 
 var ErrCategoryNotFound = errors.New("category not found")
@@ -24,11 +22,11 @@ type CategoryService interface {
 
 type categoryService struct {
 	repo repository.CategoryRepository
-	hub *gateway.Hub
 }
 
-func NewCategoryService(repo repository.CategoryRepository, hub *gateway.Hub) CategoryService {
-	return &categoryService{repo: repo, hub: hub}
+func NewCategoryService(repo repository.CategoryRepository) CategoryService {
+	return &categoryService{repo: repo}
+}
 
 func (s *categoryService) Create(category string, order string, storeID uint) (models.Category, error) {
 	newCategory := &models.Category{
@@ -40,12 +38,6 @@ func (s *categoryService) Create(category string, order string, storeID uint) (m
 	if err := s.repo.Save(newCategory); err != nil {
 		return models.Category{}, err
 	}
-
-	s.hub.SendMessage(storeID, map[string]interface{}{
-		"type":   "invalidate",
-		"target": "category",
-	})
-
 	return *newCategory, nil
 }
 
@@ -76,11 +68,6 @@ func (s *categoryService) Update(categoryID uint, storeID uint, newCategory stri
 		return models.Category{}, err
 	}
 
-	s.hub.SendMessage(storeID, map[string]interface{}{
-		"type":   "invalidate",
-		"target": "category",
-	})
-
 	return existingCategory, nil
 }
 
@@ -97,11 +84,6 @@ func (s *categoryService) Delete(categoryID uint, storeID uint) error {
 		return err
 	}
 
-	s.hub.SendMessage(storeID, map[string]interface{}{
-		"type":   "invalidate",
-		"target": "category",
-	})
-
 	return nil
 }
 
@@ -116,11 +98,5 @@ func (s *categoryService) UpdateCategoryOrder(storeID uint, body []dto.UpdateCat
 			StoreID: storeID, // 명시적으로 StoreID를 설정
 		})
 	}
-
-	s.hub.SendMessage(storeID, map[string]interface{}{
-		"type":   "invalidate",
-		"target": "category",
-	})
-
 	return s.repo.UpdateCategoryOrder(storeID, categories)
 }

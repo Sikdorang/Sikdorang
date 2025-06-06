@@ -13,7 +13,6 @@ import (
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/cors"
-	"be/internal/ws/gateway"
 )
 
 func main() {
@@ -45,9 +44,7 @@ func main() {
 		AllowCredentials: true,
 	}))
 
-	// 🎯 도메인별 라우터 한 줄로 등록
-	hub := gateway.NewHub()
-	routes.SetupRoutes(app, db, hub)
+	routes.SetupRoutes(app, db)
 
 	log.Println("🚀 Server running on port 4000")
 	log.Fatal(app.Listen(":4000"))
