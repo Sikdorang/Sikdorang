@@ -1,10 +1,9 @@
 ---
 name: Bug report
 about: Create a report to help us improve
-title: "[BUG]: 버그 제목을 입력합니다."
+title: '[BUG]: 버그 제목을 입력합니다.'
 labels: bug
 assignees: ''
-
 ---
 
 ## 문제 상황
