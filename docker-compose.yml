@@ -1,0 +1,25 @@
+version: '3.8'
+
+services:
+  backend:
+    #   env_file:
+    #    - ./apps/backend/.env
+    build:
+      context: .
+      dockerfile: apps/backend/Dockerfile
+    container_name: sikdorang-backend
+    ports:
+      - '4000:4000' # 호스트:컨테이너 (예시, 필요에 따라 조정)
+    restart: unless-stopped
+
+  frontend:
+    #   env_file:
+    #    - ./apps/frontend/.env
+    build:
+      context: .
+      dockerfile: apps/frontend/Dockerfile
+    container_name: sikdorang-frontend
+    ports:
+      - '3000:3000' # 호스트:컨테이너 (Next.js 기본 3000)
+    restart: unless-stopped
+# 필요시 환경변수, 볼륨, depends_on 등 추가 가능
