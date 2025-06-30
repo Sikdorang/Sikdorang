@@ -1,3 +1,8 @@
+<!--
+PR TITLE
+- feat: 한글로 pr 제목을 입력합니다.
+-->
+
 ## 개요
 
 <!-- A clear and concise description about the feature -->
