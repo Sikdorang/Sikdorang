@@ -30,8 +30,16 @@ export default function MenuItem({
           {formatNumber(price)}원
         </p>
       </div>
-      <div className="aspect-square h-[157px] rounded-2xl bg-gray-100">
-        {imageUrl ? imageUrl : '이미지'}
+      <div className="aspect-square h-[157px] overflow-hidden rounded-2xl bg-gray-100">
+        {imageUrl ? (
+          <img
+            src={imageUrl}
+            alt="메뉴 이미지"
+            className="h-full w-full object-cover"
+          />
+        ) : (
+          <span>이미지 없음</span>
+        )}
       </div>
     </li>
   );
