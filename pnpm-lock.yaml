@@ -147,6 +147,9 @@ importers:
       react-toastify:
         specifier: ^11.0.5
         version: 11.0.5(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
+      tokens:
+        specifier: workspace:*
+        version: link:../../packages/tokens
       zod:
         specifier: ^3.25.67
         version: 3.25.67
@@ -211,6 +214,9 @@ importers:
       react-toastify:
         specifier: ^11.0.5
         version: 11.0.5(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
+      tokens:
+        specifier: workspace:*
+        version: link:../../packages/tokens
       zustand:
         specifier: ^5.0.6
         version: 5.0.6(@types/react@19.1.8)(react@19.1.0)
@@ -251,6 +257,8 @@ importers:
       typescript:
         specifier: ^5
         version: 5.8.3
+
+  packages/tokens: {}
 
 packages:
 

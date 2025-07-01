@@ -2,3 +2,4 @@ packages:
   - 'apps/backend'
   - 'apps/frontend-admin'
   - 'apps/frontend-user'
+  - 'packages/*'
