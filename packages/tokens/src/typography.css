@@ -1,127 +1,130 @@
 @layer utilities {
-  /* === MOBILE === */
-  .text-mobile-title-semibold {
+  /* ===== MOBILE ===== */
+  .text-mobile-title-xl-semibold {
     font-family: 'Pretendard', sans-serif;
     font-size: 24px;
     font-weight: 600;
     line-height: 150%;
   }
-  .text-mobile-title-regular {
+  .text-mobile-title-xl-regular {
     font-family: 'Pretendard', sans-serif;
     font-size: 24px;
     font-weight: 400;
     line-height: 150%;
   }
 
-  .text-mobile-head-semibold {
+  .text-mobile-head-l-semibold {
     font-family: 'Pretendard', sans-serif;
     font-size: 22px;
     font-weight: 600;
     line-height: 150%;
   }
-  .text-mobile-head-regular {
+  .text-mobile-head-l-regular {
     font-family: 'Pretendard', sans-serif;
     font-size: 22px;
     font-weight: 400;
     line-height: 150%;
   }
 
-  .text-mobile-body-semibold {
+  .text-mobile-body-l-semibold {
     font-family: 'Pretendard', sans-serif;
     font-size: 18px;
     font-weight: 600;
     line-height: 150%;
   }
-  .text-mobile-body-regular {
+  .text-mobile-body-l-regular {
     font-family: 'Pretendard', sans-serif;
     font-size: 18px;
     font-weight: 400;
     line-height: 150%;
   }
-  .text-mobile-body-semibold {
+
+  .text-mobile-body-m-semibold {
     font-family: 'Pretendard', sans-serif;
     font-size: 16px;
     font-weight: 600;
     line-height: 150%;
   }
-  .text-mobile-body-regular {
+  .text-mobile-body-m-regular {
     font-family: 'Pretendard', sans-serif;
     font-size: 16px;
     font-weight: 400;
     line-height: 150%;
   }
-  .text-mobile-body-semibold {
+
+  .text-mobile-body-s-semibold {
     font-family: 'Pretendard', sans-serif;
     font-size: 14px;
     font-weight: 600;
     line-height: 150%;
   }
-  .text-mobile-body-regular {
+  .text-mobile-body-s-regular {
     font-family: 'Pretendard', sans-serif;
     font-size: 14px;
     font-weight: 400;
     line-height: 150%;
   }
 
-  .text-mobile-caption-semibold {
+  .text-mobile-caption-s-semibold {
     font-family: 'Pretendard', sans-serif;
     font-size: 12px;
     font-weight: 600;
     line-height: 150%;
   }
-  .text-mobile-caption-regular {
+  .text-mobile-caption-s-regular {
     font-family: 'Pretendard', sans-serif;
     font-size: 12px;
     font-weight: 400;
     line-height: 150%;
   }
 
-  .text-mobile-label-semibold {
+  .text-mobile-label-s-semibold {
     font-family: 'Pretendard', sans-serif;
     font-size: 10px;
     font-weight: 600;
     line-height: 150%;
   }
-  .text-mobile-label-regular {
+  .text-mobile-label-s-regular {
     font-family: 'Pretendard', sans-serif;
     font-size: 10px;
     font-weight: 400;
     line-height: 150%;
   }
 
-  /* === DESKTOP === */
-  .text-desktop-title-semibold {
+  /* ===== DESKTOP ===== */
+  .text-desktop-title-xl-semibold {
     font-family: 'Pretendard', sans-serif;
     font-size: 38px;
     font-weight: 600;
     line-height: 150%;
   }
-  .text-desktop-title-regular {
+  .text-desktop-title-xl-regular {
     font-family: 'Pretendard', sans-serif;
     font-size: 38px;
     font-weight: 400;
     line-height: 150%;
   }
 
-  .text-desktop-head-semibold {
+  .text-desktop-head-l-semibold {
     font-family: 'Pretendard', sans-serif;
     font-size: 28px;
     font-weight: 600;
     line-height: 150%;
   }
-  .text-desktop-head-regular {
+  .text-desktop-head-l-regular {
     font-family: 'Pretendard', sans-serif;
     font-size: 28px;
     font-weight: 400;
     line-height: 150%;
   }
-  .text-desktop-head-semibold {
+
+  .text-desktop-head-s-semibold {
     font-family: 'Pretendard', sans-serif;
     font-size: 24px;
     font-weight: 600;
     line-height: 150%;
   }
-  .text-desktop-head-regular {
+  .text-desktop-head-s-regular {
     font-family: 'Pretendard', sans-serif;
     font-size: 24px;
     font-weight: 400;
