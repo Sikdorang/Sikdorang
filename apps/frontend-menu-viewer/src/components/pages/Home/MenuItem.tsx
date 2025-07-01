@@ -17,7 +17,7 @@ export default function MenuItem({
   isPopular = false,
 }: Props) {
   return (
-    <li className="flex gap-5 py-3">
+    <li className="flex gap-5 py-3 md:flex-col-reverse md:gap-2 md:py-0">
       <div className="flex flex-1 flex-col gap-1">
         {(isNew || isPopular) && (
           <div className="flex items-center gap-1">
@@ -30,7 +30,7 @@ export default function MenuItem({
           {formatNumber(price)}원
         </p>
       </div>
-      <div className="aspect-square h-[157px] overflow-hidden rounded-2xl bg-gray-100">
+      <div className="aspect-square h-[157px] overflow-hidden rounded-2xl bg-gray-100 sm:h-[216px] md:h-auto md:w-full">
         {imageUrl ? (
           <img
             src={imageUrl}
