@@ -1,1 +1,166 @@
 @import 'tailwindcss';
+
+@font-face {
+  font-family: 'Pretendard';
+  src: url('/fonts/PretendardVariable.woff2') format('woff2-variations');
+  font-weight: 45 920;
+  font-style: normal;
+  font-display: swap;
+}
+
+@theme {
+  /* ================================================ */
+  /* breakpoints */
+  /* ================================================ */
+
+  --breakpoint-xs: 23.438rem;
+  --breakpoint-sm: 30rem;
+  --breakpoint-xl: 90rem;
+
+  --container-xs: 23.438rem;
+
+  /* ================================================ */
+  /* Colors */
+  /* ================================================ */
+
+  /* black */
+  --color-black: #191919;
+
+  /* gray */
+  --color-gray-50: #fdfeff;
+  --color-gray-100: #f3f4f8;
+  --color-gray-200: #d2d4da;
+  --color-gray-300: #b3b5bd;
+  --color-gray-400: #93969f;
+  --color-gray-500: #777a85;
+  --color-gray-600: #5b5e69;
+  --color-gray-700: #404251;
+  --color-gray-800: #282a38;
+  --color-gray-900: #111223;
+
+  /* main */
+  --color-main-100: #fffdf6;
+  --color-main-200: #fff1c3;
+  --color-main-300: #ffe590;
+  --color-main-400: #ffd95d;
+  --color-main-500: #ffcd2a;
+  --color-main-600: #f6bc00;
+  --color-main-700: #c39500;
+  --color-main-800: #906e00;
+  --color-main-900: #5d4700;
+
+  /* red */
+  --color-red-200: #ffe5e5;
+  --color-red-500: #d94141;
+
+  /* orange */
+  --color-orange-200: #fff0e0;
+  --color-orange-500: #df7c00;
+
+  /* yellow */
+  --color-yellow-200: #fff9cc;
+  --color-yellow-500: #d7b70f;
+
+  /* green */
+  --color-green-200: #e5ffe9;
+  --color-green-500: #3aa655;
+
+  /* blue */
+  --color-blue-200: #e5f1ff;
+  --color-blue-500: #418cc3;
+
+  /* purple */
+  --color-purple-200: #f0e5ff;
+  --color-purple-500: #9c68b3;
+
+  --shadow-sm: 0px 1px 4px rgba(0, 0, 0, 0.06);
+  --inner-shadow-sm: inset 0px 0px 5px rgba(0, 0, 0, 0.06);
+}
+
+@layer components {
+  .wrapper {
+    @apply max-w-xs px-5;
+  }
+
+  .text-mt-1 {
+    @apply text-2xl font-semibold leading-[150%] tracking-[-4%];
+  }
+
+  .text-mt-2 {
+    @apply text-2xl font-normal leading-[150%] tracking-[-4%];
+  }
+
+  .text-mh-1 {
+    @apply text-[1.375rem] font-semibold leading-[150%] tracking-[-4%];
+  }
+
+  .text-mh-2 {
+    @apply text-[1.375rem] font-normal leading-[150%] tracking-[-4%];
+  }
+
+  .text-mb-1 {
+    @apply text-lg font-semibold leading-[150%] tracking-[-2%];
+  }
+
+  .text-mb-2 {
+    @apply text-lg font-normal leading-[150%] tracking-[-2%];
+  }
+
+  .text-mb-3 {
+    @apply text-base font-semibold leading-[150%] tracking-[-2%];
+  }
+
+  .text-mb-4 {
+    @apply text-base font-normal leading-[150%] tracking-[-2%];
+  }
+
+  .text-mb-5 {
+    @apply text-sm font-semibold leading-[150%] tracking-[-2%];
+  }
+
+  .text-mb-6 {
+    @apply text-sm font-normal leading-[150%] tracking-[-2%];
+  }
+
+  .text-mc-1 {
+    @apply text-xs font-semibold leading-[150%] tracking-[-2%];
+  }
+
+  .text-mc-2 {
+    @apply text-xs font-normal leading-[150%] tracking-[-2%];
+  }
+
+  .text-ml-1 {
+    @apply text-[0.625rem] font-semibold leading-[150%] tracking-[-2%];
+  }
+
+  .text-ml-2 {
+    @apply text-xs font-normal leading-[150%] tracking-[-2%];
+  }
+
+  .scrollbar-hide {
+    -ms-overflow-style: none; /* IE and Edge */
+    scrollbar-width: none; /* Firefox */
+  }
+
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none; /* Chrome, Safari, Opera */
+  }
+}
+
+html {
+  font-family:
+    'Pretendard',
+    -apple-system,
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  font-family: 'Pretendard', sans-serif;
+}
+
+button {
+  @apply cursor-pointer;
+}
