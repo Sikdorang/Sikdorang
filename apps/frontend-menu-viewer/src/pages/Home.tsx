@@ -4,16 +4,17 @@ import ChervonRightSvg from '@/assets/icons/ic_chervon_right.svg?react';
 
 import Divider from '@/components/common/Divider';
 import CategoryMenuGroup from '@/components/pages/Home/CategoryMenuGroup';
-import CategoryTabList from '@/components/pages/Home/CategoryTabList';
 
 import { useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router';
+import CategoryTabItem from '../components/pages/Home/CategoryTabItem';
 import useFetchMenuQuery from '../hooks/useFetchMenuQuery';
 
 export default function Home() {
   const { data, isLoading, isError } = useFetchMenuQuery();
   const [selectedId, setSelectedId] = useState<string | null>(null);
-  const groupRefs = useRef<Record<string, HTMLDivElement | null>>({});
+  const groupRefs = useRef<Record<string, HTMLElement | null>>({});
+  const tabRefs = useRef<Record<string, HTMLElement | null>>({});
 
   useEffect(() => {
     if (data && data.length > 0) {
@@ -24,7 +25,9 @@ export default function Home() {
   useEffect(() => {
     const callback: IntersectionObserverCallback = (entries) => {
       const visible = entries.find((entry) => entry.isIntersecting);
+
       if (visible) {
+        console.log(visible);
         const id = visible.target.getAttribute('data-id');
         if (id) setSelectedId(id);
       }
@@ -32,7 +35,7 @@ export default function Home() {
 
     const options = {
       threshold: 0.6,
-      rootMargin: '0px 0px -40% 0px',
+      rootMargin: '-116px 0px -160px 0px',
     };
 
     const observer = new IntersectionObserver(callback, options);
@@ -40,17 +43,30 @@ export default function Home() {
     Object.values(groupRefs.current).forEach((el) => {
       if (el) observer.observe(el);
     });
-
     return () => observer.disconnect();
-  }, []);
+  }, [data]);
 
   const handleTabSelect = (id: string) => {
     const el = groupRefs.current[id];
     if (el) {
-      el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      const y = el.getBoundingClientRect().top + window.scrollY - 116; // header 높이 + categoryTab 높이
+      window.scrollTo({ top: y, behavior: 'smooth' });
       setSelectedId(id);
     }
   };
+
+  useEffect(() => {
+    if (!selectedId) return;
+    const el = tabRefs.current[selectedId];
+
+    if (!el || !el.parentElement?.parentElement) return;
+    const container = el.parentElement.parentElement;
+    const offsetLeft = el.offsetLeft;
+    container.scrollTo({
+      left: offsetLeft - 20,
+      behavior: 'smooth',
+    });
+  }, [selectedId]);
 
   if (isError) return <div>error</div>;
   if (isLoading) return <div>loading</div>;
@@ -114,11 +130,22 @@ export default function Home() {
       <Divider />
 
       {data && (
-        <CategoryTabList
-          groups={data}
-          selectedId={selectedId ?? ''}
-          onSelect={handleTabSelect}
-        />
+        <div className="scrollbar-hide sticky top-12 max-w-xs overflow-x-auto bg-white py-3">
+          <ul className="flex w-fit items-center gap-2 px-5">
+            {data.map(({ id, category, items }) => (
+              <CategoryTabItem
+                key={id}
+                ref={(el) => {
+                  tabRefs.current[id] = el;
+                }}
+                label={category}
+                count={items.length ?? 0}
+                selected={selectedId === id}
+                onClick={() => handleTabSelect(id)}
+              />
+            ))}
+          </ul>
+        </div>
       )}
       {data && (
         <ul>
