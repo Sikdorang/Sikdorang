@@ -10,14 +10,14 @@
 
 @theme {
   /* ================================================ */
-  /* breakpoints */
+  /* breakpoints(xs - sm - md - lg - xl) */
   /* ================================================ */
 
-  --breakpoint-xs: 23.438rem;
-  --breakpoint-sm: 30rem;
-  --breakpoint-xl: 90rem;
+  --breakpoint-xs: 23.438rem; /* 375px */
+  --breakpoint-sm: 30rem; /* 480px */
+  --breakpoint-xl: 90rem; /* 1440px */
 
-  --container-xs: 23.438rem;
+  --container-xs: 23.438rem; /* 375px */
 
   /* ================================================ */
   /* Colors */
@@ -79,7 +79,7 @@
 
 @layer components {
   .wrapper {
-    @apply max-w-xs px-5;
+    @apply min-w-xs px-5 xl:mx-auto xl:max-w-5xl;
   }
 
   .text-mt-1 {
