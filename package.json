@@ -10,7 +10,9 @@
     "test": "turbo run test",
     "type-check": "turbo run type-check",
     "clean": "turbo run clean && rm -rf node_modules",
-    "format": "prettier --write \"**/*.{ts,tsx,md}\""
+    "format": "prettier --write \"**/*.{ts,tsx,md}\"",
+    "dev:admin": "turbo run dev --filter=frontend-admin --filter=backend",
+    "dev:user": "turbo run dev --filter=frontend-user --filter=backend"
   },
   "keywords": [],
   "author": "",
