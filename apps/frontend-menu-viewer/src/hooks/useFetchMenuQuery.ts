@@ -5,5 +5,6 @@ export default function useFetchMenuQuery() {
   return useQuery({
     queryKey: ['menus'],
     queryFn: () => menuAPI.fetchMenus(),
+    retry: false,
   });
 }
