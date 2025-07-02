@@ -3,42 +3,84 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 
-const navItems = [
-  { name: '메뉴', path: '/menu' },
-  // { name: '이벤트', path: '/events' },
-  { name: '메뉴 순서 편집', path: '/edit' },
-  { name: '손님용으로 전환', path: '/preview' },
-  { name: '마이페이지', path: '/mypage' },
+// 상위 카테고리와 하위 탭 정의
+const NAV_STRUCTURE = [
+  {
+    key: 'menu',
+    label: '메뉴 관리',
+    basePath: '/menu',
+    tabs: [
+      { name: '메뉴편집', href: '/menu/edit' },
+      { name: '순서·카테고리 편집', href: '/menu/category' },
+    ],
+  },
+  {
+    key: 'recommend',
+    label: '추천 관리',
+    basePath: '/recommend',
+    tabs: [
+      { name: '추천목록', href: '/recommend/list' },
+      { name: '추천설정', href: '/recommend/settings' },
+    ],
+  },
+  {
+    key: 'preview',
+    label: '내 메뉴판 보기',
+    basePath: '/preview',
+    tabs: [{ name: '내 메뉴판 보기', href: '/preview' }],
+  },
+  {
+    key: 'shop',
+    label: '매장 정보 관리',
+    basePath: '/shop',
+    tabs: [
+      { name: '매장정보', href: '/store/info' },
+      { name: '직원관리', href: '/store/staff' },
+    ],
+  },
+  {
+    key: 'settings',
+    label: '설정',
+    basePath: '/settings',
+    tabs: [{ name: '설정', href: '/settings' }],
+  },
 ];
 
-export default function NavigationBar() {
+function getActiveCategory(pathname: string) {
+  return (
+    NAV_STRUCTURE.find(
+      (cat) =>
+        pathname === cat.basePath || pathname.startsWith(cat.basePath + '/'),
+    ) || NAV_STRUCTURE[0]
+  );
+}
+
+export default function TopNavigationBar() {
   const pathname = usePathname();
+  const activeCategory = getActiveCategory(pathname);
 
   return (
-    <nav className="sticky inset-0 z-10 w-full border-b border-gray-200 bg-white">
-      <div className="wrapper mx-auto flex items-center justify-between py-4">
-        <div className="text-title-sm text-gray-800">
-          <Link href="/">식도랑 관리자</Link>
-        </div>
-        <div className="flex space-x-4">
-          <ul className="flex items-center space-x-4">
-            {navItems.map((item) => (
-              <li key={item.path}>
-                <Link
-                  href={item.path}
-                  className={`text-label-md px-3 transition-colors focus:outline-none ${
-                    pathname === item.path
-                      ? 'text-blue-500'
-                      : 'text-gray-700 hover:text-blue-400'
-                  }`}
-                >
-                  {item.name}
-                </Link>
-              </li>
-            ))}
-          </ul>
-        </div>
-      </div>
-    </nav>
+    <header className="flex items-center justify-between border-b border-gray-200 bg-white px-12 py-8">
+      <h2 className="text-desktop-head-s-semibold text-bk">
+        {activeCategory.label}
+      </h2>
+
+      <nav className="flex items-center gap-6">
+        {activeCategory.tabs.map((tab) => (
+          <Link
+            key={tab.href}
+            href={tab.href}
+            className={
+              (pathname === tab.href
+                ? 'text-main-500 font-semibold'
+                : 'font-medium text-gray-400') +
+              ' text-mobile-body-m-semibold transition-colors'
+            }
+          >
+            {tab.name}
+          </Link>
+        ))}
+      </nav>
+    </header>
   );
 }

@@ -1,7 +1,7 @@
 'use client';
 
+import CtaButton from '@/components/common/buttons/CtaButton';
 import { useRouter } from 'next/navigation';
-import CtaButton from '../components/common/buttons/CtaButton';
 export default function Home() {
   const router = useRouter();
 
