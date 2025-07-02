@@ -62,25 +62,7 @@ export const CategoryGroupData: ICategoryGroup[] = [
   {
     id: '3',
     category: '주류',
-    items: [
-      {
-        imgUrl: 'https://i.imgur.com/sbLBtXL.jpeg',
-        id: '8',
-        name: '소주',
-        price: 5000,
-        isNew: false,
-        isPopular: true,
-      },
-      {
-        imgUrl: 'https://i.imgur.com/sbLBtXL.jpeg',
-        id: '9',
-        name: '맥주',
-        price: 6000,
-        isNew: false,
-        isPopular: true,
-      },
-      { id: '10', name: '청하', price: 7000, isNew: true, isPopular: false },
-    ],
+    items: [],
   },
   {
     id: '4',
