@@ -39,6 +39,12 @@ const NAV_STRUCTURE = [
     ],
   },
   {
+    key: 'dashboard',
+    label: '대시보드',
+    basePath: '/dashboard',
+    tabs: [{ name: '대시보드', href: '/dashboard' }],
+  },
+  {
     key: 'settings',
     label: '설정',
     basePath: '/settings',

@@ -7,20 +7,25 @@ interface CtaButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   isLoading?: boolean;
   size?: 'small' | 'medium' | 'large';
   color?: 'yellow' | 'gray' | 'red' | 'white';
+  width?: 'full' | 'fit';
   className?: string;
+  left?: React.ReactNode;
+  right?: React.ReactNode;
 }
 
 export default function CtaButton({
-  text = '카카오로 계속하기',
+  text = '버튼',
   isLoading = false,
   size = 'medium',
   className = '',
   color = 'yellow',
+  width = 'full',
   disabled,
   onClick,
+  left,
+  right,
   ...props
 }: CtaButtonProps) {
-  // 크기별 스타일 정의
   const sizeStyles = {
     small: 'px-4 py-2 gap-2',
     medium: 'px-6 py-4 gap-3',
@@ -47,11 +52,30 @@ export default function CtaButton({
     white: 'bg-w',
   };
 
+  const hoverColorStyles = {
+    yellow: 'hover:bg-main-500',
+    gray: 'hover:bg-gray-800',
+    red: 'hover:bg-system-error',
+    white: 'hover:bg-gray-100',
+  };
+
+  const borderColorStyles = {
+    yellow: 'border-main-500',
+    gray: 'border-gray-800',
+    red: 'border-system-error',
+    white: 'border-gray-200',
+  };
+
   const iconSizeStyles = {
     small: 'h-4 w-4',
     medium: 'h-5 w-5',
     large: 'h-6 w-6',
   };
+
+  const flexStyle =
+    width === 'fit'
+      ? 'inline-flex items-center justify-center'
+      : 'flex w-full items-center justify-center';
 
   const handleClick = (e: React.MouseEvent<HTMLButtonElement>) => {
     if (disabled || isLoading) return;
@@ -60,20 +84,24 @@ export default function CtaButton({
 
   return (
     <button
-      className={`${backgroundColorStyles[color]} border-chip-yellowText hover:bg-chip-yellowText hover:text-w flex w-full items-center justify-center rounded-xl border transition-colors duration-200 disabled:cursor-not-allowed disabled:opacity-50 ${sizeStyles[size]} ${className} `}
+      className={`${backgroundColorStyles[color]} ${borderColorStyles[color]} ${hoverColorStyles[color]} ${flexStyle} rounded-xl border transition-colors duration-200 disabled:cursor-not-allowed disabled:opacity-50 ${sizeStyles[size]} ${className} `}
       disabled={disabled || isLoading}
       onClick={handleClick}
       {...props}
     >
+      {left && <span className="mr-2 flex items-center">{left}</span>}
+
       {isLoading && (
         <div
-          className={`border-chip-yellowText animate-spin rounded-full border-2 border-t-transparent ${iconSizeStyles[size]}`}
+          className={`border-chip-yellowText animate-spin rounded-full border-2 border-t-transparent ${iconSizeStyles[size]} mr-2`}
         />
       )}
 
       <span className={`${textSizeStyles[size]} ${textColorStyles[color]}`}>
-        {isLoading ? '로그인 중...' : text}
+        {text}
       </span>
+
+      {right && <span className="ml-2 flex items-center">{right}</span>}
     </button>
   );
 }

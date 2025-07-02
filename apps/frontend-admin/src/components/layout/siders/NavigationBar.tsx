@@ -4,6 +4,7 @@ import SettingIcon from '@public/icons/ic_cogwheel.svg';
 import LogoutIcon from '@public/icons/ic_exit.svg';
 import RecommandManagementIcon from '@public/icons/ic_flag.svg';
 import PreviewMenuIcon from '@public/icons/ic_flatware.svg';
+import DashboardIcon from '@public/icons/ic_histogram.svg';
 import MenuManagementIcon from '@public/icons/ic_paper.svg';
 import CollapsingIcon from '@public/icons/ic_screen.svg';
 import ShopManagementIcon from '@public/icons/ic_shop.svg';
@@ -147,6 +148,23 @@ export default function NavigationBar({
               alt="Shop Management"
             />
             {!collapsed && <span>매장 정보 관리</span>}
+          </Link>
+
+          <Link
+            href="/dashboard"
+            className={`text-mobile-body-m-semibold flex items-center gap-3 rounded-lg px-4 py-2 transition-colors ${
+              pathname === '/dashboard'
+                ? 'text-main-500'
+                : 'hover:bg-main-500/10 text-gray-100'
+            } ${collapsed ? 'justify-center' : ''}`}
+          >
+            <Image
+              src={DashboardIcon}
+              width={20}
+              height={20}
+              alt="Shop Management"
+            />
+            {!collapsed && <span>대시보드</span>}
           </Link>
         </nav>
       </div>

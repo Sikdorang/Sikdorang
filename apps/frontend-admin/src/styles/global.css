@@ -5,3 +5,9 @@
 body {
   font-family: Pretendard, sans-serif;
 }
+
+@layer utilities {
+  .wrapper {
+    @apply max-w-[1272px] px-4;
+  }
+}
