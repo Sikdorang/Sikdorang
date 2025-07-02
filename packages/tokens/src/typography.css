@@ -1,0 +1,130 @@
+@layer utilities {
+  /* === MOBILE === */
+  .text-mobile-title-semibold {
+    font-family: 'Pretendard', sans-serif;
+    font-size: 24px;
+    font-weight: 600;
+    line-height: 150%;
+  }
+  .text-mobile-title-regular {
+    font-family: 'Pretendard', sans-serif;
+    font-size: 24px;
+    font-weight: 400;
+    line-height: 150%;
+  }
+
+  .text-mobile-head-semibold {
+    font-family: 'Pretendard', sans-serif;
+    font-size: 22px;
+    font-weight: 600;
+    line-height: 150%;
+  }
+  .text-mobile-head-regular {
+    font-family: 'Pretendard', sans-serif;
+    font-size: 22px;
+    font-weight: 400;
+    line-height: 150%;
+  }
+
+  .text-mobile-body-semibold {
+    font-family: 'Pretendard', sans-serif;
+    font-size: 18px;
+    font-weight: 600;
+    line-height: 150%;
+  }
+  .text-mobile-body-regular {
+    font-family: 'Pretendard', sans-serif;
+    font-size: 18px;
+    font-weight: 400;
+    line-height: 150%;
+  }
+  .text-mobile-body-semibold {
+    font-family: 'Pretendard', sans-serif;
+    font-size: 16px;
+    font-weight: 600;
+    line-height: 150%;
+  }
+  .text-mobile-body-regular {
+    font-family: 'Pretendard', sans-serif;
+    font-size: 16px;
+    font-weight: 400;
+    line-height: 150%;
+  }
+  .text-mobile-body-semibold {
+    font-family: 'Pretendard', sans-serif;
+    font-size: 14px;
+    font-weight: 600;
+    line-height: 150%;
+  }
+  .text-mobile-body-regular {
+    font-family: 'Pretendard', sans-serif;
+    font-size: 14px;
+    font-weight: 400;
+    line-height: 150%;
+  }
+
+  .text-mobile-caption-semibold {
+    font-family: 'Pretendard', sans-serif;
+    font-size: 12px;
+    font-weight: 600;
+    line-height: 150%;
+  }
+  .text-mobile-caption-regular {
+    font-family: 'Pretendard', sans-serif;
+    font-size: 12px;
+    font-weight: 400;
+    line-height: 150%;
+  }
+
+  .text-mobile-label-semibold {
+    font-family: 'Pretendard', sans-serif;
+    font-size: 10px;
+    font-weight: 600;
+    line-height: 150%;
+  }
+  .text-mobile-label-regular {
+    font-family: 'Pretendard', sans-serif;
+    font-size: 10px;
+    font-weight: 400;
+    line-height: 150%;
+  }
+
+  /* === DESKTOP === */
+  .text-desktop-title-semibold {
+    font-family: 'Pretendard', sans-serif;
+    font-size: 38px;
+    font-weight: 600;
+    line-height: 150%;
+  }
+  .text-desktop-title-regular {
+    font-family: 'Pretendard', sans-serif;
+    font-size: 38px;
+    font-weight: 400;
+    line-height: 150%;
+  }
+
+  .text-desktop-head-semibold {
+    font-family: 'Pretendard', sans-serif;
+    font-size: 28px;
+    font-weight: 600;
+    line-height: 150%;
+  }
+  .text-desktop-head-regular {
+    font-family: 'Pretendard', sans-serif;
+    font-size: 28px;
+    font-weight: 400;
+    line-height: 150%;
+  }
+  .text-desktop-head-semibold {
+    font-family: 'Pretendard', sans-serif;
+    font-size: 24px;
+    font-weight: 600;
+    line-height: 150%;
+  }
+  .text-desktop-head-regular {
+    font-family: 'Pretendard', sans-serif;
+    font-size: 24px;
+    font-weight: 400;
+    line-height: 150%;
+  }
+}

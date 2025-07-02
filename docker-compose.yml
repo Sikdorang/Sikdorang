@@ -22,4 +22,28 @@ services:
     ports:
       - '3000:3000' # 호스트:컨테이너 (Next.js 기본 3000)
     restart: unless-stopped
-# 필요시 환경변수, 볼륨, depends_on 등 추가 가능
+  # 필요시 환경변수, 볼륨, depends_on 등 추가 가능
+
+  frontend-admin:
+    build: ./apps/frontend-admin
+    ports:
+      - '3001:3000'
+    # env_file:
+    #   - ./apps/frontend-admin/.env.local
+    volumes:
+      - ./apps/frontend-admin:/app
+    command: pnpm dev
+    depends_on:
+      - backend
+
+  frontend-user:
+    build: ./apps/frontend-user
+    ports:
+      - '3002:3000'
+    # env_file:
+    #   - ./apps/frontend-user/.env.local
+    volumes:
+      - ./apps/frontend-user:/app
+    command: pnpm dev
+    depends_on:
+      - backend

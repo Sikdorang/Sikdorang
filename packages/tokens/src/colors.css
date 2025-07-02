@@ -1,0 +1,43 @@
+@theme {
+  --color-bk: #000000;
+  --color-w: #ffffff;
+
+  --color-gray-50: #f9fafb;
+  --color-gray-100: #f3f4f6;
+  --color-gray-200: #e5e7eb;
+  --color-gray-300: #d1d5db;
+  --color-gray-400: #9ca3af;
+  --color-gray-500: #6b7280;
+  --color-gray-600: #4b5563;
+  --color-gray-700: #374151;
+  --color-gray-800: #1f2937;
+  --color-gray-900: #111827;
+
+  --color-main-100: #fffbea;
+  --color-main-200: #fff3c4;
+  --color-main-300: #fce588;
+  --color-main-400: #fadb5f;
+  --color-main-500: #f7c948;
+  --color-main-600: #f0b429;
+  --color-main-700: #de911d;
+  --color-main-800: #b66809;
+  --color-main-900: #8d4a0b;
+
+  --color-chip-redBg: #fde8e8;
+  --color-chip-redText: #d7263d;
+  --color-chip-orangeBg: #fff4e5;
+  --color-chip-orangeText: #ff9900;
+  --color-chip-yellowBg: #fffbea;
+  --color-chip-yellowText: #f7c948;
+  --color-chip-greenBg: #e6f9f0;
+  --color-chip-greenText: #2ecc71;
+  --color-chip-blueBg: #e6f0fa;
+  --color-chip-blueText: #3498db;
+  --color-chip-purpleBg: #f3e8ff;
+  --color-chip-purpleText: #9b59b6;
+
+  --color-system-error: #d7263d;
+  --color-system-information: #3498db;
+  --color-system-warning: #f7c948;
+  --color-system-success: #2ecc71;
+}
