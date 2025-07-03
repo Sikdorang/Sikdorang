@@ -6,7 +6,7 @@ interface CtaButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   text?: string;
   isLoading?: boolean;
   size?: 'small' | 'medium' | 'large';
-  color?: 'yellow' | 'gray' | 'red' | 'white';
+  color?: 'yellow' | 'gray' | 'red' | 'white' | 'black';
   width?: 'full' | 'fit';
   className?: string;
   left?: React.ReactNode;
@@ -40,30 +40,34 @@ export default function CtaButton({
 
   const textColorStyles = {
     yellow: 'text-main-900',
-    gray: 'text-w',
+    gray: 'text-gray-700',
     red: 'text-w',
     white: 'text-gray-700',
+    black: 'text-w',
   };
 
   const backgroundColorStyles = {
     yellow: 'bg-main-500',
-    gray: 'bg-gray-800',
+    gray: 'bg-gray-100',
     red: 'bg-system-error',
     white: 'bg-w',
+    black: 'bg-gray-800',
   };
 
   const hoverColorStyles = {
     yellow: 'hover:bg-main-500',
-    gray: 'hover:bg-gray-800',
+    gray: 'hover:bg-gray-200',
     red: 'hover:bg-system-error',
     white: 'hover:bg-gray-100',
+    black: 'hover:bg-gray-800',
   };
 
   const borderColorStyles = {
     yellow: 'border-main-500',
-    gray: 'border-gray-800',
+    gray: 'border-gray-100',
     red: 'border-system-error',
     white: 'border-gray-200',
+    black: 'border-gray-800',
   };
 
   const iconSizeStyles = {

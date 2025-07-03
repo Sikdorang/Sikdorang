@@ -34,7 +34,7 @@ export default function MenuEditPage() {
             <CategoryButton
               key={cat.id}
               text={cat.text}
-              color={selectedCategory === cat.id ? 'gray' : 'white'}
+              color={selectedCategory === cat.id ? 'black' : 'white'}
               size="small"
               width="fit"
               right={
@@ -47,13 +47,14 @@ export default function MenuEditPage() {
           ))}
           <CategoryButton
             text="카테고리 추가"
-            color="white"
+            color="gray"
             size="small"
             width="fit"
-            className="inline-flex"
           />
         </div>
       </div>
+
+      <div className="w-full border-b border-gray-100" />
     </div>
   );
 }
