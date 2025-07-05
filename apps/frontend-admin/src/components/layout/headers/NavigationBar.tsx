@@ -66,7 +66,7 @@ export default function TopNavigationBar() {
   const activeCategory = getActiveCategory(pathname);
 
   return (
-    <header className="flex items-center justify-between border-b border-gray-200 bg-white px-12 py-8">
+    <header className="flex items-center justify-between border-t border-gray-200 bg-white px-12 py-8">
       <h2 className="text-desktop-head-s-semibold text-bk">
         {activeCategory.label}
       </h2>

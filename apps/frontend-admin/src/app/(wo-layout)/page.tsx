@@ -27,7 +27,11 @@ export default function Home() {
           <div className="h-128 w-128 mx-auto flex items-center justify-center rounded-2xl bg-gray-100"></div>
         </div>
 
-        <CtaButton size="large" onClick={handleClick} />
+        <CtaButton
+          text="카카오로 시작하기"
+          size="large"
+          onClick={handleClick}
+        />
 
         <div className="text-mobile-body-s-semibold mt-5 flex select-none items-center justify-center gap-4 text-gray-300">
           <span className="underline underline-offset-2">이용약관</span>

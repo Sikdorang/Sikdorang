@@ -35,7 +35,7 @@ export default function NavigationBar({
       <div>
         <div className="mb-6 flex items-center justify-end px-4">
           <button
-            aria-label="사이드바 최소화"
+            aria-label="최소화"
             onClick={() => setCollapsed((v) => !v)}
             className="hover:text-main-500 text-gray-400 transition-colors"
           >
@@ -43,22 +43,30 @@ export default function NavigationBar({
           </button>
         </div>
 
-        <div className="px-4">
-          <button
-            className={`text-mobile-body-m-semibold text-main-500 flex w-full items-center gap-2 focus:outline-none ${
-              collapsed ? 'justify-center px-2' : ''
-            }`}
-            onClick={() => !collapsed && setMenuOpen((v) => !v)}
+        <nav className="mt-6 flex flex-col gap-2">
+          <Link
+            href="/menu/edit"
+            className={`text-mobile-body-m-semibold flex items-center gap-3 rounded-lg px-4 py-2 transition-colors ${
+              pathname === '/menu/edit'
+                ? 'text-main-500'
+                : 'hover:bg-main-500/10 text-gray-100'
+            } ${collapsed ? 'justify-center' : ''}`}
           >
             <Image
               src={MenuManagementIcon}
               width={20}
               height={20}
-              alt="메뉴 관리"
+              alt="Preview Menu"
             />
-            {!collapsed && (
-              <>
-                <span>메뉴 관리</span>
+            {!collapsed && <span>메뉴 관리</span>}
+
+            <button
+              className={`text-mobile-body-m-semibold text-main-500 flex items-center gap-2 focus:outline-none ${
+                collapsed ? 'justify-center px-2' : ''
+              }`}
+              onClick={() => !collapsed && setMenuOpen((v) => !v)}
+            >
+              {!collapsed && (
                 <svg
                   className={`ml-auto h-4 w-4 transition-transform ${menuOpen ? 'rotate-180' : ''}`}
                   fill="none"
@@ -68,9 +76,9 @@ export default function NavigationBar({
                 >
                   <path d="M6 9l6 6 6-6" />
                 </svg>
-              </>
-            )}
-          </button>
+              )}
+            </button>
+          </Link>
 
           {menuOpen && !collapsed && (
             <div className="mt-2 flex flex-col gap-1">
@@ -96,25 +104,6 @@ export default function NavigationBar({
               </Link>
             </div>
           )}
-        </div>
-
-        <nav className="mt-6 flex flex-col gap-2">
-          <Link
-            href="/recommend"
-            className={`text-mobile-body-m-semibold flex items-center gap-3 rounded-lg px-4 py-2 transition-colors ${
-              pathname === '/recommend'
-                ? 'text-main-500'
-                : 'hover:bg-main-500/10 text-gray-100'
-            } ${collapsed ? 'justify-center' : ''}`}
-          >
-            <Image
-              src={RecommandManagementIcon}
-              width={20}
-              height={20}
-              alt="Recommand Management"
-            />
-            {!collapsed && <span>추천 관리</span>}
-          </Link>
 
           <Link
             href="/preview"
@@ -131,6 +120,23 @@ export default function NavigationBar({
               alt="Preview Menu"
             />
             {!collapsed && <span>내 메뉴판 보기</span>}
+          </Link>
+
+          <Link
+            href="/recommend"
+            className={`text-mobile-body-m-semibold flex items-center gap-3 rounded-lg px-4 py-2 transition-colors ${
+              pathname === '/recommend'
+                ? 'text-main-500'
+                : 'hover:bg-main-500/10 text-gray-100'
+            } ${collapsed ? 'justify-center' : ''}`}
+          >
+            <Image
+              src={RecommandManagementIcon}
+              width={20}
+              height={20}
+              alt="Recommand Management"
+            />
+            {!collapsed && <span>추천 관리</span>}
           </Link>
 
           <Link
@@ -173,8 +179,10 @@ export default function NavigationBar({
         <Link
           href="/settings"
           className={`text-mobile-body-m-semibold hover:text-main-500 flex items-center gap-3 px-2 py-2 text-gray-100 transition-colors ${
-            collapsed ? 'justify-center' : ''
-          }`}
+            pathname === '/settings'
+              ? 'text-main-500'
+              : 'hover:bg-main-500/10 text-gray-100'
+          } ${collapsed ? 'justify-center' : ''}`}
         >
           <Image src={SettingIcon} width={20} height={20} alt="Setting" />
           {!collapsed && <span>설정</span>}
@@ -183,8 +191,10 @@ export default function NavigationBar({
         <Link
           href="/logout"
           className={`text-mobile-body-m-semibold hover:text-main-500 flex items-center gap-3 px-2 py-2 text-gray-100 transition-colors ${
-            collapsed ? 'justify-center' : ''
-          }`}
+            pathname === '/logout'
+              ? 'text-main-500'
+              : 'hover:bg-main-500/10 text-gray-100'
+          } ${collapsed ? 'justify-center' : ''}`}
         >
           <Image src={LogoutIcon} width={20} height={20} alt="Logout" />
           {!collapsed && <span>로그아웃</span>}

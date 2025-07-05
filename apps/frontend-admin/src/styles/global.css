@@ -8,6 +8,6 @@ body {
 
 @layer utilities {
   .wrapper {
-    @apply max-w-[1272px] px-4;
+    @apply max-w-[1432px] px-4;
   }
 }
