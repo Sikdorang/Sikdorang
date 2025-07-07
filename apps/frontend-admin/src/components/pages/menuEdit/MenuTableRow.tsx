@@ -4,7 +4,10 @@ import UncheckedIcon from '@public/icons/ic_empty_box.svg';
 
 import { default as EditButton } from '@/components/common/buttons/CtaButton';
 import Image from 'next/image';
-import MenuCustomSelect from './MenuCustomSelect';
+import {
+  default as CategorySelect,
+  default as StatusSelect,
+} from './MenuCustomSelect';
 
 interface MenuTableRowProps {
   item: IMenuTableItem;
@@ -28,15 +31,15 @@ export default function MenuTableRow({ item }: MenuTableRowProps) {
         {item.price}
       </td>
       <td className="border-b border-t border-gray-300 px-5 py-5">
-        <MenuCustomSelect
-          options={['카테고리 1', '카테고리 2', '카테고리 3']}
+        <CategorySelect
+          options={['안주', '카테고리 2', '카테고리 3']}
           selectedOption={item.category || '카테고리 1'}
           onChange={() => {}}
         />
       </td>
       <td className="border-b border-t border-gray-300 px-5 py-5">
-        <MenuCustomSelect
-          options={['판매 중', '판매 예정', '품절']}
+        <StatusSelect
+          options={['판매 중', '품절', '숨김']}
           selectedOption={item.status || '판매 중'}
           isStatus={true}
           onChange={() => {}}

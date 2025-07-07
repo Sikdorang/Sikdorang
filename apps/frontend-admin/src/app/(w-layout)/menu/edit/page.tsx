@@ -173,7 +173,7 @@ export default function MenuEditPage() {
           </thead>
           <tbody className="text-mobile-body-m-regular text-gray-600">
             {menuList.map((item) => (
-              <MenuTableRow item={item} onEdit={() => {}} />
+              <MenuTableRow key={item.id} item={item} onEdit={() => {}} />
             ))}
           </tbody>
         </table>

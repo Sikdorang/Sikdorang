@@ -58,6 +58,6 @@ const MenuCustomLabel = forwardRef<HTMLDivElement, MenuCustomLabelProps>(
   },
 );
 
-MenuCustomLabel.displayName = 'MenuElementLabel';
+MenuCustomLabel.displayName = 'MenuCustomLabel';
 
 export default MenuCustomLabel;

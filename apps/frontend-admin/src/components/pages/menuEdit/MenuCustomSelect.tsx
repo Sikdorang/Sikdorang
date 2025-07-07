@@ -1,8 +1,10 @@
 import { useEffect, useRef, useState } from 'react';
+import { createPortal } from 'react-dom';
 
-import MenuElementLabel from './MenuCustomLabel';
+import MenuCustomLabel from './MenuCustomLabel';
 
 import CheckedIcon from '@public/icons/ic_checked_circle.svg';
+import Image from 'next/image';
 
 interface MenuCustomSelectProps {
   options: string[];
@@ -58,7 +60,7 @@ export default function MenuCustomSelect({
 
   return (
     <div className="cursor-pointer" ref={selectRef}>
-      <MenuElementLabel
+      <MenuCustomLabel
         ref={labelRef}
         text={selectedOption || '카테고리 선택'}
         variant={isStatus ? undefined : 'default'}
@@ -71,37 +73,43 @@ export default function MenuCustomSelect({
         className="relative"
       />
 
-      {isOpen && (
-        <div
-          className={`absolute z-10 flex flex-col rounded border border-gray-200 bg-white shadow-lg`}
-          style={{
-            top: `${position.top}px`,
-            left: `${position.left}px`,
-          }}
-        >
-          {options.map((option) => (
-            <div
-              key={option}
-              onClick={() => {
-                onChange(option);
-                setIsOpen(false);
-              }}
-              className={`flex w-full shrink-0 cursor-pointer items-center px-4 py-2 hover:bg-gray-100`}
-            >
-              {option === selectedOption ? (
-                <CheckedIcon className="mr-2 shrink-0" />
-              ) : (
-                <div className="mr-2 h-3 w-3 shrink-0"></div>
-              )}
-              <MenuElementLabel
-                text={option}
-                hover={false}
-                isStatus={isStatus}
-              />
-            </div>
-          ))}
-        </div>
-      )}
+      {isOpen &&
+        createPortal(
+          <div
+            className={`absolute z-10 flex flex-col rounded-xl border border-gray-200 bg-white shadow-lg`}
+            style={{
+              top: `${position.top}px`,
+              left: `${position.left}px`,
+            }}
+          >
+            {options.map((option) => (
+              <div
+                key={option}
+                onClick={() => {
+                  onChange(option);
+                  setIsOpen(false);
+                }}
+                className={`flex w-full shrink-0 cursor-pointer items-center px-4 py-2 hover:bg-gray-100`}
+              >
+                {option === selectedOption ? (
+                  <Image
+                    src={CheckedIcon}
+                    alt="checked"
+                    className="mr-2 shrink-0"
+                  />
+                ) : (
+                  <div className="mr-2 h-3 w-3 shrink-0"></div>
+                )}
+                <MenuCustomLabel
+                  text={option}
+                  hover={false}
+                  isStatus={isStatus}
+                />
+              </div>
+            ))}
+          </div>,
+          document.body,
+        )}
     </div>
   );
 }

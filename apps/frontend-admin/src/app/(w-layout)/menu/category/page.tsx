@@ -22,6 +22,23 @@ import {
 import { CSS } from '@dnd-kit/utilities';
 import { useState } from 'react';
 
+import {
+  default as CategoryEditModal,
+  default as MenuEditModal,
+  NameEditModalBody,
+  NameEditModalHeader,
+} from '@/components/pages/menuCategory/NameEditModal';
+import { useEditModal } from '@/contexts/NameEditModalContext';
+
+import {
+  default as DeleteCategoryModal,
+  default as DeleteMenuModal,
+  WarningModalActions,
+  WarningModalBody,
+  WarningModalHeader,
+} from '@/components/common/modals/WarningModal';
+import { useWarningModal } from '@/contexts/WarningModalContext';
+
 import ChevronDownIcon from '@public/icons/ic_chevron_down.svg';
 import ChevronRightIcon from '@public/icons/ic_chevron_right.svg';
 import DragIcon from '@public/icons/ic_dots.svg';
@@ -29,7 +46,6 @@ import EditIcon from '@public/icons/ic_pencil.svg';
 import DeleteIcon from '@public/icons/ic_trashcan.svg';
 import Image from 'next/image';
 
-// 타입 정의
 interface CategoryItem {
   id: string;
   name: string;
@@ -216,6 +232,10 @@ export default function MenuCategoryPage() {
     },
   ]);
 
+  const { openModal: openCategoryEditModal } = useEditModal();
+  const { openModal: openMenuEditModal } = useEditModal();
+  const { openModal: openDeleteCategoryModal } = useWarningModal();
+  const { openModal: openDeleteMenuModal } = useWarningModal();
   const [activeId, setActiveId] = useState<string | null>(null);
 
   // 센서 설정
@@ -299,23 +319,23 @@ export default function MenuCategoryPage() {
 
   // 편집 버튼 클릭
   const handleEdit = (categoryId: string) => {
-    console.log('Edit category:', categoryId);
-    // 편집 로직 구현
+    openCategoryEditModal(categoryId);
   };
 
   // 삭제 버튼 클릭
   const handleDelete = (categoryId: string) => {
-    setCategories((prevCategories) => {
-      return prevCategories.filter((category) => {
-        if (category.id === categoryId) return false;
-        if (category.children) {
-          category.children = category.children.filter(
-            (child) => child.id !== categoryId,
-          );
-        }
-        return true;
-      });
-    });
+    openDeleteMenuModal(categoryId);
+    // setCategories((prevCategories) => {
+    //   return prevCategories.filter((category) => {
+    //     if (category.id === categoryId) return false;
+    //     if (category.children) {
+    //       category.children = category.children.filter(
+    //         (child) => child.id !== categoryId,
+    //       );
+    //     }
+    //     return true;
+    //   });
+    // });
   };
 
   // 저장 버튼 클릭
@@ -360,7 +380,6 @@ export default function MenuCategoryPage() {
         onDragStart={handleDragStart}
         onDragEnd={handleDragEnd}
       >
-        {/* 카테고리 리스트 */}
         <div className="wrapper w-full p-4">
           <SortableContext
             items={flatCategoriesForRender.map((category) => category.id)}
@@ -387,6 +406,46 @@ export default function MenuCategoryPage() {
           {activeCategory && <DragOverlayItem category={activeCategory} />}
         </DragOverlay>
       </DndContext>
+
+      <CategoryEditModal>
+        <NameEditModalHeader onSave={handleSave}>
+          카테고리명 수정하기
+        </NameEditModalHeader>
+        <NameEditModalBody
+          label="카테고리명"
+          placeholder="카테고리명을 입력해주세요."
+        />
+      </CategoryEditModal>
+
+      <MenuEditModal>
+        <NameEditModalHeader onSave={handleSave}>
+          메뉴명 수정하기
+        </NameEditModalHeader>
+        <NameEditModalBody
+          label="메뉴명"
+          placeholder="메뉴명을 입력해주세요."
+        />
+      </MenuEditModal>
+
+      <DeleteCategoryModal>
+        <WarningModalHeader>카테고리 삭제</WarningModalHeader>
+        <WarningModalBody>
+          카테고리를 정말 삭제할까요?
+          <br />
+          카테고리와 안에 있는 메뉴들이 모두 사라져요.
+          <br />한 번 삭제하면 복구할 수 없어요 !
+        </WarningModalBody>
+        <WarningModalActions onConfirm={undefined} />
+      </DeleteCategoryModal>
+
+      <DeleteMenuModal>
+        <WarningModalHeader>메뉴 삭제</WarningModalHeader>
+        <WarningModalBody>
+          메뉴를 정말 삭제할까요 ?
+          <br />한 번 삭제하면 복구할 수 없어요 !
+        </WarningModalBody>
+        <WarningModalActions onConfirm={undefined} />
+      </DeleteMenuModal>
     </div>
   );
 }
