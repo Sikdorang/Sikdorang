@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 
 import MenuElementLabel from './MenuCustomLabel';
 
-import CheckedIcon from '@public/icons/ic_checked_box.svg';
+import CheckedIcon from '@public/icons/ic_checked_circle.svg';
 
 interface MenuCustomSelectProps {
   options: string[];
