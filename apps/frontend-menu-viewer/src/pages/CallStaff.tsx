@@ -1,5 +1,5 @@
 import ChervonSvg from '@/assets/icons/ic_chervon_left.svg?react';
-import BaseButton from '@/components/common/\bBaseButton';
+import BaseButton from '@/components/common/BaseButton';
 import OutlineButton from '@/components/common/OutlineButton';
 import { useState } from 'react';
 import { useNavigate } from 'react-router';

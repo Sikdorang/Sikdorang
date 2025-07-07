@@ -1,49 +1,65 @@
 version: '3.8'
 
 services:
+  mysql:
+    image: mysql:8.0
+    container_name: sikdorang-mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+    ports:
+      - '3307:3306'
+    volumes:
+      - ./mysql_data:/var/lib/mysql
+    restart: unless-stopped
+
   backend:
-    #   env_file:
-    #    - ./apps/backend/.env
     build:
       context: .
       dockerfile: apps/backend/Dockerfile
     container_name: sikdorang-backend
+    env_file:
+      - ./apps/backend/.env
     ports:
-      - '4000:4000' # 호스트:컨테이너 (예시, 필요에 따라 조정)
+      - '4000:4000'
+    depends_on:
+      - mysql
     restart: unless-stopped
-
-  frontend:
-    #   env_file:
-    #    - ./apps/frontend/.env
-    build:
-      context: .
-      dockerfile: apps/frontend/Dockerfile
-    container_name: sikdorang-frontend
-    ports:
-      - '3000:3000' # 호스트:컨테이너 (Next.js 기본 3000)
-    restart: unless-stopped
-  # 필요시 환경변수, 볼륨, depends_on 등 추가 가능
 
   frontend-admin:
-    build: ./apps/frontend-admin
+    build:
+      context: .
+      dockerfile: apps/frontend-admin/Dockerfile
+    container_name: sikdorang-frontend-admin
     ports:
-      - '3001:3000'
-    # env_file:
-    #   - ./apps/frontend-admin/.env.local
-    volumes:
-      - ./apps/frontend-admin:/app
-    command: pnpm dev
+      - '3000:3000'
     depends_on:
       - backend
+    restart: unless-stopped
 
   frontend-user:
-    build: ./apps/frontend-user
+    build:
+      context: .
+      dockerfile: apps/frontend-user/Dockerfile
+    container_name: sikdorang-frontend-user
     ports:
-      - '3002:3000'
-    # env_file:
-    #   - ./apps/frontend-user/.env.local
-    volumes:
-      - ./apps/frontend-user:/app
-    command: pnpm dev
+      - '3001:3001'
     depends_on:
       - backend
+    restart: unless-stopped
+
+  frontend-menu-viewer:
+    build:
+      context: .
+      dockerfile: apps/frontend-menu-viewer/Dockerfile
+    container_name: sikdorang-frontend-menu-viewer
+    ports:
+      - '5173:5173'
+    depends_on:
+      - backend
+    restart: unless-stopped
+
+volumes:
+  mysql_data:
