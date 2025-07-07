@@ -1,3 +1,13 @@
 @import 'tailwindcss';
 @import 'tokens/src/colors.css';
 @import 'tokens/src/typography.css';
+
+body {
+  font-family: Pretendard, sans-serif;
+}
+
+@layer utilities {
+  .wrapper {
+    @apply max-w-[1272px] px-4;
+  }
+}

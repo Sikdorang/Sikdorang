@@ -90,3 +90,4 @@ temp/
 
 # Turbo
 .turbo
+mysql_data/
