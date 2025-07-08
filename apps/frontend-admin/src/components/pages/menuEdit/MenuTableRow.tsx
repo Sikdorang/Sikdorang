@@ -11,10 +11,10 @@ import {
 
 interface MenuTableRowProps {
   item: IMenuTableItem;
-  onEdit: () => void;
+  onEdit: (menuId: number) => void;
 }
 
-export default function MenuTableRow({ item }: MenuTableRowProps) {
+export default function MenuTableRow({ item, onEdit }: MenuTableRowProps) {
   return (
     <tr key={item.id}>
       <td className="items-center border-b border-l border-t border-gray-300 px-5 py-5">
@@ -46,7 +46,13 @@ export default function MenuTableRow({ item }: MenuTableRowProps) {
         />
       </td>
       <td className="border-b border-r border-t border-gray-300 px-5 py-5 text-center">
-        <EditButton text="편집하기" color="gray" size="small" width="fit" />
+        <EditButton
+          text="편집하기"
+          color="gray"
+          size="small"
+          width="fit"
+          onClick={() => onEdit(item.id)}
+        />
       </td>
     </tr>
   );

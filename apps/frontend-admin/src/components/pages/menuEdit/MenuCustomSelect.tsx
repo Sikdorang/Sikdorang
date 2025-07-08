@@ -43,7 +43,7 @@ export default function MenuCustomSelect({
       const labelRect = labelRef.current.getBoundingClientRect();
       setPosition({
         top: labelRect.top + window.scrollY,
-        left: labelRect.right + window.scrollX + 4,
+        left: labelRect.right + window.scrollX + 10,
       });
     }
   };
@@ -98,7 +98,7 @@ export default function MenuCustomSelect({
                     className="mr-2 shrink-0"
                   />
                 ) : (
-                  <div className="mr-2 h-3 w-3 shrink-0"></div>
+                  <div className="mr-2 h-6 w-6 shrink-0"></div>
                 )}
                 <MenuCustomLabel
                   text={option}

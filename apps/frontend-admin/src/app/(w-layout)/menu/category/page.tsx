@@ -24,11 +24,11 @@ import { useState } from 'react';
 
 import {
   default as CategoryEditModal,
+  EditModalHeader,
+  EditModalTextInput,
   default as MenuEditModal,
-  NameEditModalBody,
-  NameEditModalHeader,
-} from '@/components/pages/menuCategory/NameEditModal';
-import { useEditModal } from '@/contexts/NameEditModalContext';
+} from '@/components/common/modals/EditModal';
+import { useEditModal } from '@/contexts/EditModalContext';
 
 import {
   default as DeleteCategoryModal,
@@ -408,20 +408,18 @@ export default function MenuCategoryPage() {
       </DndContext>
 
       <CategoryEditModal>
-        <NameEditModalHeader onSave={handleSave}>
+        <EditModalHeader onSave={handleSave}>
           카테고리명 수정하기
-        </NameEditModalHeader>
-        <NameEditModalBody
+        </EditModalHeader>
+        <EditModalTextInput
           label="카테고리명"
           placeholder="카테고리명을 입력해주세요."
         />
       </CategoryEditModal>
 
       <MenuEditModal>
-        <NameEditModalHeader onSave={handleSave}>
-          메뉴명 수정하기
-        </NameEditModalHeader>
-        <NameEditModalBody
+        <EditModalHeader onSave={handleSave}>메뉴명 수정하기</EditModalHeader>
+        <EditModalTextInput
           label="메뉴명"
           placeholder="메뉴명을 입력해주세요."
         />
@@ -435,7 +433,7 @@ export default function MenuCategoryPage() {
           카테고리와 안에 있는 메뉴들이 모두 사라져요.
           <br />한 번 삭제하면 복구할 수 없어요 !
         </WarningModalBody>
-        <WarningModalActions onConfirm={undefined} />
+        <WarningModalActions onConfirm={() => {}} />
       </DeleteCategoryModal>
 
       <DeleteMenuModal>
@@ -444,7 +442,7 @@ export default function MenuCategoryPage() {
           메뉴를 정말 삭제할까요 ?
           <br />한 번 삭제하면 복구할 수 없어요 !
         </WarningModalBody>
-        <WarningModalActions onConfirm={undefined} />
+        <WarningModalActions onConfirm={() => {}} />
       </DeleteMenuModal>
     </div>
   );

@@ -10,10 +10,19 @@ import GalleryIcon from '@public/icons/ic_grid.svg';
 import TableIcon from '@public/icons/ic_list.svg';
 import ShopManagementIcon from '@public/icons/ic_plus.svg';
 
+import EditModal, {
+  EditModalHeader,
+  EditModalImageInput,
+  EditModalOptionInput,
+  EditModalTextInput,
+  EditToggleSwitch,
+} from '@/components/common/modals/EditModal';
+import { useEditModal } from '@/contexts/EditModalContext';
+
 import MenuTableRow from '@/components/pages/menuEdit/MenuTableRow';
+import { IMenuTableItem } from '@/types/model/menu';
 import Image from 'next/image';
 import { useState } from 'react';
-import { IMenuTableItem } from '../../../../types/model/menu';
 
 const categories = [
   { id: 1, text: '전체', count: 1 },
@@ -64,6 +73,11 @@ const menuList: IMenuTableItem[] = [
 export default function MenuEditPage() {
   const [searchValue, setSearchValue] = useState('');
   const [selectedCategory, setSelectedCategory] = useState(1);
+
+  const { openModal: openMenuEditModal } = useEditModal();
+  const handleEdit = (menuId: number) => {
+    openMenuEditModal(menuId.toString());
+  };
 
   return (
     <div className="flex flex-col items-center justify-center">
@@ -173,7 +187,7 @@ export default function MenuEditPage() {
           </thead>
           <tbody className="text-mobile-body-m-regular text-gray-600">
             {menuList.map((item) => (
-              <MenuTableRow key={item.id} item={item} onEdit={() => {}} />
+              <MenuTableRow key={item.id} item={item} onEdit={handleEdit} />
             ))}
           </tbody>
         </table>
@@ -187,6 +201,37 @@ export default function MenuEditPage() {
           </span>
         </button>
       </div>
+
+      <EditModal>
+        <EditModalHeader onSave={() => {}}>세부사항 편집하기</EditModalHeader>
+        <EditModalTextInput
+          label="메뉴설명"
+          placeholder="메뉴설명을 입력해주세요."
+        />
+        <EditModalImageInput
+          label="메뉴이미지"
+          placeholder="메뉴이미지를 추가해주세요."
+        />
+        <EditModalOptionInput
+          label="메뉴 옵션"
+          placeholder="옵션을 추가해주세요."
+        />
+        <EditToggleSwitch
+          label="메뉴 강조"
+          toggleSwitchItems={[
+            { label: '인기 메뉴로 표시', initialValue: true },
+            { label: '신 메뉴로 표시', initialValue: false },
+          ]}
+        />
+        <EditToggleSwitch
+          label="판매중"
+          toggleSwitchItems={[
+            { label: '판매중', initialValue: true },
+            { label: '숨김', initialValue: false },
+            { label: '품절', initialValue: false },
+          ]}
+        />
+      </EditModal>
     </div>
   );
 }

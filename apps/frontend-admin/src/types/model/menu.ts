@@ -7,3 +7,12 @@ export interface IMenuTableItem {
   status: string;
   order: string;
 }
+
+export interface IMenuImageItem {
+  id: number;
+  image_url: string;
+  url?: string;
+  order: string;
+  file?: File;
+  preview?: string;
+}

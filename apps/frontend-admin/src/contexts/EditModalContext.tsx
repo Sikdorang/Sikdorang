@@ -1,7 +1,7 @@
 'use client';
 import { createContext, ReactNode, useContext, useState } from 'react';
 
-interface NameEditModalContextType {
+interface EditModalContextType {
   isOpen: boolean;
   name: string;
   initialValue: string;
@@ -11,11 +11,11 @@ interface NameEditModalContextType {
   saveEdit: (onSave: (name: string) => void) => void;
 }
 
-const NameEditModalContext = createContext<
-  NameEditModalContextType | undefined
->(undefined);
+const EditModalContext = createContext<EditModalContextType | undefined>(
+  undefined,
+);
 
-export function MenuModalProvider({ children }: { children: ReactNode }) {
+export function EditModalProvider({ children }: { children: ReactNode }) {
   const [isOpen, setIsOpen] = useState(false);
   const [name, setName] = useState('');
   const [initialValue, setInitialValue] = useState('');
@@ -40,7 +40,7 @@ export function MenuModalProvider({ children }: { children: ReactNode }) {
   };
 
   return (
-    <NameEditModalContext.Provider
+    <EditModalContext.Provider
       value={{
         isOpen,
         name,
@@ -52,14 +52,14 @@ export function MenuModalProvider({ children }: { children: ReactNode }) {
       }}
     >
       {children}
-    </NameEditModalContext.Provider>
+    </EditModalContext.Provider>
   );
 }
 
 export function useEditModal() {
-  const context = useContext(NameEditModalContext);
+  const context = useContext(EditModalContext);
   if (!context) {
-    throw new Error('useMenuModal must be used within MenuModalProvider');
+    throw new Error('useEditModal must be used within EditModalProvider');
   }
   return context;
 }

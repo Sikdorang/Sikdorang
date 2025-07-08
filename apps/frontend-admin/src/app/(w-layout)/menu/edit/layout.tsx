@@ -1,6 +1,7 @@
+import { EditModalProvider } from '@/contexts/EditModalContext';
 import { Suspense } from 'react';
 
-export default function MenuLayout({
+export default function MenuEditLayout({
   children,
   modifyModal,
 }: {
@@ -9,8 +10,10 @@ export default function MenuLayout({
 }) {
   return (
     <div className="relative">
-      <Suspense fallback={<div />}>{modifyModal}</Suspense>
-      <div>{children}</div>
+      <EditModalProvider>
+        <Suspense fallback={<div />}>{modifyModal}</Suspense>
+        <div>{children}</div>
+      </EditModalProvider>
     </div>
   );
 }

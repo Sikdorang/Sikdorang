@@ -1,7 +1,7 @@
-import { MenuModalProvider } from '@/contexts/NameEditModalContext';
+import { EditModalProvider } from '@/contexts/EditModalContext';
 import { WarningModalProvider } from '@/contexts/WarningModalContext';
 
-export default function CategoryLayout({
+export default function MenuCategoryLayout({
   children,
 }: {
   children: React.ReactNode;
@@ -9,11 +9,11 @@ export default function CategoryLayout({
 }) {
   return (
     <div className="relative">
-      <MenuModalProvider>
+      <EditModalProvider>
         <WarningModalProvider>
           <div>{children}</div>
         </WarningModalProvider>
-      </MenuModalProvider>
+      </EditModalProvider>
     </div>
   );
 }
