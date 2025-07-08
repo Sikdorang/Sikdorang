@@ -33,77 +33,80 @@ export default function NavigationBar({
       }`}
     >
       <div>
-        <div className="mb-6 flex items-center justify-end px-4">
+        <nav
+          className={`mb-16 flex items-center px-4 ${collapsed ? 'justify-center' : 'justify-end'}`}
+        >
           <button
             aria-label="최소화"
-            onClick={() => setCollapsed((v) => !v)}
+            onClick={() => setCollapsed(!collapsed)}
             className="hover:text-main-500 text-gray-400 transition-colors"
           >
             <Image src={CollapsingIcon} width={20} height={20} alt="최소화" />
           </button>
-        </div>
+        </nav>
 
-        <nav className="mt-6 flex flex-col gap-2">
-          <Link
-            href="/menu/edit"
-            className={`text-mobile-body-m-semibold flex items-center gap-3 rounded-lg px-4 py-2 transition-colors ${
-              pathname === '/menu/edit'
-                ? 'text-main-500'
-                : 'hover:bg-main-500/10 text-gray-100'
-            } ${collapsed ? 'justify-center' : ''}`}
-          >
-            <Image
-              src={MenuManagementIcon}
-              width={20}
-              height={20}
-              alt="Preview Menu"
-            />
-            {!collapsed && <span>메뉴 관리</span>}
-
-            <button
-              className={`text-mobile-body-m-semibold text-main-500 flex items-center gap-2 focus:outline-none ${
-                collapsed ? 'justify-center px-2' : ''
-              }`}
-              onClick={() => !collapsed && setMenuOpen((v) => !v)}
+        <nav className="mt-6 flex flex-col gap-8">
+          <div>
+            <Link
+              href="/menu/edit"
+              className={`text-mobile-body-m-semibold flex items-center gap-3 rounded-lg px-4 py-2 transition-colors ${
+                pathname === '/menu/edit'
+                  ? 'text-main-500'
+                  : 'hover:bg-main-500/10 text-gray-100'
+              } ${collapsed ? 'justify-center' : ''}`}
             >
+              <Image
+                src={MenuManagementIcon}
+                width={20}
+                height={20}
+                alt="Preview Menu"
+              />
+              {!collapsed && <span>메뉴 관리</span>}
               {!collapsed && (
-                <svg
-                  className={`ml-auto h-4 w-4 transition-transform ${menuOpen ? 'rotate-180' : ''}`}
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth={2}
-                  viewBox="0 0 24 24"
+                <button
+                  className={`text-mobile-body-m-semibold text-main-500 flex items-center gap-2 focus:outline-none ${
+                    collapsed ? 'justify-center px-2' : ''
+                  }`}
+                  onClick={() => !collapsed && setMenuOpen((v) => !v)}
                 >
-                  <path d="M6 9l6 6 6-6" />
-                </svg>
+                  <svg
+                    className={`ml-auto h-4 w-4 transition-transform ${menuOpen ? 'rotate-180' : ''}`}
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth={2}
+                    viewBox="0 0 24 24"
+                  >
+                    <path d="M6 9l6 6 6-6" />
+                  </svg>
+                </button>
               )}
-            </button>
-          </Link>
+            </Link>
 
-          {menuOpen && !collapsed && (
-            <div className="mt-2 flex flex-col gap-1">
-              <Link
-                href="/menu/edit"
-                className={`text-mobile-body-s-semibold flex items-center gap-3 rounded-lg px-4 py-3 text-left transition-colors ${
-                  pathname === '/menu/edit'
-                    ? 'bg-main-500 text-bk'
-                    : 'hover:bg-main-500/20 text-gray-200'
-                }`}
-              >
-                <span>메뉴 편집</span>
-              </Link>
-              <Link
-                href="/menu/category"
-                className={`text-mobile-body-s-semibold flex items-center gap-3 rounded-lg px-4 py-3 text-left transition-colors ${
-                  pathname === '/menu/category'
-                    ? 'bg-main-500 text-bk'
-                    : 'hover:bg-main-500/10 text-gray-200'
-                }`}
-              >
-                <span>순서·카테고리 편집</span>
-              </Link>
-            </div>
-          )}
+            {menuOpen && !collapsed && (
+              <div className="mt-2 flex flex-col gap-1">
+                <Link
+                  href="/menu/edit"
+                  className={`text-mobile-body-s-semibold flex items-center gap-3 rounded-lg px-4 py-3 text-left transition-colors ${
+                    pathname === '/menu/edit'
+                      ? 'bg-main-500 text-bk'
+                      : 'hover:bg-main-500/20 text-gray-200'
+                  }`}
+                >
+                  <span>메뉴 편집</span>
+                </Link>
+                <Link
+                  href="/menu/category"
+                  className={`text-mobile-body-s-semibold flex items-center gap-3 rounded-lg px-4 py-3 text-left transition-colors ${
+                    pathname === '/menu/category'
+                      ? 'bg-main-500 text-bk'
+                      : 'hover:bg-main-500/10 text-gray-200'
+                  }`}
+                >
+                  <span>순서·카테고리 편집</span>
+                </Link>
+              </div>
+            )}
+          </div>
 
           <Link
             href="/preview"

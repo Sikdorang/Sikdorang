@@ -52,7 +52,9 @@ const MenuCustomLabel = forwardRef<HTMLDivElement, MenuCustomLabelProps>(
         className={`${baseClass} ${variantClass} shrink-0 px-2 py-1 ${className}`}
         onClick={onClick}
       >
-        <span>{text}</span>
+        <span>
+          {isStatus ? '· ' : ''} {text}
+        </span>
       </div>
     );
   },

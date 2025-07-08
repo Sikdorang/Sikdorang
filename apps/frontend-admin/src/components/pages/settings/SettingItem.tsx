@@ -9,7 +9,7 @@ interface SettingItemProps
 
 export default function SettingItem({ children, image }: SettingItemProps) {
   return (
-    <button className="flex w-full items-center gap-2">
+    <button className="flex w-full max-w-xl items-center gap-2">
       <div>
         <Image src={image} alt="setting" />
       </div>

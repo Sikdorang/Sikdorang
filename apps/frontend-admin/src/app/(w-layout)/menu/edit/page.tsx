@@ -205,11 +205,11 @@ export default function MenuEditPage() {
       <EditModal>
         <EditModalHeader onSave={() => {}}>세부사항 편집하기</EditModalHeader>
         <EditModalTextInput
-          label="메뉴설명"
+          label="메뉴 설명"
           placeholder="메뉴설명을 입력해주세요."
         />
         <EditModalImageInput
-          label="메뉴이미지"
+          label="메뉴 이미지"
           placeholder="메뉴이미지를 추가해주세요."
         />
         <EditModalOptionInput

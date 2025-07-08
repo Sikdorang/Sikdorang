@@ -16,3 +16,9 @@ export interface IMenuImageItem {
   file?: File;
   preview?: string;
 }
+
+export interface IMenuOption {
+  id: string;
+  name: string;
+  price?: number;
+}

@@ -59,7 +59,7 @@ export default function CtaButton({
     gray: 'hover:bg-gray-200',
     red: 'hover:bg-system-error',
     white: 'hover:bg-gray-100',
-    black: 'hover:bg-gray-800',
+    black: 'hover:bg-gray-600',
   };
 
   const borderColorStyles = {

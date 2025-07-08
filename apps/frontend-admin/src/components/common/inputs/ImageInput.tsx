@@ -20,6 +20,7 @@ import React, { useEffect, useState } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 
 import DraggableIcon from '@public/icons/ic_dots.svg';
+import EmptyImageIcon from '@public/icons/ic_picture.svg';
 import AddIcon from '@public/icons/ic_plus.svg';
 import DeleteIcon from '@public/icons/ic_x.svg';
 import Image from 'next/image';
@@ -114,7 +115,7 @@ export default function MenuImageGallery({
 
   return (
     <div>
-      <div className="mb-4 flex h-64 w-full items-center justify-center rounded-md border border-blue-200 bg-gray-900">
+      <div className="mb-4 flex h-64 w-full items-center justify-center rounded-xl bg-gray-100">
         {selectedImage ? (
           <img
             src={
@@ -128,9 +129,14 @@ export default function MenuImageGallery({
             className="h-full w-full rounded-md object-contain"
           />
         ) : (
-          <p className="text-body-xs select-none text-gray-700">
-            이미지를 업로드해 주세요
-          </p>
+          <div className="text-mobile-body-m-semibold flex select-none flex-col items-center justify-center gap-4 text-center text-gray-700">
+            <Image src={EmptyImageIcon} alt="add" width={55} height={55} />
+            <div>
+              메뉴 사진이 아직 없어요.
+              <br />
+              사진을 추가 해주세요 !
+            </div>
+          </div>
         )}
       </div>
 

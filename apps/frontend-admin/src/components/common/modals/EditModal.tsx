@@ -2,18 +2,15 @@ import {
   default as AddButton,
   default as SaveButton,
 } from '@/components/common/buttons/CtaButton';
-import ToggleSwitch, {
-  ToggleLabel,
-  ToggleSwitchButton,
-} from '@/components/common/buttons/ToggleSwitch';
+import ToggleSwitch from '@/components/common/buttons/ToggleSwitch';
 import ImageInput from '@/components/common/inputs/ImageInput';
 import OptionInput from '@/components/common/inputs/OptionInput';
 import TextInput from '@/components/common/inputs/TextInput';
 import { useEditModal } from '@/contexts/EditModalContext';
-import { ToggleSwitchProvider } from '@/contexts/ToggleSwitchContext';
+import { IMenuOption } from '@/types/model/menu';
 import CloseIcon from '@public/icons/ic_x.svg';
 import Image from 'next/image';
-import { ReactNode } from 'react';
+import React, { ReactNode } from 'react';
 
 export default function EditModal({ children }: { children: ReactNode }) {
   const { isOpen, closeModal } = useEditModal();
@@ -116,6 +113,17 @@ export function EditModalOptionInput({
   label,
   placeholder,
 }: EditModalBodyProps) {
+  const [options, setOptions] = React.useState<IMenuOption[]>([]);
+
+  const handleAddOption = () => {
+    const newOption: IMenuOption = {
+      id: Date.now().toString(),
+      name: '',
+      price: 0,
+    };
+    setOptions((prev) => [...prev, newOption]);
+  };
+
   return (
     <div className="mb-4 flex flex-col gap-4">
       <div className="flex">
@@ -129,7 +137,14 @@ export function EditModalOptionInput({
           size="small"
         />
       </div>
-      <OptionInput />
+      <OptionInput
+        options={options}
+        onOptionsChange={setOptions}
+        optionName={''}
+        onOptionNameChange={() => {}}
+        onDelete={() => {}}
+        onAddOption={handleAddOption}
+      />
     </div>
   );
 }
@@ -149,25 +164,22 @@ export function EditToggleSwitch({
   toggleSwitchItems,
 }: EditToggleSwitchProps) {
   return (
-    <ToggleSwitchProvider>
-      <div className="mb-4 flex flex-col gap-4">
-        <div className="flex">
-          <div className="grow-1 text-mobile-body-l-semibold text-gray-900">
-            {label}
-          </div>
+    <div className="mb-4 flex flex-col gap-4">
+      <div className="flex">
+        <div className="grow-1 text-mobile-body-l-semibold text-gray-900">
+          {label}
         </div>
+      </div>
+      <div className="grid grid-cols-2 gap-4">
         {toggleSwitchItems.map((item, idx) => (
-          <ToggleSwitchProvider
+          <ToggleSwitch
             key={item.label + idx}
-            initialValue={item.initialValue ?? false}
-          >
-            <ToggleSwitch>
-              <ToggleLabel>{item.label}</ToggleLabel>
-              <ToggleSwitchButton />
-            </ToggleSwitch>
-          </ToggleSwitchProvider>
+            isOn={item.initialValue ?? false}
+            onToggle={() => {}}
+            label={item.label}
+          />
         ))}
       </div>
-    </ToggleSwitchProvider>
+    </div>
   );
 }
