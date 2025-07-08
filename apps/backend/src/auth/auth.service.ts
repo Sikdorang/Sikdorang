@@ -52,7 +52,6 @@ export class AuthService {
     return this.prisma.user.create({
       data: {
         kakaoId: Number(kakaoUser.id),
-        email: kakaoUser.email,
         nickname: kakaoUser.nickname,
       },
     });
@@ -88,8 +87,7 @@ export class AuthService {
       });
       return {
         id: response.data.id,
-        email: response.data.email,
-        nickname: response.data.nickname,
+        nickname: response.data.properties?.nickname ?? null,
       };
     } catch (error) {
       throw new UnauthorizedException('카카오 사용자 정보 조회 실패');

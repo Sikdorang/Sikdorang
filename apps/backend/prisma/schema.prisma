@@ -38,7 +38,6 @@ model Store {
 model User {
   id         Int      @id @default(autoincrement())
   kakaoId    BigInt      @unique(map: "User_kakaoId_key")
-  email      String?  @unique(map: "User_email_key")
   nickname   String?
   created_at DateTime @default(now())
 }
