@@ -1,12 +1,5 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider = "prisma-client-js"
-  output   = "../generated/prisma"
 }
 
 datasource db {
@@ -14,8 +7,37 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+model RefreshToken {
+  id        Int      @id @default(autoincrement())
+  token     String   @unique(map: "RefreshToken_token_key")
+  userId    Int
+  createdAt DateTime @default(now())
+  expiresAt DateTime
+
+  @@index([userId], map: "RefreshToken_userId_fkey")
+}
+
 model Store {
-  id          Int      @id @default(autoincrement())
-  store        String
-  createdAt   DateTime @default(now())
+  id              Int      @id @default(autoincrement())
+  store           String
+  createdAt       DateTime @default(now())
+  Toilet          String?
+  corkageFree     Boolean?
+  corkagePossible Boolean?
+  description     String?
+  kakaoId         BigInt?
+  logo            String
+  naverPlace      String?
+  phoneNumber     String?
+  wifiId          String?
+  wifiPassword    String?
+
+  @@index([kakaoId], map: "Store_kakaoId_fkey")
+}
+
+model User {
+  id         Int      @id @default(autoincrement())
+  kakaoId    BigInt      @unique(map: "User_kakaoId_key")
+  nickname   String?
+  created_at DateTime @default(now())
 }
