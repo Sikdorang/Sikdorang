@@ -178,30 +178,32 @@ export default function NavigationBar({
         </nav>
       </div>
 
-      <div className="flex flex-col gap-2 px-4">
-        <Link
-          href="/settings"
-          className={`text-mobile-body-m-semibold hover:text-main-500 flex items-center gap-3 px-2 py-2 text-gray-100 transition-colors ${
-            pathname === '/settings'
-              ? 'text-main-500'
-              : 'hover:bg-main-500/10 text-gray-100'
-          } ${collapsed ? 'justify-center' : ''}`}
-        >
-          <Image src={SettingIcon} width={20} height={20} alt="Setting" />
-          {!collapsed && <span>설정</span>}
-        </Link>
+      <div>
+        <nav className="flex flex-col gap-2 px-4">
+          <Link
+            href="/settings"
+            className={`text-mobile-body-m-semibold flex items-center gap-3 rounded-lg px-4 py-2 text-gray-100 transition-colors ${
+              pathname === '/settings'
+                ? 'text-main-500'
+                : 'hover:bg-main-500/10 text-gray-100'
+            } ${collapsed ? 'justify-center' : ''}`}
+          >
+            <Image src={SettingIcon} width={20} height={20} alt="Setting" />
+            {!collapsed && <span>설정</span>}
+          </Link>
 
-        <Link
-          href="/logout"
-          className={`text-mobile-body-m-semibold hover:text-main-500 flex items-center gap-3 px-2 py-2 text-gray-100 transition-colors ${
-            pathname === '/logout'
-              ? 'text-main-500'
-              : 'hover:bg-main-500/10 text-gray-100'
-          } ${collapsed ? 'justify-center' : ''}`}
-        >
-          <Image src={LogoutIcon} width={20} height={20} alt="Logout" />
-          {!collapsed && <span>로그아웃</span>}
-        </Link>
+          <Link
+            href="/logout"
+            className={`text-mobile-body-m-semibold flex items-center gap-3 rounded-lg px-2 py-2 text-gray-100 transition-colors ${
+              pathname === '/logout'
+                ? 'text-main-500'
+                : 'hover:bg-main-500/10 text-gray-100'
+            } ${collapsed ? 'justify-center' : ''}`}
+          >
+            <Image src={LogoutIcon} width={20} height={20} alt="Logout" />
+            {!collapsed && <span>로그아웃</span>}
+          </Link>
+        </nav>
       </div>
     </aside>
   );
