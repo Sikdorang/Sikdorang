@@ -4,6 +4,10 @@
   "description": "",
   "author": "",
   "private": true,
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
   "license": "UNLICENSED",
   "scripts": {
     "build": "nest build",
@@ -25,9 +29,11 @@
     "@nestjs/core": "^11.0.1",
     "@nestjs/passport": "^11.0.5",
     "@nestjs/platform-express": "^11.0.1",
+    "@nestjs/swagger": "^11.2.0",
     "@nestjs/typeorm": "^11.0.0",
     "@prisma/client": "^6.11.1",
     "axios": "^1.10.0",
+    "cookie-parser": "^1.4.7",
     "jsonwebtoken": "^9.0.2",
     "passport": "^0.7.0",
     "passport-jwt": "^4.0.1",

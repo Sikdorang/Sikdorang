@@ -103,4 +103,10 @@ export class AuthService {
     const { userId, kakaoId } = payload as { userId: number; kakaoId: number };
     return this.jwtService.sign({ userId, kakaoId }, '1h');
   }
+
+  async logout(refreshToken: string) {
+    await this.prisma.refreshToken.deleteMany({
+      where: { token: refreshToken },
+    });
+  }
 }
