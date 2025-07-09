@@ -1,10 +1,30 @@
-    node_modules
-    .git
-    dist
-    .vscode
-    apps/*/node_modules
-    apps/*/dist
-    apps/*/.next
-    pnpm-lock.yaml.backup
-    *.log
-    Dockerfile
+# 빌드 시 제외할 디렉토리
+node_modules
+.turbo
+turbo
+.next
+.git
+.gitignore
+
+# 설정 및 빌드 캐시
+*.log
+*.tsbuildinfo
+.DS_Store
+Thumbs.db
+
+# 환경변수 파일 (필요시 컨테이너에 개별 복사)
+*.env
+.env*
+.env
+.env.local
+.env.docker
+.env.production
+
+# Docker 자체
+Dockerfile
+docker-compose.yml
+*.exe
+*.dll
+*.bin
+*.sh
+*.bat
