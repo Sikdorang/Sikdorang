@@ -1,9 +1,11 @@
-
 import {
   Controller,
   Get,
   Post,
-  Query, Req, Res, UnauthorizedException
+  Query,
+  Req,
+  Res,
+  UnauthorizedException,
 } from '@nestjs/common';
 import { Request, Response } from 'express';
 
@@ -25,16 +27,16 @@ export class AuthController {
   @Post('refresh')
   @RefreshAccessTokenSwagger()
   async refresh(@Req() req: Request) {
-  const refreshToken = req.cookies?.refreshToken;
-  if (!refreshToken) {
-    throw new UnauthorizedException('Refresh token not found');
-  }
+    const refreshToken: string = req.cookies?.refreshToken;
+    if (!refreshToken) {
+      throw new UnauthorizedException('Refresh token not found');
+    }
 
-  try {
-    const newAccessToken =
-      await this.authService.refreshAccessToken(refreshToken);
-    return { accessToken: newAccessToken };
-  } catch (error) {
+    try {
+      const newAccessToken =
+        await this.authService.refreshAccessToken(refreshToken);
+      return { accessToken: newAccessToken };
+    } catch (error) {
       throw new UnauthorizedException('Invalid token');
     }
   }
@@ -42,15 +44,15 @@ export class AuthController {
   @Post('logout')
   @LogoutSwagger()
   async logout(@Req() req: Request, @Res() res: Response) {
-    const refreshToken = req.cookies?.refreshToken;
+    const refreshToken: string = req.cookies?.refreshToken;
 
-  if (refreshToken) {
-    await this.authService.logout(refreshToken);
-  }
+    if (refreshToken) {
+      await this.authService.logout(refreshToken);
+    }
 
-  res.clearCookie('accessToken', { httpOnly: true });
-  res.clearCookie('refreshToken', { httpOnly: true });
+    res.clearCookie('accessToken', { httpOnly: true });
+    res.clearCookie('refreshToken', { httpOnly: true });
 
-  return res.status(200).json({ message: 'Logged out successfully' });
+    return res.status(200).json({ message: 'Logged out successfully' });
   }
 }
