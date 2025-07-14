@@ -16,5 +16,6 @@ import { JwtService } from './jwt.service';
       useValue: new PrismaClient(),
     },
   ],
+  exports: [JwtService],
 })
 export class AuthModule {}

@@ -1,4 +1,9 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import {
+  ConflictException,
+  Injectable,
+  InternalServerErrorException,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { PrismaClient } from '@prisma/client';
 import axios from 'axios';
 
@@ -18,43 +23,75 @@ export class AuthService {
   ) {}
 
   async kakaoLogin(code: string): Promise<any> {
-    const accessToken: string = await this.getKakaoAccessToken(code);
-    const kakaoUser: KakaoUser = await this.getKakaoUserInfo(accessToken);
-    let user: any = await this.findByKakaoId(kakaoUser.id);
-    if (!user) {
-      user = await this.createUser(kakaoUser);
+    try {
+      const accessToken: string = await this.getKakaoAccessToken(code);
+      const kakaoUser: KakaoUser = await this.getKakaoUserInfo(accessToken);
+      let user: any = await this.findByKakaoId(kakaoUser.id);
+      if (!user) {
+        user = await this.createUser(kakaoUser);
+      }
+      // JWT 토큰 생성
+      const payload = { userId: user.id, kakaoId: user.kakaoId.toString() };
+      const jwtAccessToken = this.jwtService.sign(payload, '1h');
+      const jwtRefreshToken = this.jwtService.sign(payload, '1y');
+
+      await this.prisma.refreshToken.create({
+        data: {
+          userId: user.id,
+          token: jwtRefreshToken,
+          expiresAt: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000), // 1년 후
+        },
+      });
+
+      return {
+        user: {
+          ...user,
+          id: user.id.toString(),
+          kakaoId: user.kakaoId.toString(),
+        },
+        accessToken: jwtAccessToken,
+        refreshToken: jwtRefreshToken,
+      };
+    } catch (e) {
+      console.error('kakaoLogin 에러:', e);
+      throw new InternalServerErrorException(
+        '카카오 로그인 중 오류가 발생했습니다.',
+      );
     }
-    // JWT 토큰 생성
-    const payload = { userId: user.id, kakaoId: user.kakaoId.toString() };
-    const jwtAccessToken = this.jwtService.sign(payload, '1h');
-    const jwtRefreshToken = this.jwtService.sign(payload, '1y');
-
-    await this.prisma.refreshToken.create({
-      data: {
-        userId: user.id,
-        token: jwtRefreshToken,
-        expiresAt: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000), // 1년 후
-      },
-    });
-
-    return {
-      user: {
-        ...user,
-        id: user.id.toString(),
-        kakaoId: user.kakaoId.toString(),
-      },
-      accessToken: jwtAccessToken,
-      refreshToken: jwtRefreshToken,
-    };
   }
 
   async createUser(kakaoUser: KakaoUser): Promise<any> {
-    return this.prisma.user.create({
-      data: {
-        kakaoId: Number(kakaoUser.id),
-        nickname: kakaoUser.nickname,
-      },
-    });
+    let user;
+    try {
+      user = await this.prisma.user.create({
+        data: {
+          kakaoId: Number(kakaoUser.id),
+          nickname: kakaoUser.nickname,
+        },
+      });
+    } catch (e) {
+      if (e.code === 'P2002') {
+        // Prisma unique constraint violation
+        throw new ConflictException('이미 가입된 카카오 계정입니다.');
+      }
+      console.error('User 생성 중 에러:', e);
+      throw new InternalServerErrorException(
+        '회원가입 중 오류가 발생했습니다.',
+      );
+    }
+
+    try {
+      const randomStoreName = `매장-${Math.floor(Math.random() * 100000)}`;
+      await this.prisma.store.create({
+        data: {
+          store: randomStoreName,
+          userId: user.id,
+        },
+      });
+    } catch (e) {
+      console.error('Store 생성 중 에러:', e);
+    }
+    return user;
   }
 
   async getKakaoAccessToken(code: string): Promise<string> {
@@ -95,18 +132,44 @@ export class AuthService {
   }
 
   async findByKakaoId(kakaoId: number): Promise<any> {
-    return this.prisma.user.findUnique({ where: { kakaoId: Number(kakaoId) } });
+    try {
+      return await this.prisma.user.findUnique({
+        where: { kakaoId: Number(kakaoId) },
+      });
+    } catch (e) {
+      console.error('findByKakaoId 에러:', e);
+      throw new InternalServerErrorException(
+        '사용자 조회 중 오류가 발생했습니다.',
+      );
+    }
   }
 
   async refreshAccessToken(refreshToken: string): Promise<string> {
-    const payload = this.jwtService.verify(refreshToken);
-    const { userId, kakaoId } = payload as { userId: number; kakaoId: number };
-    return this.jwtService.sign({ userId, kakaoId }, '1h');
+    try {
+      const payload = this.jwtService.verify(refreshToken);
+      const { userId, kakaoId } = payload as {
+        userId: number;
+        kakaoId: number;
+      };
+      return this.jwtService.sign({ userId, kakaoId }, '1h');
+    } catch (e) {
+      console.error('refreshAccessToken 에러:', e);
+      throw new InternalServerErrorException(
+        'AccessToken 갱신 중 오류가 발생했습니다.',
+      );
+    }
   }
 
   async logout(refreshToken: string) {
-    await this.prisma.refreshToken.deleteMany({
-      where: { token: refreshToken },
-    });
+    try {
+      await this.prisma.refreshToken.deleteMany({
+        where: { token: refreshToken },
+      });
+    } catch (e) {
+      console.error('logout 에러:', e);
+      throw new InternalServerErrorException(
+        '로그아웃 중 오류가 발생했습니다.',
+      );
+    }
   }
 }
