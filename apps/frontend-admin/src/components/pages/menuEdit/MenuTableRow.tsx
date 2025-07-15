@@ -12,12 +12,21 @@ import {
 interface MenuTableRowProps {
   item: IMenuTableItem;
   onEdit: (menuId: number) => void;
+  isLastRow: boolean;
 }
 
-export default function MenuTableRow({ item, onEdit }: MenuTableRowProps) {
+export default function MenuTableRow({
+  item,
+  onEdit,
+  isLastRow,
+}: MenuTableRowProps) {
   return (
     <tr key={item.id}>
-      <td className="items-center border-b border-l border-t border-gray-300 px-5 py-5">
+      <td
+        className={`items-center border-b border-l border-t border-gray-300 px-5 py-5 ${
+          isLastRow ? 'rounded-bl-xl' : ''
+        }`}
+      >
         {item.checked ? (
           <Image src={CheckedIcon} alt="check" width={24} height={24} />
         ) : (
@@ -45,7 +54,11 @@ export default function MenuTableRow({ item, onEdit }: MenuTableRowProps) {
           onChange={() => {}}
         />
       </td>
-      <td className="border-b border-r border-t border-gray-300 px-5 py-5 text-center">
+      <td
+        className={`border-b border-r border-t border-gray-300 px-5 py-5 text-center ${
+          isLastRow ? 'rounded-br-xl' : ''
+        }`}
+      >
         <EditButton
           text="편집하기"
           color="gray"

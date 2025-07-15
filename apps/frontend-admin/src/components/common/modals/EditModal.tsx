@@ -1,5 +1,6 @@
 import {
   default as AddButton,
+  default as CategoryButton,
   default as SaveButton,
 } from '@/components/common/buttons/CtaButton';
 import ToggleSwitch from '@/components/common/buttons/ToggleSwitch';
@@ -8,9 +9,10 @@ import OptionInput from '@/components/common/inputs/OptionInput';
 import TextInput from '@/components/common/inputs/TextInput';
 import { useEditModal } from '@/contexts/EditModalContext';
 import { IMenuOption } from '@/types/model/menu';
+import AddIcon from '@public/icons/ic_plus.svg';
 import CloseIcon from '@public/icons/ic_x.svg';
 import Image from 'next/image';
-import React, { ReactNode } from 'react';
+import React, { ReactNode, useState } from 'react';
 
 export default function EditModal({ children }: { children: ReactNode }) {
   const { isOpen, closeModal } = useEditModal();
@@ -81,6 +83,57 @@ export function EditModalTextInput({ label, placeholder }: EditModalBodyProps) {
         onChange={(e) => setName(e.target.value)}
         maxLength={30}
       />
+    </div>
+  );
+}
+
+export function EditModaSelectInput({
+  label,
+  placeholder,
+}: EditModalBodyProps) {
+  const contents = [
+    { id: 1, text: '전체', count: 1 },
+    { id: 2, text: '한식', count: 3 },
+    { id: 3, text: '중식', count: 2 },
+    { id: 4, text: '일식', count: 4 },
+    { id: 5, text: '양식', count: 1 },
+  ];
+
+  const [selectedContent, setSelectedContent] = useState(1);
+
+  return (
+    <div className="mb-4">
+      <div className="grow-1 text-mobile-body-l-semibold mb-4 text-gray-900">
+        {label}
+      </div>
+      <div className="flex gap-2">
+        {contents.map((cat) => (
+          <CategoryButton
+            key={cat.id}
+            text={cat.text}
+            color={selectedContent === cat.id ? 'black' : 'white'}
+            size="small"
+            width="fit"
+            right={
+              <span className="text-mobile-body-s-semibold text-gray-200">
+                {cat.count}
+              </span>
+            }
+            onClick={() => setSelectedContent(cat.id)}
+          />
+        ))}
+        <CategoryButton
+          text="카테고리 추가"
+          color="gray"
+          size="small"
+          width="fit"
+          right={
+            <span className="text-mobile-body-s-semibold text-gray-200">
+              <Image src={AddIcon} alt="plus" />
+            </span>
+          }
+        />
+      </div>
     </div>
   );
 }

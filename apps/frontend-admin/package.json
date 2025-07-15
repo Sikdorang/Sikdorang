@@ -16,6 +16,7 @@
     "@tanstack/react-query": "^5.81.5",
     "axios": "^1.10.0",
     "lexorank": "^1.0.5",
+    "lottie-react": "^2.4.1",
     "next": "15.3.4",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",

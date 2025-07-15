@@ -8,13 +8,14 @@ import {
 import SearchInput from '@/components/common/inputs/TextInput';
 import GalleryIcon from '@public/icons/ic_grid.svg';
 import TableIcon from '@public/icons/ic_list.svg';
-import ShopManagementIcon from '@public/icons/ic_plus.svg';
+import AddIcon from '@public/icons/ic_plus.svg';
 
 import EditModal, {
   EditModalHeader,
   EditModalImageInput,
   EditModalOptionInput,
   EditModalTextInput,
+  EditModaSelectInput,
   EditToggleSwitch,
 } from '@/components/common/modals/EditModal';
 import { useEditModal } from '@/contexts/EditModalContext';
@@ -74,9 +75,15 @@ export default function MenuEditPage() {
   const [searchValue, setSearchValue] = useState('');
   const [selectedCategory, setSelectedCategory] = useState(1);
 
+  const [viewType, setViewType] = useState<'table' | 'gallery'>('table');
+
   const { openModal: openMenuEditModal } = useEditModal();
+  const { openModal: openMenuCreateModal } = useEditModal();
   const handleEdit = (menuId: number) => {
     openMenuEditModal(menuId.toString());
+  };
+  const handleCreate = () => {
+    openMenuCreateModal();
   };
 
   return (
@@ -117,7 +124,7 @@ export default function MenuEditPage() {
             width="fit"
             right={
               <span className="text-mobile-body-s-semibold text-gray-200">
-                <Image src={ShopManagementIcon} alt="plus" />
+                <Image src={AddIcon} alt="plus" />
               </span>
             }
           />
@@ -130,25 +137,55 @@ export default function MenuEditPage() {
         <div className="flex gap-2">
           <div className="grow-1 flex items-center gap-2">
             <div className="">전체 13</div>
-            <button>
+            <button
+              className={`rounded-md px-2 py-2 ${
+                viewType === 'table' ? 'bg-gray-100' : 'hover:bg-gray-50'
+              }`}
+              onClick={() => setViewType('table')}
+            >
               <Image src={TableIcon} alt="table" />
             </button>
-            <button>
+            <button
+              className={`rounded-md px-2 py-2 ${
+                viewType === 'gallery' ? 'bg-gray-100' : 'hover:bg-gray-50'
+              }`}
+              onClick={() => setViewType('gallery')}
+            >
               <Image src={GalleryIcon} alt="gallery" />
             </button>
           </div>
-          <TableControlButton
-            text="삭제하기"
-            color="gray"
-            size="small"
-            width="fit"
-          />
-          <TableControlButton
-            text="변경사항 저장하기"
-            color="gray"
-            size="small"
-            width="fit"
-          />
+
+          {viewType === 'table' ? (
+            <>
+              <TableControlButton
+                text="메뉴 추가하기"
+                color="white"
+                size="small"
+                width="fit"
+                onClick={handleCreate}
+              />
+              <TableControlButton
+                text="삭제하기"
+                color="gray"
+                size="small"
+                width="fit"
+              />
+              <TableControlButton
+                text="변경사항 저장하기"
+                color="gray"
+                size="small"
+                width="fit"
+              />
+            </>
+          ) : (
+            <TableControlButton
+              text="메뉴 추가하기"
+              color="yellow"
+              size="small"
+              width="fit"
+              onClick={handleCreate}
+            />
+          )}
         </div>
         <div className="flex gap-2 pt-2">
           {filterOptions.map((option) => (
@@ -164,42 +201,58 @@ export default function MenuEditPage() {
       </div>
 
       <div className="wrapper w-full p-4">
-        <table className="w-full table-auto border-none">
-          <thead className="text-mobile-body-m-semibold text-w rounded-lg border-b border-b-gray-400 bg-gray-700">
-            <tr>
-              <th className="w-[3%] whitespace-nowrap rounded-tl-xl px-5 py-5"></th>
-              <th className="w-[35%] whitespace-nowrap px-5 py-5 text-left">
-                메뉴명
-              </th>
-              <th className="w-[10%] whitespace-nowrap px-5 py-5 text-left">
-                가격
-              </th>
-              <th className="w-[12%] whitespace-nowrap px-5 py-5 text-left">
-                카테고리
-              </th>
-              <th className="w-[10%] whitespace-nowrap px-5 py-5 text-left">
-                상태
-              </th>
-              <th className="w-[8%] whitespace-nowrap rounded-tr-xl px-5 py-5">
-                세부사항
-              </th>
-            </tr>
-          </thead>
-          <tbody className="text-mobile-body-m-regular text-gray-600">
-            {menuList.map((item) => (
-              <MenuTableRow key={item.id} item={item} onEdit={handleEdit} />
-            ))}
-          </tbody>
-        </table>
-        <button
-          className="text-mobile-body-m-semibold flex w-full items-center justify-center rounded-xl rounded-t-none border border-t-0 border-gray-300 py-5 text-gray-600"
-          onClick={undefined}
-        >
-          메뉴 추가
-          <span className="text-mobile-body-s-semibold ml-2 text-gray-200">
-            <Image src={ShopManagementIcon} alt="plus" />
-          </span>
-        </button>
+        {viewType === 'table' ? (
+          <>
+            <table className="w-full table-auto border-separate border-spacing-0 overflow-hidden rounded-xl">
+              <thead className="text-mobile-body-m-semibold text-w rounded-lg border-b border-b-gray-400 bg-gray-700">
+                <tr>
+                  <th className="w-[3%] whitespace-nowrap rounded-tl-xl px-5 py-5"></th>
+                  <th className="w-[35%] whitespace-nowrap px-5 py-5 text-left">
+                    메뉴명
+                  </th>
+                  <th className="w-[10%] whitespace-nowrap px-5 py-5 text-left">
+                    가격
+                  </th>
+                  <th className="w-[12%] whitespace-nowrap px-5 py-5 text-left">
+                    카테고리
+                  </th>
+                  <th className="w-[10%] whitespace-nowrap px-5 py-5 text-left">
+                    상태
+                  </th>
+                  <th className="w-[8%] whitespace-nowrap rounded-tr-xl px-5 py-5">
+                    세부사항
+                  </th>
+                </tr>
+              </thead>
+              <tbody className="text-mobile-body-m-regular rounded-t-none rounded-bl-xl rounded-br-xl border border-t-0 text-gray-600">
+                {menuList.map((item, idx) => (
+                  <MenuTableRow
+                    key={item.id}
+                    item={item}
+                    onEdit={handleEdit}
+                    isLastRow={idx === menuList.length - 1}
+                  />
+                ))}
+              </tbody>
+            </table>
+          </>
+        ) : (
+          <>
+            <div className="grid grid-cols-3 gap-2">
+              {menuList.map((item) => (
+                <div key={item.id} className="flex flex-col gap-2">
+                  <div className="h-[300px] w-full rounded-lg bg-gray-200"></div>
+                  <div className="text-mobile-body-m-semibold text-gray-900">
+                    {item.name}
+                  </div>
+                  <div className="text-mobile-body-s-semibold text-gray-600">
+                    {item.price}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </>
+        )}
       </div>
 
       <EditModal>
@@ -207,6 +260,42 @@ export default function MenuEditPage() {
         <EditModalTextInput
           label="메뉴 설명"
           placeholder="메뉴설명을 입력해주세요."
+        />
+        <EditModalImageInput
+          label="메뉴 이미지"
+          placeholder="메뉴이미지를 추가해주세요."
+        />
+        <EditModalOptionInput
+          label="메뉴 옵션"
+          placeholder="옵션을 추가해주세요."
+        />
+        <EditToggleSwitch
+          label="메뉴 강조"
+          toggleSwitchItems={[
+            { label: '인기 메뉴로 표시', initialValue: true },
+            { label: '신 메뉴로 표시', initialValue: false },
+          ]}
+        />
+        <EditToggleSwitch
+          label="판매중"
+          toggleSwitchItems={[
+            { label: '판매중', initialValue: true },
+            { label: '숨김', initialValue: false },
+            { label: '품절', initialValue: false },
+          ]}
+        />
+      </EditModal>
+
+      <EditModal>
+        <EditModalHeader onSave={() => {}}>메뉴 추가하기</EditModalHeader>
+        <EditModalTextInput
+          label="메뉴명"
+          placeholder="메뉴명을 입력해주세요."
+        />
+        <EditModalTextInput label="가격" placeholder="가격을 입력해주세요." />
+        <EditModaSelectInput
+          label="카테고리"
+          placeholder="카테고리를 선택해주세요."
         />
         <EditModalImageInput
           label="메뉴 이미지"
