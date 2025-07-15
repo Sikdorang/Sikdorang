@@ -1,4 +1,4 @@
-import toast from 'react-hot-toast';
+import { showCustomToast } from '../../../utils/showToast';
 import Chip from '../../common/Chip';
 import Divider from '../../common/Divider';
 import OptionSelector from './OptionSelector';
@@ -52,7 +52,10 @@ export default function OptionGroup({
                   isMaxReached &&
                   !selectedOptionIds.has(item.id)
                 ) {
-                  toast.error('이미 최대 개수만큼 선택하셨어요!');
+                  showCustomToast({
+                    icon: 'error',
+                    message: '이미 최대 개수만큼 선택하셨어요!',
+                  });
                 } else {
                   onToggle(item.id);
                 }

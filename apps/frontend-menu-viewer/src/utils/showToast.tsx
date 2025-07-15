@@ -1,11 +1,13 @@
 import BellSvg from '@/assets/icons/ic_bell.svg?react';
+import ErrorSvg from '@/assets/icons/ic_error.svg?react';
 import type { ReactNode } from 'react';
 import toast from 'react-hot-toast';
 
-export type ToastIconType = 'bell';
+export type ToastIconType = 'bell' | 'error';
 
 const IconMap: Record<ToastIconType, ReactNode> = {
   bell: <BellSvg />,
+  error: <ErrorSvg />,
 };
 
 export function showCustomToast({
