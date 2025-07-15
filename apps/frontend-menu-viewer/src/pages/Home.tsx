@@ -8,10 +8,10 @@ import CategoryMenuGroup from '@/components/pages/Home/CategoryMenuGroup';
 import { useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router';
 import CategoryTabItem from '../components/pages/Home/CategoryTabItem';
-import useFetchMenuQuery from '../hooks/useFetchMenuQuery';
+import { useFetchMenusQuery } from '../hooks/useFetchMenusQuery';
 
 export default function Home() {
-  const { data, isLoading, isError } = useFetchMenuQuery();
+  const { data, isLoading, isError } = useFetchMenusQuery();
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const groupRefs = useRef<Record<string, HTMLElement | null>>({});
   const tabRefs = useRef<Record<string, HTMLElement | null>>({});

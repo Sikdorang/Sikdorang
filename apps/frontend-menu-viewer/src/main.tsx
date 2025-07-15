@@ -4,7 +4,7 @@ import App from './App.tsx';
 import './index.css';
 
 async function enableMocking() {
-  if (import.meta.env.MODE === 'development') {
+  if (import.meta.env.VITE_MOCKING == 'true') {
     const { worker } = await import('./mocks/browser');
     await worker.start({
       onUnhandledRequest: 'warn',

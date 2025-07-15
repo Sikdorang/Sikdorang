@@ -2,7 +2,7 @@ import { Fragment } from 'react';
 import MenuItem from './MenuItem';
 
 interface Props {
-  items: IMenu[];
+  items: IMenuListItem[];
 }
 
 export default function MenuItemList({ items }: Props) {

@@ -2,7 +2,7 @@ import MenuItemList from './MenuItemList';
 
 interface Props {
   category: string;
-  items: IMenu[];
+  items: IMenuListItem[];
 }
 
 export default function CategoryMenuGroup({ category, items }: Props) {
