@@ -1,6 +1,8 @@
+import ChervonLeftThickSvg from '@/assets/icons/ic_chervon_left_thick.svg?react';
 import { useParams } from 'react-router';
 import BaseButton from '../components/common/BaseButton';
 import Chip from '../components/common/Chip';
+import Carousel from '../components/pages/MenuDetail/Carousel';
 import OptionGroup from '../components/pages/MenuDetail/OptionGroup';
 import { useFetchMenuDetailQuery } from '../hooks/useFetchMenuDetailQuery';
 import formatNumber from '../utils/formatNumber';
@@ -16,25 +18,15 @@ export default function MenuDetail() {
 
   return (
     <div className="min-w-xs mx-auto w-full">
-      <div className="sticky top-0 z-10 h-12 bg-white shadow-sm">
-        <div className="wrapper flex w-full items-center justify-end"></div>
+      <div className="sticky top-0 z-20 h-14 bg-white">
+        <div className="wrapper flex h-full w-full items-center">
+          <ChervonLeftThickSvg />
+          <h1 className="text-mb-1 text-gray-800">메뉴보기</h1>
+        </div>
       </div>
       <div className="wrapper">
-        <div className="mb-3 mt-6 flex w-full flex-col items-center">
-          <div className="relative mb-1 aspect-square w-full max-w-md rounded-2xl bg-gray-100">
-            <div className="text-mb-4 text-gray-400">이미지 영역</div>
-            <div className="text-mc-1 absolute right-2.5 top-2.5 rounded-full bg-gray-900/40 px-2 py-1 text-white">
-              1/5
-            </div>
-          </div>
-
-          <div className="my-2.5 flex items-center justify-center space-x-1.5">
-            <div className="h-2 w-2 rounded-full bg-gray-800"></div>
-            <div className="h-1 w-1 rounded-full bg-gray-300"></div>
-            <div className="h-1 w-1 rounded-full bg-gray-300"></div>
-            <div className="h-1 w-1 rounded-full bg-gray-300"></div>
-            <div className="h-1 w-1 rounded-full bg-gray-300"></div>
-          </div>
+        <div className="mb-3 mt-6">
+          <Carousel imgUrls={data.imageUrls} />
         </div>
 
         <div className="mb-2 flex items-center gap-1">
