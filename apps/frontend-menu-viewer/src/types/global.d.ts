@@ -29,7 +29,6 @@ interface IOptionGroup {
   id: string;
   title: string;
   required: boolean;
-  minSelectable: number;
   maxSelectable: number;
   items: IOptionItem[];
 }
