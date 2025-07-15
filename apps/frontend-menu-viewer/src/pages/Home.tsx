@@ -11,6 +11,7 @@ import ButtonWrapper from '../components/common/ButtonWrapper';
 import CategoryTabItem from '../components/pages/Home/CategoryTabItem';
 import RecommendationButton from '../components/pages/Home/RecommendationButton';
 import StoreInfoDropDown from '../components/pages/Home/StoreInfoDropDown';
+import { ROUTES } from '../constants/routes';
 import { useFetchMenusQuery } from '../hooks/useFetchMenusQuery';
 import { useCartStore } from '../stores/useCartStore';
 import formatNumber from '../utils/formatNumber';
@@ -34,7 +35,6 @@ export default function Home() {
       const visible = entries.find((entry) => entry.isIntersecting);
 
       if (visible) {
-        console.log(visible);
         const id = visible.target.getAttribute('data-id');
         if (id) setSelectedId(id);
       }
@@ -98,13 +98,13 @@ export default function Home() {
       <div className="sticky top-0 z-10 h-12 bg-white shadow-sm">
         <div className="wrapper flex w-full items-center justify-end">
           <div className="flex items-center gap-2">
-            <Link to="/call-staff">
+            <Link to={ROUTES.CALL_STAFF}>
               <button className="text-mb-5 flex flex-wrap items-center text-gray-700">
                 <BellSvg className="text-gray-700" />
                 <span> 호출하기</span>
               </button>
             </Link>
-            <Link to="/orders">
+            <Link to={ROUTES.ORDERS}>
               <button className="text-mb-5 flex flex-wrap items-center text-gray-700">
                 <BillSvg className="text-gray-700" />
                 <span> 주문내역</span>
@@ -186,12 +186,12 @@ export default function Home() {
             <div className="flex items-center gap-2.5">
               <p className="flex items-center gap-1">
                 <span>총 {formatNumber(getTotalPrice())}원</span>
-                <div className="h-1 w-1 rounded-full bg-white"></div>
+                <p className="h-1 w-1 rounded-full bg-white"></p>
                 <span>주문하기</span>
               </p>
-              <div className="text-mc-1 flex h-6 w-6 flex-col items-center justify-center rounded-full bg-white text-gray-800">
+              <p className="text-xs font-bold leading-[150%] tracking-[-2%]  flex h-6 w-6 flex-col items-center justify-center rounded-full bg-white text-gray-800">
                 {items.length}
-              </div>
+              </p>
             </div>
           </BaseButton>
         </ButtonWrapper>

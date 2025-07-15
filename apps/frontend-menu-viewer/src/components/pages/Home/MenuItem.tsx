@@ -1,6 +1,7 @@
 import Chip from '@/components/common/Chip';
 import formatNumber from '@/utils/formatNumber';
 import { Link } from 'react-router';
+import { ROUTES } from '../../../constants/routes';
 
 interface Props extends IMenuListItem {}
 
@@ -13,7 +14,7 @@ export default function MenuItem({
   isPopular = false,
 }: Props) {
   return (
-    <Link to={`/menus/${id}`}>
+    <Link to={ROUTES.MENUS.DETAIL(id)}>
       <li className="flex gap-5 py-3 md:flex-col-reverse md:gap-2 md:py-0">
         <div className="flex flex-1 flex-col gap-1">
           {(isNew || isPopular) && (
