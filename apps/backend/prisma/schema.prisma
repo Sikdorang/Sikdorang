@@ -1,0 +1,47 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model RefreshToken {
+  id        Int      @id @default(autoincrement())
+  token     String   @unique(map: "RefreshToken_token_key")
+  userId    Int
+  createdAt DateTime @default(now())
+  expiresAt DateTime
+
+  @@index([userId], map: "RefreshToken_userId_fkey")
+}
+
+model User {
+  id         Int      @id @default(autoincrement())
+  kakaoId    BigInt   @unique(map: "User_kakaoId_key")
+  nickname   String?
+  created_at DateTime @default(now())
+
+  stores     Store[]  // 1:N 관계 설정 (User → Store)
+}
+
+model Store {
+  id              Int      @id @default(autoincrement())
+  store           String                                // 가게 이름
+//  logo            String                                // 매장 로고
+  description     String?                               // 가게 설명
+  wifiId          String?                               // 와이파이 아이디
+  wifiPassword    String?                               // 와이파이 비밀번호
+  phoneNumber     String?                               // 전화번호
+  naverPlace      String?                               // 네이버 플레이스 주소
+  corkagePossible Boolean?                              // 콜키지 가능 여부
+  corkageFree     Boolean?                              // 콜키지 무료 여부
+  toilet          String?                               // 화장실 정보
+  userId          Int                                   // 외래키: User
+  createdAt       DateTime @default(now())
+
+  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId], map: "Store_userId_fkey")
+}

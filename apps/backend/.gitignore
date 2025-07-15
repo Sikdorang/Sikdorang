@@ -1,3 +1,6 @@
+
+/generated/prisma
+mysql_data/
 # Dependencies
 node_modules
 .pnpm-store/
@@ -14,6 +17,7 @@ build/
 .env.development.local
 .env.test.local
 .env.production.local
+.env.docker
 
 # Logs
 *.log
@@ -90,4 +94,3 @@ temp/
 
 # Turbo
 .turbo
-mysql_data/

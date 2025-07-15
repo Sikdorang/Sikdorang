@@ -7,7 +7,11 @@
  * - Please do NOT modify this file.
  */
 
+<<<<<<< Updated upstream
 const PACKAGE_VERSION = '2.10.2'
+=======
+const PACKAGE_VERSION = '2.10.3'
+>>>>>>> Stashed changes
 const INTEGRITY_CHECKSUM = 'f5825c521429caf22a4dd13b66e243af'
 const IS_MOCKED_RESPONSE = Symbol('isMockedResponse')
 const activeClientIds = new Set()

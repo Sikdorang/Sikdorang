@@ -30,10 +30,9 @@ services:
 
   frontend-admin:
     build:
-      context: ./apps/frontend-admin
+      context: .
+      dockerfile: apps/frontend-admin/Dockerfile
     container_name: sikdorang-frontend-admin
-    env_file:
-      - ./apps/frontend-admin/.env.local
     ports:
       - '3000:3000'
     depends_on:
@@ -42,12 +41,22 @@ services:
 
   frontend-user:
     build:
-      context: ./apps/frontend-user
+      context: .
+      dockerfile: apps/frontend-user/Dockerfile
     container_name: sikdorang-frontend-user
-    env_file:
-      - ./apps/frontend-user/.env.local
     ports:
-      - '3001:3000'
+      - '3001:3001'
+    depends_on:
+      - backend
+    restart: unless-stopped
+
+  frontend-menu-viewer:
+    build:
+      context: .
+      dockerfile: apps/frontend-menu-viewer/Dockerfile
+    container_name: sikdorang-frontend-menu-viewer
+    ports:
+      - '5173:5173'
     depends_on:
       - backend
     restart: unless-stopped
