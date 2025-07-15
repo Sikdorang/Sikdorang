@@ -3,15 +3,39 @@ interface ICategory {
   category: string;
 }
 
-interface IMenu {
+interface IBaseMenu {
   id: string;
   name: string;
   price?: number;
-  isNew?: boolean;
   isPopular?: boolean;
-  imgUrl?: string;
+  isNew?: boolean;
 }
 
 interface ICategoryGroup extends ICategory {
-  items: IMenu[];
+  items: IMenuListItem[];
+}
+
+interface IMenuListItem extends IBaseMenu {
+  imgUrl?: string;
+}
+
+interface IMenuDetail extends IBaseMenu {
+  description?: string;
+  imageUrls: string[];
+  optionGroups: IOptionGroup[];
+}
+
+interface IOptionGroup {
+  id: string;
+  title: string;
+  required: boolean;
+  minSelectable: number;
+  maxSelectable: number;
+  items: IOptionItem[];
+}
+
+interface IOptionItem {
+  id: string;
+  name: string;
+  price: number;
 }
