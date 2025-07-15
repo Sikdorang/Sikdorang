@@ -1,30 +1,24 @@
-import ChervonSvg from '@/assets/icons/ic_chervon_left.svg?react';
 import BaseButton from '@/components/common/BaseButton';
 import OutlineButton from '@/components/common/OutlineButton';
 import { useState } from 'react';
-import { useNavigate } from 'react-router';
+import Header from '../components/common/\bHeader';
+import ButtonWrapper from '../components/common/ButtonWrapper';
+import { showCustomToast } from '../utils/showToast';
 
 const callOptions = [
   { id: 'water', label: '물' },
   { id: 'spoon', label: '수저' },
   { id: 'side', label: '반찬 추가' },
   { id: 'plate', label: '앞 접시' },
+  { id: 'etc', label: '기타 호출' },
 ];
 
 export default function CallStaff() {
-  const navigate = useNavigate();
   const [selectedId, setSelectedId] = useState<string | null>(null);
 
   return (
     <div className="min-w-xs mx-auto flex h-full w-full flex-col">
-      <div className="sticky top-0 z-10 h-12 bg-white shadow-sm">
-        <div className="wrapper flex items-center text-gray-700">
-          <button onClick={() => navigate(-1)}>
-            <ChervonSvg />
-          </button>
-          <p className="text-mb-5">호출하기</p>
-        </div>
-      </div>
+      <Header title="호출하기" />
       <div className="wrapper flex w-full flex-1 flex-col pb-7 pt-6">
         <div className="mb-6 w-full flex-1">
           <div className="grid w-full grid-cols-1 gap-3 md:grid-cols-2">
@@ -39,7 +33,18 @@ export default function CallStaff() {
             ))}
           </div>
         </div>
-        {selectedId && <BaseButton>호출하기</BaseButton>}
+        {selectedId && (
+          <ButtonWrapper>
+            <BaseButton
+              onClick={() =>
+                showCustomToast({ icon: 'bell', message: '호출하기를 했어요' })
+              }
+              color="black"
+            >
+              호출하기
+            </BaseButton>
+          </ButtonWrapper>
+        )}
       </div>
     </div>
   );

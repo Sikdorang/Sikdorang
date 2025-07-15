@@ -7,7 +7,11 @@ export default function App() {
 
   return (
     <QueryClientProvider client={queryClient}>
-      <Toaster />
+      <Toaster
+        containerStyle={{
+          bottom: '7rem',
+        }}
+      />
       <Router />
     </QueryClientProvider>
   );
