@@ -1,6 +1,5 @@
 import BellSvg from '@/assets/icons/ic_bell.svg?react';
 import BillSvg from '@/assets/icons/ic_bill.svg?react';
-import ChervonRightSvg from '@/assets/icons/ic_chervon_right.svg?react';
 
 import Divider from '@/components/common/Divider';
 import CategoryMenuGroup from '@/components/pages/Home/CategoryMenuGroup';
@@ -8,6 +7,7 @@ import CategoryMenuGroup from '@/components/pages/Home/CategoryMenuGroup';
 import { useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router';
 import CategoryTabItem from '../components/pages/Home/CategoryTabItem';
+import StoreInfoDropDown from '../components/pages/Home/StoreInfoDropDown';
 import { useFetchMenusQuery } from '../hooks/useFetchMenusQuery';
 
 export default function Home() {
@@ -114,35 +114,22 @@ export default function Home() {
           <h1 className="text-mt-1 text-gray-900">지화자</h1>
         </div>
         <div>
-          <Link to={`/store-info/${123}`}>
-            <div className="flex items-center justify-between">
-              <h2 className="text-mb-3 text-gray-700">매장 안내·서비스</h2>
-              <ChervonRightSvg className="text-gray-700" />
-            </div>
-          </Link>
-          <div className="grid grid-cols-1 gap-2 rounded-2xl bg-gray-100 p-4 md:grid-cols-2 lg:grid-cols-3">
-            <div className="flex flex-wrap items-center gap-2">
-              <div className="aspect-square w-6 rounded-full bg-white"></div>
-              <p className="flex flex-wrap items-center gap-1">
-                <span className="text-mb-5 text-gray-700">영업시간</span>
-                <span className="text-mb-6 text-gray-700">목 1600-100</span>
-              </p>
-            </div>
-            <div className="flex flex-wrap items-center gap-2">
-              <div className="aspect-square w-6 rounded-full bg-white"></div>
-              <p className="flex flex-wrap items-center gap-1">
-                <span className="text-mb-5 text-gray-700">영업시간</span>
-                <span className="text-mb-6 text-gray-700">목 1600-100</span>
-              </p>
-            </div>
-            <div className="flex flex-wrap items-center gap-2">
-              <div className="aspect-square w-6 rounded-full bg-white"></div>
-              <p className="flex flex-wrap items-center gap-1">
-                <span className="text-mb-5 text-gray-700">영업시간</span>
-                <span className="text-mb-6 text-gray-700">목 1600-100</span>
-              </p>
-            </div>
-          </div>
+          <StoreInfoDropDown
+            items={[
+              {
+                label: '영업시간',
+                value: '목 1600-100',
+              },
+              {
+                label: '영업시간',
+                value: '목 1600-100',
+              },
+              {
+                label: '영업시간',
+                value: '목 1600-100',
+              },
+            ]}
+          />
         </div>
       </div>
       <Divider />
