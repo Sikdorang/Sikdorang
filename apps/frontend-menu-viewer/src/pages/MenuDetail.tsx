@@ -1,7 +1,8 @@
-import ChervonLeftThickSvg from '@/assets/icons/ic_chervon_left_thick.svg?react';
 import { useEffect } from 'react';
-import { useNavigate, useParams } from 'react-router';
+import { useParams } from 'react-router';
+import Header from '../components/common/\bHeader';
 import BaseButton from '../components/common/BaseButton';
+import ButtonWrapper from '../components/common/ButtonWrapper';
 import Chip from '../components/common/Chip';
 import Carousel from '../components/pages/MenuDetail/Carousel';
 import OptionGroup from '../components/pages/MenuDetail/OptionGroup';
@@ -11,7 +12,6 @@ import formatNumber from '../utils/formatNumber';
 
 export default function MenuDetail() {
   const { menuId } = useParams<{ menuId: string }>();
-  const navigate = useNavigate();
   if (!menuId) return <div>error</div>;
 
   const { data, isLoading, isError } = useFetchMenuDetailQuery(menuId);
@@ -39,6 +39,10 @@ export default function MenuDetail() {
   }
 
   useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
+
+  useEffect(() => {
     if (data) {
       startMenu(data);
 
@@ -60,15 +64,7 @@ export default function MenuDetail() {
 
   return (
     <div className="min-w-xs mx-auto w-full">
-      <div className="sticky top-0 z-20 h-14 bg-white">
-        <div className="wrapper flex h-full w-full items-center">
-          <ChervonLeftThickSvg
-            onClick={() => navigate(-1)}
-            className="cursor-pointer"
-          />
-          <h1 className="text-mb-1 text-gray-800">메뉴보기</h1>
-        </div>
-      </div>
+      <Header title="메뉴보기" />
       <div className="wrapper">
         <div className="mb-3 mt-6">
           <Carousel imgUrls={data.imageUrls} />
@@ -118,14 +114,14 @@ export default function MenuDetail() {
         />
       ))}
       <div className="h-48"></div>
-      <div className="wrapper fixed bottom-0 left-0 right-0 w-full bg-gradient-to-t from-white to-white/0 pb-7 pt-2">
+      <ButtonWrapper>
         <BaseButton
           disabled={!isAllRequiredSelected(data.optionGroups, selectedOptions)}
         >
           총 {formatNumber(((data.price ?? 0) + optionPrice) * quantity)}원 ·
           담기
         </BaseButton>
-      </div>
+      </ButtonWrapper>
     </div>
   );
 }

@@ -168,6 +168,7 @@ export default function Home() {
           ))}
         </ul>
       )}
+      <div className="h-48"></div>
     </div>
   );
 }
