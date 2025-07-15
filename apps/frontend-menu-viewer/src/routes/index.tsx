@@ -5,6 +5,7 @@ import Login from '@/pages/Login';
 import Orders from '@/pages/Orders';
 import StoreInfo from '@/pages/StoreInfo';
 import { createBrowserRouter, RouterProvider } from 'react-router';
+import MenuDetail from '../pages/MenuDetail';
 
 const router = createBrowserRouter([
   {
@@ -14,6 +15,10 @@ const router = createBrowserRouter([
   {
     path: '/store',
     element: <Home />,
+  },
+  {
+    path: '/menu',
+    element: <MenuDetail />,
   },
   {
     path: '/login',
