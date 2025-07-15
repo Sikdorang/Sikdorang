@@ -9,9 +9,6 @@ export const MenuDetailsData: Record<string, IMenuDetail> = {
     imageUrls: [
       'https://i.imgur.com/sbLBtXL.jpeg',
       'https://i.imgur.com/sbLBtXL.jpeg',
-      'https://i.imgur.com/sbLBtXL.jpeg',
-      'https://i.imgur.com/sbLBtXL.jpeg',
-      'https://i.imgur.com/sbLBtXL.jpeg',
     ],
     optionGroups: [
       {
@@ -21,7 +18,18 @@ export const MenuDetailsData: Record<string, IMenuDetail> = {
         maxSelectable: 1,
         items: [
           { id: 'opt1-1', name: '순한맛', price: 0 },
-          { id: 'opt1-2', name: '매운맛', price: 500 },
+          { id: 'opt1-2', name: '보통맛', price: 0 },
+          { id: 'opt1-3', name: '매운맛', price: 500 },
+        ],
+      },
+      {
+        id: 'opt1-2',
+        title: '추가 토핑',
+        required: false,
+        maxSelectable: 2,
+        items: [
+          { id: 'opt1-2-1', name: '참깨소스', price: 1000 },
+          { id: 'opt1-2-2', name: '깻잎 추가', price: 1500 },
         ],
       },
     ],
@@ -34,7 +42,18 @@ export const MenuDetailsData: Record<string, IMenuDetail> = {
     isNew: false,
     isPopular: true,
     imageUrls: ['https://i.imgur.com/sbLBtXL.jpeg'],
-    optionGroups: [],
+    optionGroups: [
+      {
+        id: 'opt2-1',
+        title: '양념 선택',
+        required: true,
+        maxSelectable: 1,
+        items: [
+          { id: 'opt2-1-1', name: '초장', price: 0 },
+          { id: 'opt2-1-2', name: '간장', price: 0 },
+        ],
+      },
+    ],
   },
   '3': {
     id: '3',
@@ -44,7 +63,15 @@ export const MenuDetailsData: Record<string, IMenuDetail> = {
     isNew: true,
     isPopular: false,
     imageUrls: ['https://i.imgur.com/sbLBtXL.jpeg'],
-    optionGroups: [],
+    optionGroups: [
+      {
+        id: 'opt3-1',
+        title: '국수 추가',
+        required: false,
+        maxSelectable: 1,
+        items: [{ id: 'opt3-1-1', name: '소면 추가', price: 2000 }],
+      },
+    ],
   },
   '4': {
     id: '4',
@@ -54,7 +81,15 @@ export const MenuDetailsData: Record<string, IMenuDetail> = {
     isNew: false,
     isPopular: false,
     imageUrls: ['https://i.imgur.com/sbLBtXL.jpeg'],
-    optionGroups: [],
+    optionGroups: [
+      {
+        id: 'opt4-1',
+        title: '공기밥',
+        required: false,
+        maxSelectable: 1,
+        items: [{ id: 'opt4-1-1', name: '공기밥 추가', price: 1000 }],
+      },
+    ],
   },
   '5': {
     id: '5',
@@ -67,10 +102,13 @@ export const MenuDetailsData: Record<string, IMenuDetail> = {
     optionGroups: [
       {
         id: 'opt5-1',
-        title: '공기밥 추가',
+        title: '토핑 추가',
         required: false,
-        maxSelectable: 1,
-        items: [{ id: 'opt5-1-1', name: '공기밥', price: 1000 }],
+        maxSelectable: 2,
+        items: [
+          { id: 'opt5-1-1', name: '두부 추가', price: 500 },
+          { id: 'opt5-1-2', name: '버섯 추가', price: 800 },
+        ],
       },
     ],
   },
@@ -92,7 +130,18 @@ export const MenuDetailsData: Record<string, IMenuDetail> = {
     isNew: false,
     isPopular: false,
     imageUrls: ['https://i.imgur.com/sbLBtXL.jpeg'],
-    optionGroups: [],
+    optionGroups: [
+      {
+        id: 'opt7-1',
+        title: '계란 선택',
+        required: true,
+        maxSelectable: 1,
+        items: [
+          { id: 'opt7-1-1', name: '반숙 계란', price: 500 },
+          { id: 'opt7-1-2', name: '완숙 계란', price: 500 },
+        ],
+      },
+    ],
   },
   '8': {
     id: '8',
@@ -102,7 +151,19 @@ export const MenuDetailsData: Record<string, IMenuDetail> = {
     isNew: false,
     isPopular: false,
     imageUrls: ['https://i.imgur.com/sbLBtXL.jpeg'],
-    optionGroups: [],
+    optionGroups: [
+      {
+        id: 'opt8-1',
+        title: '소스 선택',
+        required: false,
+        maxSelectable: 2,
+        items: [
+          { id: 'opt8-1-1', name: '케찹', price: 0 },
+          { id: 'opt8-1-2', name: '마요네즈', price: 0 },
+          { id: 'opt8-1-3', name: '스위트칠리', price: 500 },
+        ],
+      },
+    ],
   },
   '9': {
     id: '9',
@@ -131,6 +192,17 @@ export const MenuDetailsData: Record<string, IMenuDetail> = {
         items: [
           { id: 'opt10-1-1', name: '유자 드레싱', price: 0 },
           { id: 'opt10-1-2', name: '참깨 드레싱', price: 0 },
+          { id: 'opt10-1-3', name: '발사믹 드레싱', price: 0 },
+        ],
+      },
+      {
+        id: 'opt10-2',
+        title: '단백질 추가',
+        required: false,
+        maxSelectable: 1,
+        items: [
+          { id: 'opt10-2-1', name: '닭가슴살', price: 2000 },
+          { id: 'opt10-2-2', name: '삶은 달걀', price: 1000 },
         ],
       },
     ],

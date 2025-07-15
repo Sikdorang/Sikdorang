@@ -1,3 +1,4 @@
+import { enableMapSet } from 'immer';
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 import App from './App.tsx';
@@ -11,6 +12,7 @@ async function enableMocking() {
     });
   }
 }
+enableMapSet();
 
 enableMocking().then(() => {
   createRoot(document.getElementById('root')!).render(

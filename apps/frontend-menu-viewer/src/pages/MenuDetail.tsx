@@ -1,10 +1,12 @@
 import ChervonLeftThickSvg from '@/assets/icons/ic_chervon_left_thick.svg?react';
+import { useEffect } from 'react';
 import { useParams } from 'react-router';
 import BaseButton from '../components/common/BaseButton';
 import Chip from '../components/common/Chip';
 import Carousel from '../components/pages/MenuDetail/Carousel';
 import OptionGroup from '../components/pages/MenuDetail/OptionGroup';
 import { useFetchMenuDetailQuery } from '../hooks/useFetchMenuDetailQuery';
+import { useMenuSelectionStore } from '../stores/useMenuSelectionStore';
 import formatNumber from '../utils/formatNumber';
 
 export default function MenuDetail() {
@@ -12,6 +14,31 @@ export default function MenuDetail() {
   if (!menuId) return <div>error</div>;
 
   const { data, isLoading, isError } = useFetchMenuDetailQuery(menuId);
+  const {
+    startMenu,
+    quantity,
+    setQuantity,
+    selectedOptions,
+    toggleOption,
+    optionPrice,
+  } = useMenuSelectionStore();
+
+  useEffect(() => {
+    if (data) {
+      startMenu(data);
+
+      // radio 버튼은 첫 옵션 자동 선택
+      for (const group of data.optionGroups) {
+        if (
+          group.required &&
+          group.maxSelectable === 1 &&
+          group.items.length > 0
+        ) {
+          toggleOption(group.id, group.items[0].id, true);
+        }
+      }
+    }
+  }, [data]);
 
   if (isLoading) return <div>loading</div>;
   if (isError || !data) return <div>error</div>;
@@ -40,24 +67,44 @@ export default function MenuDetail() {
             {formatNumber(data.price ?? 0)}원
           </div>
           <div className="flex gap-1 rounded-md bg-gray-200 p-0.5">
-            <button className="text-mb-1 flex aspect-square h-6 w-6 flex-col items-center justify-center text-gray-400">
+            <button
+              onClick={() => setQuantity(quantity - 1)}
+              className={`transition-colors duration-300 ${quantity === 1 ? 'text-gray-400' : 'text-gray-600'} text-mb-1 flex aspect-square h-6 w-6 flex-col items-center justify-center`}
+            >
               -
             </button>
             <span className="text-mb-1 flex aspect-square h-6 w-6 flex-col items-center justify-center rounded-md bg-white text-gray-800">
-              1
+              {quantity}
             </span>
-            <button className="text-mb-1 flex aspect-square h-6 w-6 flex-col items-center justify-center text-gray-400">
+            <button
+              onClick={() => setQuantity(quantity + 1)}
+              className="text-mb-1 flex aspect-square h-6 w-6 flex-col items-center justify-center text-gray-600"
+            >
               +
             </button>
           </div>
         </div>
       </div>
       {data.optionGroups.map((group) => (
-        <OptionGroup key={group.id} group={group} />
+        <OptionGroup
+          key={group.id}
+          group={group}
+          selectedOptionIds={selectedOptions[group.id] ?? new Set()}
+          onToggle={(itemId) =>
+            toggleOption(
+              group.id,
+              itemId,
+              group.maxSelectable === 1 && group.required,
+            )
+          }
+        />
       ))}
       <div className="h-48"></div>
       <div className="wrapper fixed bottom-0 left-0 right-0 w-full bg-gradient-to-t from-white to-white/0 pb-7 pt-2">
-        <BaseButton>총 25,000원 · 담기</BaseButton>
+        <BaseButton>
+          총 {formatNumber(((data.price ?? 0) + optionPrice) * quantity)}원 ·
+          담기
+        </BaseButton>
       </div>
     </div>
   );
