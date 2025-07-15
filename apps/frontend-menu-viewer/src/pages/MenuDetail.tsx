@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { useParams } from 'react-router';
+import { useNavigate, useParams } from 'react-router';
 import Header from '../components/common/\bHeader';
 import BaseButton from '../components/common/BaseButton';
 import ButtonWrapper from '../components/common/ButtonWrapper';
@@ -7,10 +7,12 @@ import Chip from '../components/common/Chip';
 import Carousel from '../components/pages/MenuDetail/Carousel';
 import OptionGroup from '../components/pages/MenuDetail/OptionGroup';
 import { useFetchMenuDetailQuery } from '../hooks/useFetchMenuDetailQuery';
+import { useCartStore } from '../stores/useCartStore';
 import { useMenuSelectionStore } from '../stores/useMenuSelectionStore';
 import formatNumber from '../utils/formatNumber';
 
 export default function MenuDetail() {
+  const navigate = useNavigate();
   const { menuId } = useParams<{ menuId: string }>();
   if (!menuId) return <div>error</div>;
 
@@ -22,7 +24,9 @@ export default function MenuDetail() {
     selectedOptions,
     toggleOption,
     optionPrice,
+    optionItemPriceMap,
   } = useMenuSelectionStore();
+  const { addItem } = useCartStore();
 
   function isAllRequiredSelected(
     optionGroups: IOptionGroup[],
@@ -116,6 +120,16 @@ export default function MenuDetail() {
       <div className="h-48"></div>
       <ButtonWrapper>
         <BaseButton
+          onClick={() => {
+            addItem({
+              originalItem: data,
+              optionPrice: optionPrice,
+              quantity: quantity,
+              selectedOptions: selectedOptions,
+              optionItemPriceMap: optionItemPriceMap,
+            });
+            navigate(-1);
+          }}
           disabled={!isAllRequiredSelected(data.optionGroups, selectedOptions)}
         >
           총 {formatNumber(((data.price ?? 0) + optionPrice) * quantity)}원 ·

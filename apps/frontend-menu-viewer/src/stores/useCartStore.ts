@@ -1,15 +1,13 @@
 import { create } from 'zustand';
 import { immer } from 'zustand/middleware/immer';
 
-type OptionSelection = Record<string, string[]>; // groupId → itemIds
-
 interface CartItem {
   id: string;
-  menuId: string;
-  menuName: string;
-  basePrice: number;
+  originalItem: IMenuListItem;
+  optionPrice: number;
   quantity: number;
-  options: Record<string, string[]>; // 옵션 선택 내역
+  selectedOptions: OptionSelection;
+  optionItemPriceMap: Record<string, number>;
 }
 
 interface CartStore {
@@ -21,10 +19,10 @@ interface CartStore {
   getTotalPrice: () => number;
 }
 
-function generateItemId(menuId: string, options: Record<string, string[]>) {
+function generateItemId(menuId: string, options: OptionSelection) {
   return `${menuId}::${Object.entries(options)
     .map(([groupId, itemIds]) => `${groupId}:${[...itemIds].sort().join(',')}`)
-    .sort() // group 순서도 보장
+    .sort()
     .join('|')}`;
 }
 export const useCartStore = create<CartStore>()(
@@ -33,7 +31,7 @@ export const useCartStore = create<CartStore>()(
 
     addItem: (item) =>
       set((state) => {
-        const id = generateItemId(item.menuId, item.options);
+        const id = generateItemId(item.originalItem.id, item.selectedOptions);
         const existing = state.items.find((i) => i.id === id);
 
         if (existing) {
@@ -62,7 +60,9 @@ export const useCartStore = create<CartStore>()(
     getTotalPrice: () => {
       const items = get().items;
       return items.reduce(
-        (acc, item) => acc + item.basePrice * item.quantity,
+        (acc, item) =>
+          acc +
+          (item.optionPrice + (item.originalItem.price ?? 0)) * item.quantity,
         0,
       );
     },

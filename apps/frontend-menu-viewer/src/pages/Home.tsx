@@ -6,11 +6,17 @@ import CategoryMenuGroup from '@/components/pages/Home/CategoryMenuGroup';
 
 import { useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router';
+import BaseButton from '../components/common/BaseButton';
+import ButtonWrapper from '../components/common/ButtonWrapper';
 import CategoryTabItem from '../components/pages/Home/CategoryTabItem';
+import RecommendationButton from '../components/pages/Home/RecommendationButton';
 import StoreInfoDropDown from '../components/pages/Home/StoreInfoDropDown';
 import { useFetchMenusQuery } from '../hooks/useFetchMenusQuery';
+import { useCartStore } from '../stores/useCartStore';
+import formatNumber from '../utils/formatNumber';
 
 export default function Home() {
+  const { items, getTotalPrice } = useCartStore();
   const { data, isLoading, isError } = useFetchMenusQuery();
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const groupRefs = useRef<Record<string, HTMLElement | null>>({});
@@ -167,6 +173,28 @@ export default function Home() {
             </div>
           ))}
         </ul>
+      )}
+      <div
+        className={`${items.length > 0 ? 'bottom-27' : 'bottom-11'} fixed right-5 z-10 transition-all duration-300`}
+      >
+        <RecommendationButton />
+      </div>
+
+      {items.length > 0 && (
+        <ButtonWrapper>
+          <BaseButton onClick={() => {}} color="black">
+            <div className="flex items-center gap-2.5">
+              <p className="flex items-center gap-1">
+                <span>총 {formatNumber(getTotalPrice())}원</span>
+                <div className="h-1 w-1 rounded-full bg-white"></div>
+                <span>주문하기</span>
+              </p>
+              <div className="text-mc-1 flex h-6 w-6 flex-col items-center justify-center rounded-full bg-white text-gray-800">
+                {items.length}
+              </div>
+            </div>
+          </BaseButton>
+        </ButtonWrapper>
       )}
       <div className="h-48"></div>
     </div>

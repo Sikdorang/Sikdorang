@@ -39,3 +39,5 @@ interface IOptionItem {
   name: string;
   price: number;
 }
+
+type OptionSelection = Record<string, Set<string>>;

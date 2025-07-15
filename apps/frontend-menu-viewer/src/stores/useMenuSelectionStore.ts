@@ -1,8 +1,6 @@
 import { create } from 'zustand';
 import { immer } from 'zustand/middleware/immer';
 
-type OptionSelection = Record<string, Set<string>>;
-
 interface MenuSelectionStore {
   menuId: string | null;
   quantity: number;
