@@ -1,6 +1,7 @@
 import { EditModalProvider } from '@/contexts/EditModalContext';
+import { WarningModalProvider } from '@/contexts/WarningModalContext';
 
-export default function MenuEditLayout({
+export default function MenuCategoryLayout({
   children,
 }: {
   children: React.ReactNode;
@@ -9,7 +10,9 @@ export default function MenuEditLayout({
   return (
     <div className="relative">
       <EditModalProvider>
-        <div>{children}</div>
+        <WarningModalProvider>
+          <div>{children}</div>
+        </WarningModalProvider>
       </EditModalProvider>
     </div>
   );
