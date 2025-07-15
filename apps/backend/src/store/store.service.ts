@@ -21,4 +21,16 @@ export class StoreService {
       );
     }
   }
+  async getStore(userId: number) {
+    try {
+      return await this.prisma.store.findMany({
+        where: { userId },
+      });
+    } catch (error) {
+      console.error('Store get 에러:', error);
+      throw new InternalServerErrorException(
+        '매장 정보 조회 중 오류가 발생하였습니다',
+      );
+    }
+  }
 }
