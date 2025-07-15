@@ -15,6 +15,7 @@ export const MenuDetailsData: Record<string, IMenuDetail> = {
         id: 'opt1',
         title: '맵기 조절',
         required: true,
+        minSelectable: 1,
         maxSelectable: 1,
         items: [
           { id: 'opt1-1', name: '순한맛', price: 0 },
@@ -47,6 +48,7 @@ export const MenuDetailsData: Record<string, IMenuDetail> = {
         id: 'opt2-1',
         title: '양념 선택',
         required: true,
+        minSelectable: 1,
         maxSelectable: 1,
         items: [
           { id: 'opt2-1-1', name: '초장', price: 0 },
@@ -102,12 +104,47 @@ export const MenuDetailsData: Record<string, IMenuDetail> = {
     optionGroups: [
       {
         id: 'opt5-1',
-        title: '토핑 추가',
-        required: false,
-        maxSelectable: 2,
+        title: '맵기 선택',
+        required: true,
+        maxSelectable: 1,
         items: [
-          { id: 'opt5-1-1', name: '두부 추가', price: 500 },
-          { id: 'opt5-1-2', name: '버섯 추가', price: 800 },
+          { id: 'opt5-1-1', name: '순한맛', price: 0 },
+          { id: 'opt5-1-2', name: '매운맛', price: 0 },
+        ],
+      },
+      {
+        id: 'opt5-2',
+        title: '추가 토핑 선택 (필수)',
+        required: true,
+        minSelectable: 2,
+        maxSelectable: 5,
+        items: [
+          { id: 'opt5-2-1', name: '두부 추가', price: 500 },
+          { id: 'opt5-2-2', name: '버섯 추가', price: 800 },
+          { id: 'opt5-2-3', name: '애호박 추가', price: 700 },
+          { id: 'opt5-2-4', name: '청양고추 추가', price: 300 },
+          { id: 'opt5-2-5', name: '양파 추가', price: 200 },
+        ],
+      },
+      {
+        id: 'opt5-3',
+        title: '사이드 메뉴 추가',
+        required: false,
+        maxSelectable: 3,
+        items: [
+          { id: 'opt5-3-1', name: '공기밥 추가', price: 1000 },
+          { id: 'opt5-3-2', name: '계란말이 추가', price: 2000 },
+          { id: 'opt5-3-3', name: '김치 추가', price: 500 },
+        ],
+      },
+      {
+        id: 'opt5-4',
+        title: '국물 양 선택',
+        required: false,
+        maxSelectable: 1,
+        items: [
+          { id: 'opt5-4-1', name: '보통', price: 0 },
+          { id: 'opt5-4-2', name: '많이', price: 500 },
         ],
       },
     ],
@@ -135,6 +172,7 @@ export const MenuDetailsData: Record<string, IMenuDetail> = {
         id: 'opt7-1',
         title: '계란 선택',
         required: true,
+        minSelectable: 1,
         maxSelectable: 1,
         items: [
           { id: 'opt7-1-1', name: '반숙 계란', price: 500 },
@@ -188,6 +226,7 @@ export const MenuDetailsData: Record<string, IMenuDetail> = {
         id: 'opt10-1',
         title: '드레싱 선택',
         required: true,
+        minSelectable: 1,
         maxSelectable: 1,
         items: [
           { id: 'opt10-1-1', name: '유자 드레싱', price: 0 },

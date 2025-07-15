@@ -1,3 +1,4 @@
+import toast from 'react-hot-toast';
 import Chip from '../../common/Chip';
 import Divider from '../../common/Divider';
 import OptionSelector from './OptionSelector';
@@ -15,7 +16,7 @@ export default function OptionGroup({
 }: Props) {
   const type: 'radio' | 'checkbox' =
     group.required && group.maxSelectable === 1 ? 'radio' : 'checkbox';
-
+  const isMaxReached = selectedOptionIds.size == group.maxSelectable;
   return (
     <>
       <Divider />
@@ -26,8 +27,14 @@ export default function OptionGroup({
             {group.required && <Chip label="필수" color="blue" />}
           </div>
           {type === 'checkbox' && (
-            <p className="text-mc-2 mt-2 text-gray-500">
-              최대 {group.maxSelectable}개 선택
+            <p className="text-mc-2 mt-2 flex items-center gap-1 text-gray-500">
+              {group.minSelectable && (
+                <>
+                  <span> 최대 {group.minSelectable}개</span>
+                  <div className="h-1 w-1 rounded-full bg-gray-500"></div>
+                </>
+              )}
+              <span> 최대 {group.maxSelectable}개 선택</span>
             </p>
           )}
         </div>
@@ -39,7 +46,17 @@ export default function OptionGroup({
               label={item.name}
               price={item.price}
               checked={selectedOptionIds.has(item.id)}
-              onChange={() => onToggle(item.id)}
+              onChange={() => {
+                if (
+                  type === 'checkbox' &&
+                  isMaxReached &&
+                  !selectedOptionIds.has(item.id)
+                ) {
+                  toast.error('이미 최대 개수만큼 선택하셨어요!');
+                } else {
+                  onToggle(item.id);
+                }
+              }}
               name={group.id}
             />
           ))}

@@ -1,6 +1,6 @@
 import ChervonLeftThickSvg from '@/assets/icons/ic_chervon_left_thick.svg?react';
 import { useEffect } from 'react';
-import { useParams } from 'react-router';
+import { useNavigate, useParams } from 'react-router';
 import BaseButton from '../components/common/BaseButton';
 import Chip from '../components/common/Chip';
 import Carousel from '../components/pages/MenuDetail/Carousel';
@@ -11,6 +11,7 @@ import formatNumber from '../utils/formatNumber';
 
 export default function MenuDetail() {
   const { menuId } = useParams<{ menuId: string }>();
+  const navigate = useNavigate();
   if (!menuId) return <div>error</div>;
 
   const { data, isLoading, isError } = useFetchMenuDetailQuery(menuId);
@@ -22,6 +23,20 @@ export default function MenuDetail() {
     toggleOption,
     optionPrice,
   } = useMenuSelectionStore();
+
+  function isAllRequiredSelected(
+    optionGroups: IOptionGroup[],
+    selectedOptions: Record<string, Set<string>>,
+  ) {
+    return optionGroups.every((group) => {
+      if (!group.required) return true;
+      const selectedCount = selectedOptions[group.id]?.size ?? 0;
+      const minSelectable = group.minSelectable ?? 0;
+      return (
+        selectedCount >= minSelectable && selectedCount <= group.maxSelectable
+      );
+    });
+  }
 
   useEffect(() => {
     if (data) {
@@ -47,7 +62,10 @@ export default function MenuDetail() {
     <div className="min-w-xs mx-auto w-full">
       <div className="sticky top-0 z-20 h-14 bg-white">
         <div className="wrapper flex h-full w-full items-center">
-          <ChervonLeftThickSvg />
+          <ChervonLeftThickSvg
+            onClick={() => navigate(-1)}
+            className="cursor-pointer"
+          />
           <h1 className="text-mb-1 text-gray-800">메뉴보기</h1>
         </div>
       </div>
@@ -101,7 +119,9 @@ export default function MenuDetail() {
       ))}
       <div className="h-48"></div>
       <div className="wrapper fixed bottom-0 left-0 right-0 w-full bg-gradient-to-t from-white to-white/0 pb-7 pt-2">
-        <BaseButton>
+        <BaseButton
+          disabled={!isAllRequiredSelected(data.optionGroups, selectedOptions)}
+        >
           총 {formatNumber(((data.price ?? 0) + optionPrice) * quantity)}원 ·
           담기
         </BaseButton>

@@ -7,7 +7,7 @@ interface Props
 export default function BaseButton({ children, ...props }: Props) {
   return (
     <button
-      className={`text-mb-3 text-main-900 bg-main-500 flex h-14 w-full items-center justify-center rounded-2xl`}
+      className={`text-mb-3 text-main-900 bg-main-500 flex h-14 w-full items-center justify-center rounded-2xl transition-colors duration-300 disabled:bg-gray-100 disabled:text-gray-400`}
       {...props}
     >
       {children}

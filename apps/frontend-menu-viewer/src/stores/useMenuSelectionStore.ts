@@ -30,6 +30,7 @@ export const useMenuSelectionStore = create<MenuSelectionStore>()(
         state.quantity = 1;
         state.optionPrice = 0;
         state.selectedOptions = {};
+
         const map: Record<string, number> = {};
         for (const group of menu.optionGroups) {
           for (const item of group.items) {
