@@ -3,7 +3,6 @@ import CheckUserAgent from '@/pages/CheckUserAgent';
 import Home from '@/pages/Home';
 import Login from '@/pages/Login';
 import Orders from '@/pages/Orders';
-import StoreInfo from '@/pages/StoreInfo';
 import { createBrowserRouter, RouterProvider } from 'react-router';
 import MenuDetail from '../pages/MenuDetail';
 
@@ -13,11 +12,11 @@ const router = createBrowserRouter([
     element: <CheckUserAgent />,
   },
   {
-    path: '/store',
+    path: '/stores',
     element: <Home />,
   },
   {
-    path: '/menu',
+    path: '/menus/:menuId',
     element: <MenuDetail />,
   },
   {
@@ -31,10 +30,6 @@ const router = createBrowserRouter([
   {
     path: '/orders',
     element: <Orders />,
-  },
-  {
-    path: '/store-info/:storeId',
-    element: <StoreInfo />,
   },
 ]);
 
