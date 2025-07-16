@@ -6,7 +6,7 @@ export const MenuDetailsData: Record<string, IMenuDetail> = {
     price: 25000,
     isNew: true,
     isPopular: true,
-    imageUrls: [
+    imgUrls: [
       'https://i.imgur.com/sbLBtXL.jpeg',
       'https://i.imgur.com/sbLBtXL.jpeg',
     ],
@@ -42,7 +42,7 @@ export const MenuDetailsData: Record<string, IMenuDetail> = {
     price: 18000,
     isNew: false,
     isPopular: true,
-    imageUrls: ['https://i.imgur.com/sbLBtXL.jpeg'],
+    imgUrls: ['https://i.imgur.com/sbLBtXL.jpeg'],
     optionGroups: [
       {
         id: 'opt2-1',
@@ -64,7 +64,7 @@ export const MenuDetailsData: Record<string, IMenuDetail> = {
     price: 22000,
     isNew: true,
     isPopular: false,
-    imageUrls: ['https://i.imgur.com/sbLBtXL.jpeg'],
+    imgUrls: ['https://i.imgur.com/sbLBtXL.jpeg'],
     optionGroups: [
       {
         id: 'opt3-1',
@@ -82,7 +82,7 @@ export const MenuDetailsData: Record<string, IMenuDetail> = {
     price: 9000,
     isNew: false,
     isPopular: false,
-    imageUrls: ['https://i.imgur.com/sbLBtXL.jpeg'],
+    imgUrls: ['https://i.imgur.com/sbLBtXL.jpeg'],
     optionGroups: [
       {
         id: 'opt4-1',
@@ -100,7 +100,7 @@ export const MenuDetailsData: Record<string, IMenuDetail> = {
     price: 9000,
     isNew: false,
     isPopular: true,
-    imageUrls: ['https://i.imgur.com/sbLBtXL.jpeg'],
+    imgUrls: ['https://i.imgur.com/sbLBtXL.jpeg'],
     optionGroups: [
       {
         id: 'opt5-1',
@@ -156,7 +156,7 @@ export const MenuDetailsData: Record<string, IMenuDetail> = {
     price: 12000,
     isNew: true,
     isPopular: false,
-    imageUrls: ['https://i.imgur.com/sbLBtXL.jpeg'],
+    imgUrls: ['https://i.imgur.com/sbLBtXL.jpeg'],
     optionGroups: [],
   },
   '7': {
@@ -166,7 +166,7 @@ export const MenuDetailsData: Record<string, IMenuDetail> = {
     price: 10000,
     isNew: false,
     isPopular: false,
-    imageUrls: ['https://i.imgur.com/sbLBtXL.jpeg'],
+    imgUrls: ['https://i.imgur.com/sbLBtXL.jpeg'],
     optionGroups: [
       {
         id: 'opt7-1',
@@ -188,7 +188,7 @@ export const MenuDetailsData: Record<string, IMenuDetail> = {
     price: 8000,
     isNew: false,
     isPopular: false,
-    imageUrls: ['https://i.imgur.com/sbLBtXL.jpeg'],
+    imgUrls: ['https://i.imgur.com/sbLBtXL.jpeg'],
     optionGroups: [
       {
         id: 'opt8-1',
@@ -210,7 +210,7 @@ export const MenuDetailsData: Record<string, IMenuDetail> = {
     price: 7000,
     isNew: true,
     isPopular: false,
-    imageUrls: ['https://i.imgur.com/sbLBtXL.jpeg'],
+    imgUrls: ['https://i.imgur.com/sbLBtXL.jpeg'],
     optionGroups: [],
   },
   '10': {
@@ -220,7 +220,7 @@ export const MenuDetailsData: Record<string, IMenuDetail> = {
     price: 6000,
     isNew: false,
     isPopular: true,
-    imageUrls: ['https://i.imgur.com/sbLBtXL.jpeg'],
+    imgUrls: ['https://i.imgur.com/sbLBtXL.jpeg'],
     optionGroups: [
       {
         id: 'opt10-1',

@@ -1,15 +1,16 @@
-import { useEffect } from 'react';
-import { useNavigate, useParams } from 'react-router';
 import Header from '../components/common/\bHeader';
 import BaseButton from '../components/common/BaseButton';
 import ButtonWrapper from '../components/common/ButtonWrapper';
 import Chip from '../components/common/Chip';
+import QuantityCounter from '../components/common/QuantityCounter';
 import Carousel from '../components/pages/MenuDetail/Carousel';
 import OptionGroup from '../components/pages/MenuDetail/OptionGroup';
 import { useFetchMenuDetailQuery } from '../hooks/useFetchMenuDetailQuery';
 import { useCartStore } from '../stores/useCartStore';
 import { useMenuSelectionStore } from '../stores/useMenuSelectionStore';
 import formatNumber from '../utils/formatNumber';
+import { useEffect } from 'react';
+import { useNavigate, useParams } from 'react-router';
 
 export default function MenuDetail() {
   const navigate = useNavigate();
@@ -71,7 +72,7 @@ export default function MenuDetail() {
       <Header title="메뉴보기" />
       <div className="wrapper">
         <div className="mb-3 mt-6">
-          <Carousel imgUrls={data.imageUrls} />
+          <Carousel imgUrls={data.imgUrls} />
         </div>
 
         <div className="mb-2 flex items-center gap-1">
@@ -84,23 +85,7 @@ export default function MenuDetail() {
           <div className="text-mb-1 text-gray-800">
             {formatNumber(data.price ?? 0)}원
           </div>
-          <div className="flex gap-1 rounded-md bg-gray-200 p-0.5">
-            <button
-              onClick={() => setQuantity(quantity - 1)}
-              className={`transition-colors duration-300 ${quantity === 1 ? 'text-gray-400' : 'text-gray-600'} text-mb-1 flex aspect-square h-6 w-6 flex-col items-center justify-center`}
-            >
-              -
-            </button>
-            <span className="text-mb-1 flex aspect-square h-6 w-6 flex-col items-center justify-center rounded-md bg-white text-gray-800">
-              {quantity}
-            </span>
-            <button
-              onClick={() => setQuantity(quantity + 1)}
-              className="text-mb-1 flex aspect-square h-6 w-6 flex-col items-center justify-center text-gray-600"
-            >
-              +
-            </button>
-          </div>
+          <QuantityCounter value={quantity} onChange={setQuantity} />
         </div>
       </div>
       {data.optionGroups.map((group) => (

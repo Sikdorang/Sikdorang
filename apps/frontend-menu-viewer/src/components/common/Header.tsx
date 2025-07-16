@@ -1,20 +1,31 @@
+import { ROUTES } from '../../constants/routes';
 import ChervonLeftThickSvg from '@/assets/icons/ic_chervon_left_thick.svg?react';
 import { useNavigate } from 'react-router';
 
 interface HeaderProps {
   title: string;
+  backPath?: string;
 }
 
-export default function Header({ title }: HeaderProps) {
+export default function Header({ title, backPath }: HeaderProps) {
   const navigate = useNavigate();
-  const canGoBack = typeof window !== 'undefined' && window.history.length > 1;
+  const canGoBack = window.history.state?.idx > 0;
 
+  const handleBack = () => {
+    if (backPath) {
+      navigate(backPath, { replace: true });
+    } else if (canGoBack) {
+      navigate(-1);
+    } else {
+      navigate(ROUTES.ROOT, { replace: true });
+    }
+  };
   return (
     <div className="sticky top-0 z-20 h-14 bg-white">
       <div className="wrapper flex h-full w-full items-center">
         {canGoBack && (
           <ChervonLeftThickSvg
-            onClick={() => navigate(-1)}
+            onClick={handleBack}
             className="cursor-pointer"
           />
         )}

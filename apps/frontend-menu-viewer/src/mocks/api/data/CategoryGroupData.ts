@@ -26,7 +26,7 @@ for (const [id, detail] of Object.entries(MenuDetailsData)) {
     price: detail.price,
     isNew: detail.isNew,
     isPopular: detail.isPopular,
-    imgUrl: detail.imageUrls?.[0],
+    imgUrl: detail.imgUrls?.[0],
   });
 }
 

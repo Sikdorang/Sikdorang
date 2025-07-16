@@ -21,7 +21,7 @@ interface IMenuListItem extends IBaseMenu {
 
 interface IMenuDetail extends IBaseMenu {
   description?: string;
-  imageUrls: string[];
+  imgUrls: string[];
   optionGroups: IOptionGroup[];
 }
 

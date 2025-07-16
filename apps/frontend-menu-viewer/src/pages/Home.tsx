@@ -5,7 +5,7 @@ import Divider from '@/components/common/Divider';
 import CategoryMenuGroup from '@/components/pages/Home/CategoryMenuGroup';
 
 import { useEffect, useRef, useState } from 'react';
-import { Link } from 'react-router';
+import { Link, useNavigate } from 'react-router';
 import BaseButton from '../components/common/BaseButton';
 import ButtonWrapper from '../components/common/ButtonWrapper';
 import CategoryTabItem from '../components/pages/Home/CategoryTabItem';
@@ -17,6 +17,7 @@ import { useCartStore } from '../stores/useCartStore';
 import formatNumber from '../utils/formatNumber';
 
 export default function Home() {
+  const navigate = useNavigate();
   const { items, getTotalPrice } = useCartStore();
   const { data, isLoading, isError } = useFetchMenusQuery();
   const [selectedId, setSelectedId] = useState<string | null>(null);
@@ -182,7 +183,7 @@ export default function Home() {
 
       {items.length > 0 && (
         <ButtonWrapper>
-          <BaseButton onClick={() => {}} color="black">
+          <BaseButton onClick={() => navigate(ROUTES.CARTS)} color="black">
             <div className="flex items-center gap-2.5">
               <p className="flex items-center gap-1">
                 <span>총 {formatNumber(getTotalPrice())}원</span>

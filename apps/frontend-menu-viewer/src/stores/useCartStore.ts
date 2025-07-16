@@ -3,7 +3,8 @@ import { immer } from 'zustand/middleware/immer';
 
 interface CartItem {
   id: string;
-  originalItem: IMenuListItem;
+  selected: boolean;
+  originalItem: IMenuDetail;
   optionPrice: number;
   quantity: number;
   selectedOptions: OptionSelection;
@@ -12,8 +13,9 @@ interface CartItem {
 
 interface CartStore {
   items: CartItem[];
-  addItem: (item: Omit<CartItem, 'id'>) => void;
+  addItem: (item: Omit<CartItem, 'id' | 'selected'>) => void;
   removeItem: (id: string) => void;
+  toggleSelect: (id: string) => void;
   setQuantity: (id: string, quantity: number) => void;
   clearCart: () => void;
   getTotalPrice: () => number;
@@ -37,13 +39,19 @@ export const useCartStore = create<CartStore>()(
         if (existing) {
           existing.quantity += item.quantity;
         } else {
-          state.items.push({ ...item, id });
+          state.items.push({ ...item, selected: true, id });
         }
       }),
 
     removeItem: (id) =>
       set((state) => {
         state.items = state.items.filter((i) => i.id !== id);
+      }),
+
+    toggleSelect: (id) =>
+      set((state) => {
+        const item = state.items.find((i) => i.id === id);
+        if (item) item.selected = !item.selected;
       }),
 
     setQuantity: (id, qty) =>
@@ -59,12 +67,13 @@ export const useCartStore = create<CartStore>()(
 
     getTotalPrice: () => {
       const items = get().items;
-      return items.reduce(
-        (acc, item) =>
+      return items.reduce((acc, item) => {
+        if (!item.selected) return acc;
+        return (
           acc +
-          (item.optionPrice + (item.originalItem.price ?? 0)) * item.quantity,
-        0,
-      );
+          (item.optionPrice + (item.originalItem.price ?? 0)) * item.quantity
+        );
+      }, 0);
     },
   })),
 );
