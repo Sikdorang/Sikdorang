@@ -80,6 +80,7 @@ export const useMenuSelectionStore = create<MenuSelectionStore>()(
       set((state) => {
         state.menuId = null;
         state.quantity = 1;
+        state.optionPrice = 0;
         state.selectedOptions = {};
       }),
   })),
