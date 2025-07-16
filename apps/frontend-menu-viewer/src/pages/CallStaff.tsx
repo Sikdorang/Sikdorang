@@ -1,9 +1,11 @@
 import Header from '../components/common/\bHeader';
 import ButtonWrapper from '../components/common/ButtonWrapper';
+import { ROUTES } from '../constants/routes';
 import { showCustomToast } from '../utils/showToast';
 import BaseButton from '@/components/common/BaseButton';
 import OutlineButton from '@/components/common/OutlineButton';
 import { useState } from 'react';
+import { useNavigate } from 'react-router';
 
 const callOptions = [
   { id: 'water', label: '물' },
@@ -14,6 +16,7 @@ const callOptions = [
 ];
 
 export default function CallStaff() {
+  const navigate = useNavigate();
   const [selectedId, setSelectedId] = useState<string | null>(null);
 
   return (
@@ -36,9 +39,10 @@ export default function CallStaff() {
         {selectedId && (
           <ButtonWrapper>
             <BaseButton
-              onClick={() =>
-                showCustomToast({ icon: 'bell', message: '호출하기를 했어요' })
-              }
+              onClick={() => {
+                showCustomToast({ icon: 'bell', message: '호출하기를 했어요' });
+                navigate(ROUTES.STORES.DETAIL('123'), { replace: true });
+              }}
               color="black"
             >
               호출하기

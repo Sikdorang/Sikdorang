@@ -70,7 +70,7 @@ export default function StoreInfoDropDown({ items }: Props) {
           return (
             <div
               key={idx}
-              className={`flex flex-wrap items-center gap-2 ${!open && idx >= 3 ? 'hidden' : 'block'}`}
+              className={`flex flex-wrap items-center gap-2 transition-all duration-300 ${!open && idx >= 3 ? 'hidden' : 'block'}`}
             >
               <div className="flex flex-wrap aspect-square w-6 items-center justify-center text-gray-400">
                 {info.icon}
@@ -79,7 +79,7 @@ export default function StoreInfoDropDown({ items }: Props) {
                 <span className="text-mb-5 text-gray-700 ">{info.label}</span>
                 <div className="rounded-full bg-gray-200 w-[3px] h-[3px]"></div>
                 <span
-                  className={`text-mb-6 flex-1 text-gray-700 ${!open ? 'line-clamp-1' : 'break-all whitespace-break-spaces'}`}
+                  className={` text-mb-6 flex-1 text-gray-700 ${!open ? 'line-clamp-1' : 'break-all whitespace-break-spaces'}`}
                 >
                   {item.value}
                 </span>

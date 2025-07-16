@@ -6,12 +6,14 @@ import QuantityCounter from '../components/common/QuantityCounter';
 import { ROUTES } from '../constants/routes';
 import { useCartStore } from '../stores/useCartStore';
 import formatNumber from '../utils/formatNumber';
+import { showCustomToast } from '../utils/showToast';
 import BaseButton from '@/components/common/BaseButton';
 import { useNavigate } from 'react-router';
 
 export default function Cart() {
   const navigate = useNavigate();
-  const { items, getTotalPrice, setQuantity, toggleSelect } = useCartStore();
+  const { items, getTotalPrice, setQuantity, toggleSelect, clearCart } =
+    useCartStore();
   return (
     <div className="min-w-xs mx-auto flex h-full w-full flex-col">
       <Header title="주문하기" />
@@ -25,7 +27,7 @@ export default function Cart() {
                   checked={item.selected}
                 />
                 <div className="flex w-full gap-2">
-                  <div className="overflow-hidden w-[5.25rem] h-[5.25rem] aspect-square rounded-2xl bg-gray-100 shrink-0">
+                  <div className="overflow-hidden w-[5.25rem] h-[5.25rem] sm:w-[11.25rem] sm:h-[11.25rem] aspect-square rounded-2xl bg-gray-100 shrink-0">
                     {item.originalItem.imgUrls.length > 0 && (
                       <img src={item.originalItem.imgUrls[0]} />
                     )}
@@ -88,11 +90,17 @@ export default function Cart() {
         >
           메뉴 더 추가하기
         </OutlineButton>
+
         {items.length > 0 && (
           <ButtonWrapper>
             <BaseButton
               onClick={() => {
+                clearCart();
                 navigate(ROUTES.STORES.DETAIL('123'), { replace: true });
+                showCustomToast({
+                  icon: 'check',
+                  message: '주문을 완료 했어요!\n조금만 기다려주세요.',
+                });
               }}
               color="black"
             >

@@ -1,13 +1,15 @@
 import BellSvg from '@/assets/icons/ic_bell.svg?react';
+import CheckSvg from '@/assets/icons/ic_check.svg?react';
 import ErrorSvg from '@/assets/icons/ic_error.svg?react';
 import type { ReactNode } from 'react';
 import toast from 'react-hot-toast';
 
-export type ToastIconType = 'bell' | 'error';
+export type ToastIconType = 'bell' | 'error' | 'check';
 
 const IconMap: Record<ToastIconType, ReactNode> = {
   bell: <BellSvg />,
   error: <ErrorSvg />,
+  check: <CheckSvg />,
 };
 
 export function showCustomToast({
@@ -25,7 +27,13 @@ export function showCustomToast({
         <div className="bg-main-500 flex h-6 w-6 flex-col items-center justify-center rounded-full text-gray-700">
           {icon && IconMap[icon]}
         </div>
-        <span className="text-mb-4 text-gray-700">{message}</span>
+        <div>
+          {message.split('\n').map((line, index) => (
+            <p className="text-mb-4 text-gray-700" key={index}>
+              {line}
+            </p>
+          ))}
+        </div>
       </div>
     ),
     {

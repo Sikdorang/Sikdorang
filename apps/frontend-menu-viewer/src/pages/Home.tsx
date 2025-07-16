@@ -170,9 +170,11 @@ export default function Home() {
         </ul>
       )}
       <div
-        className={`${items.length > 0 ? 'bottom-27' : 'bottom-11'} fixed right-5 z-10 transition-all duration-300`}
+        className={`${items.length > 0 ? 'bottom-27' : 'bottom-11'} mx-auto fixed w-full z-10 transition-all duration-300`}
       >
-        <RecommendationButton />
+        <div className="wrapper flex justify-end">
+          <RecommendationButton />
+        </div>
       </div>
 
       {items.length > 0 && (

@@ -1,4 +1,4 @@
-import CheckSvg from '@/assets/icons/ic_check.svg?react';
+import CheckBoxCheckSvg from '@/assets/icons/ic_checkbox_check.svg?react';
 
 interface Props {
   checked: boolean;
@@ -13,7 +13,7 @@ export default function CheckBox({ checked, onClick }: Props) {
         checked ? 'bg-main-500 border-main-500' : 'border-gray-200'
       }`}
     >
-      {checked && <CheckSvg width={20} height={20} />}
+      {checked && <CheckBoxCheckSvg width={20} height={20} />}
     </div>
   );
 }
