@@ -1,10 +1,10 @@
-import Header from '../components/common/\bHeader';
-import ButtonWrapper from '../components/common/ButtonWrapper';
-import { ROUTES } from '../constants/routes';
-import { getStoreId } from '../utilities/getStoreId';
-import { showCustomToast } from '../utilities/showToast';
 import BaseButton from '@/components/common/BaseButton';
+import ButtonWrapper from '@/components/common/ButtonWrapper';
+import Header from '@/components/common/Header';
 import OutlineButton from '@/components/common/OutlineButton';
+import { ROUTES } from '@/constants/routes';
+import { getStoreId } from '@/utilities/getStoreId';
+import { showCustomToast } from '@/utilities/showToast';
 import { useState } from 'react';
 import { useNavigate } from 'react-router';
 

@@ -1,4 +1,4 @@
-import Header from '../components/common/\bHeader';
+import Header from '../components/common/Header';
 
 export default function Orders() {
   return (

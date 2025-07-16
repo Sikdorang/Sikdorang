@@ -1,6 +1,6 @@
-import Header from '../components/common/\bHeader';
 import ButtonWrapper from '../components/common/ButtonWrapper';
 import CheckBox from '../components/common/CheckBox';
+import Header from '../components/common/Header';
 import OutlineButton from '../components/common/OutlineButton';
 import QuantityCounter from '../components/common/QuantityCounter';
 import { ROUTES } from '../constants/routes';
