@@ -3,12 +3,14 @@ import { immer } from 'zustand/middleware/immer';
 
 interface MenuSelectionStore {
   menuId: string | null;
+  menu: IMenuDetail | null;
   quantity: number;
   optionPrice: number;
   selectedOptions: OptionSelection;
   optionItemPriceMap: Record<string, number>;
 
   startMenu: (menu: IMenuDetail) => void;
+  startEdit: (cartItem: ICartItem) => void;
   setQuantity: (qty: number) => void;
   toggleOption: (groupId: string, itemId: string, isSingle: boolean) => void;
   resetSelection: () => void;
@@ -17,6 +19,7 @@ interface MenuSelectionStore {
 export const useMenuSelectionStore = create<MenuSelectionStore>()(
   immer((set) => ({
     menuId: null,
+    menu: null,
     quantity: 1,
     optionPrice: 0,
     selectedOptions: {},
@@ -25,6 +28,7 @@ export const useMenuSelectionStore = create<MenuSelectionStore>()(
     startMenu: (menu) =>
       set((state) => {
         state.menuId = menu.id;
+        state.menu = menu;
         state.quantity = 1;
         state.optionPrice = 0;
         state.selectedOptions = {};
@@ -37,6 +41,16 @@ export const useMenuSelectionStore = create<MenuSelectionStore>()(
         }
 
         state.optionItemPriceMap = map;
+      }),
+
+    startEdit: (cartItem) =>
+      set((state) => {
+        state.menuId = cartItem.id;
+        state.menu = cartItem.originalItem;
+        state.quantity = cartItem.quantity;
+        state.optionPrice = cartItem.optionPrice;
+        state.selectedOptions = cartItem.selectedOptions;
+        state.optionItemPriceMap = cartItem.optionItemPriceMap;
       }),
 
     setQuantity: (qty) =>
@@ -79,9 +93,11 @@ export const useMenuSelectionStore = create<MenuSelectionStore>()(
     resetSelection: () =>
       set((state) => {
         state.menuId = null;
+        state.menu = null;
         state.quantity = 1;
         state.optionPrice = 0;
         state.selectedOptions = {};
+        state.optionItemPriceMap = {};
       }),
   })),
 );

@@ -46,14 +46,12 @@ function SelectorIcon({
     return (
       <div
         className={`flex h-6 w-6 items-center justify-center rounded-full border transition-colors duration-200 ${
-          checked ? 'bg-main-500 border-main-500' : 'border-gray-200'
+          checked ? 'bg-main-500 border-main-500' : 'border-gray-200 bg-white'
         }`}
       >
         {checked && <div className="h-3 w-3 rounded-full bg-white" />}
       </div>
     );
   }
-  return (
-    <CheckBox checked={checked}/>
-  );
+  return <CheckBox checked={checked} />;
 }
