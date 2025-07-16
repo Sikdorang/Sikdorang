@@ -9,7 +9,7 @@ interface HeaderProps {
 
 export default function Header({ title, backPath }: HeaderProps) {
   const navigate = useNavigate();
-  const canGoBack = window.history.state?.idx > 0;
+  const canGoBack = window.history.length > 1;
 
   const handleBack = () => {
     if (backPath) {
@@ -23,7 +23,7 @@ export default function Header({ title, backPath }: HeaderProps) {
   return (
     <div className="sticky top-0 z-20 h-14 bg-white">
       <div className="wrapper flex h-full w-full items-center">
-        {canGoBack && (
+        {(canGoBack || backPath) && (
           <ChervonLeftThickSvg
             onClick={handleBack}
             className="cursor-pointer"
