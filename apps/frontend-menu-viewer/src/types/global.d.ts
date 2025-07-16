@@ -3,15 +3,60 @@ interface ICategory {
   category: string;
 }
 
-interface IMenu {
+interface IBaseMenu {
   id: string;
   name: string;
   price?: number;
-  isNew?: boolean;
   isPopular?: boolean;
-  imgUrl?: string;
+  isNew?: boolean;
 }
 
 interface ICategoryGroup extends ICategory {
-  items: IMenu[];
+  items: IMenuListItem[];
+}
+
+interface IMenuListItem extends IBaseMenu {
+  imgUrl?: string;
+}
+
+interface IMenuDetail extends IBaseMenu {
+  description?: string;
+  imgUrls: string[];
+  optionGroups: IOptionGroup[];
+}
+
+interface IOptionGroup {
+  id: string;
+  title: string;
+  required: boolean;
+  minSelectable?: number;
+  maxSelectable: number;
+  items: IOptionItem[];
+}
+
+interface IOptionItem {
+  id: string;
+  name: string;
+  price: number;
+}
+
+type OptionSelection = Record<string, Set<string>>;
+
+type StoreInfoType =
+  | 'openHour'
+  | 'toilet'
+  | 'wifi'
+  | 'corkage'
+  | 'naverPlace'
+  | 'phone';
+
+interface IStoreInfoItem {
+  key: StoreInfoType;
+  value: string;
+}
+
+interface IStoreInfo {
+  id: string;
+  name: string;
+  infoItems: IStoreInfoItem[];
 }

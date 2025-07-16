@@ -1,17 +1,32 @@
+import BaseButton from '../components/common/BaseButton';
+import ButtonWrapper from '../components/common/ButtonWrapper';
+import CategoryTabItem from '../components/pages/Home/CategoryTabItem';
+import RecommendationButton from '../components/pages/Home/RecommendationButton';
+import StoreInfoDropDown from '../components/pages/Home/StoreInfoDropDown';
+import { ROUTES } from '../constants/routes';
+import { useFetchMenusQuery } from '../hooks/useFetchMenusQuery';
+import useFetchStoreInfoQuery from '../hooks/useFetchStoreInfoQuery';
+import { useCartStore } from '../stores/useCartStore';
+import formatNumber from '../utilities/formatNumber';
 import BellSvg from '@/assets/icons/ic_bell.svg?react';
 import BillSvg from '@/assets/icons/ic_bill.svg?react';
-import ChervonRightSvg from '@/assets/icons/ic_chervon_right.svg?react';
-
 import Divider from '@/components/common/Divider';
 import CategoryMenuGroup from '@/components/pages/Home/CategoryMenuGroup';
-
 import { useEffect, useRef, useState } from 'react';
-import { Link } from 'react-router';
-import CategoryTabItem from '../components/pages/Home/CategoryTabItem';
-import useFetchMenuQuery from '../hooks/useFetchMenuQuery';
+import { Link, useNavigate, useParams } from 'react-router';
 
 export default function Home() {
-  const { data, isLoading, isError } = useFetchMenuQuery();
+  const navigate = useNavigate();
+  const { storeId } = useParams<{ storeId: string }>();
+  if (!storeId) return <div>error</div>;
+
+  const { items, getTotalPrice } = useCartStore();
+  const {
+    data: storeInfo,
+    isLoading: isStoreInfoLoading,
+    isError: isStoreInfoError,
+  } = useFetchStoreInfoQuery(storeId);
+  const { data, isLoading, isError } = useFetchMenusQuery();
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const groupRefs = useRef<Record<string, HTMLElement | null>>({});
   const tabRefs = useRef<Record<string, HTMLElement | null>>({});
@@ -28,7 +43,6 @@ export default function Home() {
       const visible = entries.find((entry) => entry.isIntersecting);
 
       if (visible) {
-        console.log(visible);
         const id = visible.target.getAttribute('data-id');
         if (id) setSelectedId(id);
       }
@@ -84,21 +98,21 @@ export default function Home() {
     });
   }, [selectedId]);
 
-  if (isError) return <div>error</div>;
-  if (isLoading) return <div>loading</div>;
+  if (isError || isStoreInfoError) return <div>error</div>;
+  if (isLoading || isStoreInfoLoading) return <div>loading</div>;
 
   return (
     <div className="min-w-xs mx-auto w-full">
       <div className="sticky top-0 z-10 h-12 bg-white shadow-sm">
         <div className="wrapper flex w-full items-center justify-end">
           <div className="flex items-center gap-2">
-            <Link to="/call-staff">
+            <Link to={ROUTES.CALL_STAFF}>
               <button className="text-mb-5 flex flex-wrap items-center text-gray-700">
                 <BellSvg className="text-gray-700" />
                 <span> 호출하기</span>
               </button>
             </Link>
-            <Link to="/orders">
+            <Link to={ROUTES.ORDERS}>
               <button className="text-mb-5 flex flex-wrap items-center text-gray-700">
                 <BillSvg className="text-gray-700" />
                 <span> 주문내역</span>
@@ -111,38 +125,12 @@ export default function Home() {
       <div className="wrapper pb-3 pt-5">
         <div className="mb-3">
           <p className="text-ml-2 text-gray-500">테이블 번호 01</p>
-          <h1 className="text-mt-1 text-gray-900">지화자</h1>
+          <h1 className="text-mt-1 text-gray-900">{storeInfo?.name}</h1>
         </div>
         <div>
-          <Link to={`/store-info/${123}`}>
-            <div className="flex items-center justify-between">
-              <h2 className="text-mb-3 text-gray-700">매장 안내·서비스</h2>
-              <ChervonRightSvg className="text-gray-700" />
-            </div>
-          </Link>
-          <div className="grid grid-cols-1 gap-2 rounded-2xl bg-gray-100 p-4 md:grid-cols-2 lg:grid-cols-3">
-            <div className="flex flex-wrap items-center gap-2">
-              <div className="aspect-square w-6 rounded-full bg-white"></div>
-              <p className="flex flex-wrap items-center gap-1">
-                <span className="text-mb-5 text-gray-700">영업시간</span>
-                <span className="text-mb-6 text-gray-700">목 1600-100</span>
-              </p>
-            </div>
-            <div className="flex flex-wrap items-center gap-2">
-              <div className="aspect-square w-6 rounded-full bg-white"></div>
-              <p className="flex flex-wrap items-center gap-1">
-                <span className="text-mb-5 text-gray-700">영업시간</span>
-                <span className="text-mb-6 text-gray-700">목 1600-100</span>
-              </p>
-            </div>
-            <div className="flex flex-wrap items-center gap-2">
-              <div className="aspect-square w-6 rounded-full bg-white"></div>
-              <p className="flex flex-wrap items-center gap-1">
-                <span className="text-mb-5 text-gray-700">영업시간</span>
-                <span className="text-mb-6 text-gray-700">목 1600-100</span>
-              </p>
-            </div>
-          </div>
+          {storeInfo?.infoItems && storeInfo?.infoItems.length > 0 && (
+            <StoreInfoDropDown items={storeInfo?.infoItems} />
+          )}
         </div>
       </div>
       <Divider />
@@ -181,6 +169,31 @@ export default function Home() {
           ))}
         </ul>
       )}
+      <div
+        className={`${items.length > 0 ? 'bottom-27' : 'bottom-11'} mx-auto fixed w-full z-10 transition-all duration-300`}
+      >
+        <div className="wrapper flex justify-end">
+          <RecommendationButton />
+        </div>
+      </div>
+
+      {items.length > 0 && (
+        <ButtonWrapper>
+          <BaseButton onClick={() => navigate(ROUTES.CARTS)} color="black">
+            <div className="flex items-center gap-2.5">
+              <p className="flex items-center gap-1">
+                <span>총 {formatNumber(getTotalPrice())}원</span>
+                <p className="h-1 w-1 rounded-full bg-white"></p>
+                <span>주문하기</span>
+              </p>
+              <p className="text-xs font-bold leading-[150%] tracking-[-2%]  flex h-6 w-6 flex-col items-center justify-center rounded-full bg-white text-gray-800">
+                {items.length}
+              </p>
+            </div>
+          </BaseButton>
+        </ButtonWrapper>
+      )}
+      <div className="h-48"></div>
     </div>
   );
 }

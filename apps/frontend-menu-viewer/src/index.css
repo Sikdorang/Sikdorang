@@ -8,9 +8,55 @@
   font-display: swap;
 }
 
+@keyframes button-enter {
+  0% {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+
+@keyframes toast-enter {
+  0% {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes toast-leave {
+  0% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+}
+
+.animate-button-in {
+  animation: button-enter 0.2s ease-out forwards;
+}
+
+.animate-toast-in {
+  animation: toast-enter 0.2s ease-out forwards;
+}
+
+.animate-toast-out {
+  animation: toast-leave 0.2s ease-in forwards;
+}
+
 @theme {
   /* ================================================ */
-  /* breakpoints(xs - sm - md - lg - xl) */
+  /* breakpoints(xs(375) - sm(480) - md(768) - lg(1024) - xl(1440)) */
   /* ================================================ */
 
   --breakpoint-xs: 23.438rem; /* 375px */

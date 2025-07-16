@@ -39,24 +39,13 @@ services:
       - backend
     restart: unless-stopped
 
-  frontend-user:
-    build:
-      context: .
-      dockerfile: apps/frontend-user/Dockerfile
-    container_name: sikdorang-frontend-user
-    ports:
-      - '3001:3001'
-    depends_on:
-      - backend
-    restart: unless-stopped
-
   frontend-menu-viewer:
     build:
       context: .
       dockerfile: apps/frontend-menu-viewer/Dockerfile
     container_name: sikdorang-frontend-menu-viewer
     ports:
-      - '5173:5173'
+      - '3001:3001'
     depends_on:
       - backend
     restart: unless-stopped

@@ -1,35 +1,41 @@
+import Cart from '../pages/Cart';
+import MenuDetail from '../pages/MenuDetail';
+import { ROUTES } from '@/constants/routes';
 import CallStaff from '@/pages/CallStaff';
 import CheckUserAgent from '@/pages/CheckUserAgent';
 import Home from '@/pages/Home';
 import Login from '@/pages/Login';
 import Orders from '@/pages/Orders';
-import StoreInfo from '@/pages/StoreInfo';
 import { createBrowserRouter, RouterProvider } from 'react-router';
 
 const router = createBrowserRouter([
   {
-    path: '/',
+    path: ROUTES.ROOT,
     element: <CheckUserAgent />,
   },
   {
-    path: '/store',
+    path: ROUTES.STORES.DETAIL(),
     element: <Home />,
   },
   {
-    path: '/login',
+    path: ROUTES.MENUS.DETAIL(),
+    element: <MenuDetail />,
+  },
+  {
+    path: ROUTES.LOGIN,
     element: <Login />,
   },
   {
-    path: '/call-staff',
+    path: ROUTES.CALL_STAFF,
     element: <CallStaff />,
   },
   {
-    path: '/orders',
+    path: ROUTES.ORDERS,
     element: <Orders />,
   },
   {
-    path: '/store-info/:storeId',
-    element: <StoreInfo />,
+    path: ROUTES.CARTS,
+    element: <Cart />,
   },
 ]);
 

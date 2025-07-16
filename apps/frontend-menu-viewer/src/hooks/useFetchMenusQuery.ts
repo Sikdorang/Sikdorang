@@ -1,7 +1,7 @@
-import { menuAPI } from '@/apis/menu';
+import { menuAPI } from '@/apis/menu/menu.api';
 import { useQuery } from '@tanstack/react-query';
 
-export default function useFetchMenuQuery() {
+export function useFetchMenusQuery() {
   return useQuery({
     queryKey: ['menus'],
     queryFn: () => menuAPI.fetchMenus(),
