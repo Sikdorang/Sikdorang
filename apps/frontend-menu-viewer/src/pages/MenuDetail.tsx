@@ -8,7 +8,7 @@ import OptionGroup from '../components/pages/MenuDetail/OptionGroup';
 import { useFetchMenuDetailQuery } from '../hooks/useFetchMenuDetailQuery';
 import { useCartStore } from '../stores/useCartStore';
 import { useMenuSelectionStore } from '../stores/useMenuSelectionStore';
-import formatNumber from '../utils/formatNumber';
+import formatNumber from '../utilities/formatNumber';
 import { useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router';
 

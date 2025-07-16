@@ -5,8 +5,8 @@ import OutlineButton from '../components/common/OutlineButton';
 import QuantityCounter from '../components/common/QuantityCounter';
 import { ROUTES } from '../constants/routes';
 import { useCartStore } from '../stores/useCartStore';
-import formatNumber from '../utils/formatNumber';
-import { showCustomToast } from '../utils/showToast';
+import formatNumber from '../utilities/formatNumber';
+import { showCustomToast } from '../utilities/showToast';
 import BaseButton from '@/components/common/BaseButton';
 import { useNavigate } from 'react-router';
 

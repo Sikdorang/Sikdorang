@@ -1,5 +1,5 @@
 import { ROUTES } from '../constants/routes';
-import { getDeviceType } from '@/utils/parseUserAgent';
+import { getDeviceType } from '@/utilities/parseUserAgent';
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router';
 

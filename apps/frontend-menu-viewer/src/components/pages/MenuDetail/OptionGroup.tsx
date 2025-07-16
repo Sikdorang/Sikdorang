@@ -1,4 +1,4 @@
-import { showCustomToast } from '../../../utils/showToast';
+import { showCustomToast } from '../../../utilities/showToast';
 import Chip from '../../common/Chip';
 import Divider from '../../common/Divider';
 import OptionSelector from './OptionSelector';

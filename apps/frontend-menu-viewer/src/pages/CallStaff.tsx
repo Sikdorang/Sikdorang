@@ -1,7 +1,7 @@
 import Header from '../components/common/\bHeader';
 import ButtonWrapper from '../components/common/ButtonWrapper';
 import { ROUTES } from '../constants/routes';
-import { showCustomToast } from '../utils/showToast';
+import { showCustomToast } from '../utilities/showToast';
 import BaseButton from '@/components/common/BaseButton';
 import OutlineButton from '@/components/common/OutlineButton';
 import { useState } from 'react';
