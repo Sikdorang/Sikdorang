@@ -29,7 +29,6 @@ model User {
 model Store {
   id              Int      @id @default(autoincrement())
   store           String                                // 가게 이름
-//  logo            String                                // 매장 로고
   description     String?                               // 가게 설명
   wifiId          String?                               // 와이파이 아이디
   wifiPassword    String?                               // 와이파이 비밀번호

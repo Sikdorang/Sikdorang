@@ -25,7 +25,6 @@ export const UserId = createParamDecorator(
     return userId;
   },
 );
-
 export const StoreId = createParamDecorator(
   (data: unknown, ctx: ExecutionContext): number => {
     const request = ctx.switchToHttp().getRequest<RequestWithUser>();

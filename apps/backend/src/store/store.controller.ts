@@ -1,6 +1,6 @@
 import { Body, Controller, Get, Patch, UseGuards } from '@nestjs/common';
 
-import { UserId } from '../auth/decorators/user-id.decorator';
+import { StoreId } from '../auth/decorators/user-id.decorator';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 
 import { CreateStoreDto } from './dto/create-store.dto';
@@ -15,12 +15,12 @@ export class StoreController {
 
   @Patch()
   @CreateStoreSwagger()
-  async createStore(@Body() dto: CreateStoreDto, @UserId() userId: number) {
-    return this.storeService.create(dto, userId);
+  async createStore(@Body() dto: CreateStoreDto, @StoreId() storeId: number) {
+    return this.storeService.create(dto, storeId);
   }
   @Get()
   @GetStoreSwagger()
-  async getStore(@UserId() userId: number) {
-    return this.storeService.getStore(userId);
+  async getStore(@StoreId() storeId: number) {
+    return this.storeService.getStore(storeId);
   }
 }

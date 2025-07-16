@@ -7,11 +7,11 @@ import { CreateStoreDto } from './dto/create-store.dto';
 export class StoreService {
   constructor(private readonly prisma: PrismaClient) {}
 
-  async create(createStoreDto: CreateStoreDto, userId: number) {
+  async create(createStoreDto: CreateStoreDto, storeId: number) {
     try {
-      const data = { ...createStoreDto, userId };
+      const data = { ...createStoreDto, storeId };
       return this.prisma.store.update({
-        where: { id: data.userId },
+        where: { id: data.storeId },
         data,
       });
     } catch (error) {
@@ -21,10 +21,10 @@ export class StoreService {
       );
     }
   }
-  async getStore(userId: number) {
+  async getStore(storeId: number) {
     try {
       return await this.prisma.store.findMany({
-        where: { userId },
+        where: { storeId },
       });
     } catch (error) {
       console.error('Store get 에러:', error);
