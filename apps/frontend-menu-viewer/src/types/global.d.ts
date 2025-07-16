@@ -41,3 +41,22 @@ interface IOptionItem {
 }
 
 type OptionSelection = Record<string, Set<string>>;
+
+type StoreInfoType =
+  | 'openHour'
+  | 'toilet'
+  | 'wifi'
+  | 'corkage'
+  | 'naverPlace'
+  | 'phone';
+
+interface IStoreInfoItem {
+  key: StoreInfoType;
+  value: string;
+}
+
+interface IStoreInfo {
+  id: string;
+  name: string;
+  infoItems: IStoreInfoItem[];
+}

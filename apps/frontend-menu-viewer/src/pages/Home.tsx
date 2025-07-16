@@ -1,11 +1,3 @@
-import BellSvg from '@/assets/icons/ic_bell.svg?react';
-import BillSvg from '@/assets/icons/ic_bill.svg?react';
-
-import Divider from '@/components/common/Divider';
-import CategoryMenuGroup from '@/components/pages/Home/CategoryMenuGroup';
-
-import { useEffect, useRef, useState } from 'react';
-import { Link, useNavigate } from 'react-router';
 import BaseButton from '../components/common/BaseButton';
 import ButtonWrapper from '../components/common/ButtonWrapper';
 import CategoryTabItem from '../components/pages/Home/CategoryTabItem';
@@ -13,12 +5,27 @@ import RecommendationButton from '../components/pages/Home/RecommendationButton'
 import StoreInfoDropDown from '../components/pages/Home/StoreInfoDropDown';
 import { ROUTES } from '../constants/routes';
 import { useFetchMenusQuery } from '../hooks/useFetchMenusQuery';
+import useFetchStoreInfoQuery from '../hooks/useFetchStoreInfoQuery';
 import { useCartStore } from '../stores/useCartStore';
 import formatNumber from '../utils/formatNumber';
+import BellSvg from '@/assets/icons/ic_bell.svg?react';
+import BillSvg from '@/assets/icons/ic_bill.svg?react';
+import Divider from '@/components/common/Divider';
+import CategoryMenuGroup from '@/components/pages/Home/CategoryMenuGroup';
+import { useEffect, useRef, useState } from 'react';
+import { Link, useNavigate, useParams } from 'react-router';
 
 export default function Home() {
   const navigate = useNavigate();
+  const { storeId } = useParams<{ storeId: string }>();
+  if (!storeId) return <div>error</div>;
+
   const { items, getTotalPrice } = useCartStore();
+  const {
+    data: storeInfo,
+    isLoading: isStoreInfoLoading,
+    isError: isStoreInfoError,
+  } = useFetchStoreInfoQuery(storeId);
   const { data, isLoading, isError } = useFetchMenusQuery();
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const groupRefs = useRef<Record<string, HTMLElement | null>>({});
@@ -91,8 +98,8 @@ export default function Home() {
     });
   }, [selectedId]);
 
-  if (isError) return <div>error</div>;
-  if (isLoading) return <div>loading</div>;
+  if (isError || isStoreInfoError) return <div>error</div>;
+  if (isLoading || isStoreInfoLoading) return <div>loading</div>;
 
   return (
     <div className="min-w-xs mx-auto w-full">
@@ -118,25 +125,12 @@ export default function Home() {
       <div className="wrapper pb-3 pt-5">
         <div className="mb-3">
           <p className="text-ml-2 text-gray-500">테이블 번호 01</p>
-          <h1 className="text-mt-1 text-gray-900">지화자</h1>
+          <h1 className="text-mt-1 text-gray-900">{storeInfo?.name}</h1>
         </div>
         <div>
-          <StoreInfoDropDown
-            items={[
-              {
-                label: '영업시간',
-                value: '목 1600-100',
-              },
-              {
-                label: '영업시간',
-                value: '목 1600-100',
-              },
-              {
-                label: '영업시간',
-                value: '목 1600-100',
-              },
-            ]}
-          />
+          {storeInfo?.infoItems && storeInfo?.infoItems.length > 0 && (
+            <StoreInfoDropDown items={storeInfo?.infoItems} />
+          )}
         </div>
       </div>
       <Divider />

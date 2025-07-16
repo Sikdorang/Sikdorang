@@ -1,14 +1,14 @@
+import { ROUTES } from '../constants/routes';
 import { getDeviceType } from '@/utils/parseUserAgent';
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router';
-import { ROUTES } from '../constants/routes';
 
 export default function CheckUserAgent() {
   const navigate = useNavigate();
   useEffect(() => {
     setTimeout(() => {
       const userAgent = getDeviceType();
-      if (userAgent == 'mobile') navigate(ROUTES.STORES);
+      if (userAgent == 'mobile') navigate(ROUTES.STORES.DETAIL('123'));
       else navigate(ROUTES.LOGIN);
     }, 500);
   }, []);

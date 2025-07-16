@@ -83,7 +83,7 @@ export default function Cart() {
         </ul>
         <OutlineButton
           onClick={() => {
-            navigate(ROUTES.STORES, { replace: true });
+            navigate(ROUTES.STORES.DETAIL('123'), { replace: true });
           }}
         >
           메뉴 더 추가하기
@@ -92,7 +92,7 @@ export default function Cart() {
           <ButtonWrapper>
             <BaseButton
               onClick={() => {
-                navigate(ROUTES.STORES, { replace: true });
+                navigate(ROUTES.STORES.DETAIL('123'), { replace: true });
               }}
               color="black"
             >

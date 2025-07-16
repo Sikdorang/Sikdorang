@@ -1,3 +1,5 @@
+import Cart from '../pages/Cart';
+import MenuDetail from '../pages/MenuDetail';
 import { ROUTES } from '@/constants/routes';
 import CallStaff from '@/pages/CallStaff';
 import CheckUserAgent from '@/pages/CheckUserAgent';
@@ -5,8 +7,6 @@ import Home from '@/pages/Home';
 import Login from '@/pages/Login';
 import Orders from '@/pages/Orders';
 import { createBrowserRouter, RouterProvider } from 'react-router';
-import Cart from '../pages/Cart';
-import MenuDetail from '../pages/MenuDetail';
 
 const router = createBrowserRouter([
   {
@@ -14,7 +14,7 @@ const router = createBrowserRouter([
     element: <CheckUserAgent />,
   },
   {
-    path: ROUTES.STORES,
+    path: ROUTES.STORES.DETAIL(),
     element: <Home />,
   },
   {
