@@ -30,7 +30,7 @@ export default function OptionGroup({
             <p className="text-mc-2 mt-2 flex items-center gap-1 text-gray-500">
               {group.minSelectable && (
                 <>
-                  <span> 최대 {group.minSelectable}개</span>
+                  <span> 최소 {group.minSelectable}개</span>
                   <div className="h-1 w-1 rounded-full bg-gray-500"></div>
                 </>
               )}
