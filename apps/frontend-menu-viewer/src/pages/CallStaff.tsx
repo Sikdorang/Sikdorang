@@ -1,6 +1,7 @@
 import Header from '../components/common/\bHeader';
 import ButtonWrapper from '../components/common/ButtonWrapper';
 import { ROUTES } from '../constants/routes';
+import { getStoreId } from '../utilities/getStoreId';
 import { showCustomToast } from '../utilities/showToast';
 import BaseButton from '@/components/common/BaseButton';
 import OutlineButton from '@/components/common/OutlineButton';
@@ -41,7 +42,7 @@ export default function CallStaff() {
             <BaseButton
               onClick={() => {
                 showCustomToast({ icon: 'bell', message: '호출하기를 했어요' });
-                navigate(ROUTES.STORES.DETAIL('123'), { replace: true });
+                navigate(ROUTES.STORES.DETAIL(getStoreId()), { replace: true });
               }}
               color="black"
             >

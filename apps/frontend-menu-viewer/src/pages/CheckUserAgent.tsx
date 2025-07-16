@@ -1,4 +1,5 @@
 import { ROUTES } from '../constants/routes';
+import { getStoreId } from '../utilities/getStoreId';
 import { getDeviceType } from '@/utilities/parseUserAgent';
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router';
@@ -8,7 +9,7 @@ export default function CheckUserAgent() {
   useEffect(() => {
     setTimeout(() => {
       const userAgent = getDeviceType();
-      if (userAgent == 'mobile') navigate(ROUTES.STORES.DETAIL('123'));
+      if (userAgent == 'mobile') navigate(ROUTES.STORES.DETAIL(getStoreId()));
       else navigate(ROUTES.LOGIN);
     }, 500);
   }, []);

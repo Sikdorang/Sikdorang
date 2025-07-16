@@ -6,6 +6,7 @@ import QuantityCounter from '../components/common/QuantityCounter';
 import { ROUTES } from '../constants/routes';
 import { useCartStore } from '../stores/useCartStore';
 import formatNumber from '../utilities/formatNumber';
+import { getStoreId } from '../utilities/getStoreId';
 import { showCustomToast } from '../utilities/showToast';
 import BaseButton from '@/components/common/BaseButton';
 import { useNavigate } from 'react-router';
@@ -85,7 +86,7 @@ export default function Cart() {
         </ul>
         <OutlineButton
           onClick={() => {
-            navigate(ROUTES.STORES.DETAIL('123'), { replace: true });
+            navigate(ROUTES.STORES.DETAIL(getStoreId()), { replace: true });
           }}
         >
           메뉴 더 추가하기
@@ -96,7 +97,7 @@ export default function Cart() {
             <BaseButton
               onClick={() => {
                 clearCart();
-                navigate(ROUTES.STORES.DETAIL('123'), { replace: true });
+                navigate(ROUTES.STORES.DETAIL(getStoreId()), { replace: true });
                 showCustomToast({
                   icon: 'check',
                   message: '주문을 완료 했어요!\n조금만 기다려주세요.',
