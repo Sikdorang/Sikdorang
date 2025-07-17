@@ -48,7 +48,6 @@ export const useCartStore = create<CartStore>()(
           updatedItem.selectedOptions,
         );
         updatedItem.id = newId;
-        console.log(updatedItem);
         state.items[itemIndex] = updatedItem;
       }),
 
