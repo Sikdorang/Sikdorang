@@ -10,6 +10,15 @@ interface Props {
   onToggle: (itemId: string) => void;
 }
 
+/**
+ * 옵션 그룹과 해당 항목들을 렌더링하며, 선택 가능한 옵션 수를 제한합니다.
+ *
+ * 옵션 그룹의 필수 여부와 최대/최소 선택 개수에 따라 라디오 버튼 또는 체크박스를 사용하여 옵션을 선택할 수 있습니다. 최대 선택 개수를 초과하려고 할 경우 사용자에게 토스트 메시지로 안내합니다.
+ *
+ * @param group - 옵션 그룹 정보 및 항목 목록
+ * @param selectedOptionIds - 현재 선택된 옵션 ID의 집합
+ * @param onToggle - 옵션 선택/해제 시 호출되는 콜백 함수
+ */
 export default function OptionGroup({
   group,
   selectedOptionIds,

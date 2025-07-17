@@ -13,6 +13,11 @@ import { isAllRequiredSelected } from '../utilities/isAllRequiredSelected';
 import { useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router';
 
+/**
+ * 메뉴의 상세 정보를 조회하고 옵션 및 수량을 선택하여 장바구니에 담을 수 있는 상세 페이지를 렌더링합니다.
+ *
+ * URL 파라미터로 전달된 menuId를 기반으로 메뉴 정보를 불러오며, 옵션 그룹별 선택 상태와 수량을 관리합니다. 필수 옵션이 모두 선택되어야 "담기" 버튼이 활성화됩니다. 담기 버튼 클릭 시 선택한 옵션과 수량으로 장바구니에 메뉴가 추가되고 이전 페이지로 이동합니다.
+ */
 export default function MenuDetail() {
   const navigate = useNavigate();
   const { menuId } = useParams<{ menuId: string }>();

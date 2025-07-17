@@ -15,6 +15,11 @@ import CategoryMenuGroup from '@/components/pages/Home/CategoryMenuGroup';
 import { useEffect, useRef, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router';
 
+/**
+ * 매장 메뉴, 카테고리 탭, 장바구니 기능을 포함한 메인 홈 화면을 렌더링합니다.
+ *
+ * 매장 정보와 메뉴 데이터를 불러와 카테고리별로 메뉴를 표시하며, 스크롤 위치에 따라 카테고리 탭이 자동으로 선택됩니다. 장바구니에 담긴 상품이 있을 경우 하단에 주문 버튼이 고정되어 나타나며, 추천 메뉴 버튼과 호출/주문내역 이동 기능도 제공합니다. 데이터 로딩 및 오류 상태를 처리합니다.
+ */
 export default function Home() {
   const navigate = useNavigate();
   const { storeId } = useParams<{ storeId: string }>();

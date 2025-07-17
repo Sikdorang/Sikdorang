@@ -12,6 +12,16 @@ interface Props {
   onToggle: (itemId: string) => void;
 }
 
+/**
+ * 옵션 그룹에 대한 드롭다운 선택 UI를 렌더링하는 React 컴포넌트입니다.
+ *
+ * 옵션 그룹의 제목, 필수 여부, 선택 가능 개수 정보를 표시하며, 현재 선택된 옵션을 보여주고, 드롭다운을 열어 전체 옵션 목록을 선택할 수 있습니다. 최대 선택 개수를 초과하여 선택 시 토스트 알림을 표시합니다.
+ *
+ * @param group - 옵션 그룹 데이터 객체
+ * @param selectedOptionIds - 현재 선택된 옵션의 ID 집합
+ * @param onToggle - 옵션 선택/해제 시 호출되는 콜백 함수
+ * @returns 옵션 그룹 드롭다운 UI 요소
+ */
 export default function OptionDropDown({
   group,
   selectedOptionIds,

@@ -14,6 +14,13 @@ import BaseButton from '@/components/common/BaseButton';
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router';
 
+/**
+ * 장바구니의 상품 목록을 표시하고, 수량 조정, 옵션 변경, 선택 및 주문 기능을 제공하는 페이지 컴포넌트입니다.
+ *
+ * 사용자는 장바구니에 담긴 상품의 옵션을 변경하거나 수량을 조정할 수 있으며, 선택한 상품만 주문할 수 있습니다. 주문 완료 시 장바구니가 비워지고, 주문 완료 알림이 표시됩니다.
+ *
+ * @returns 장바구니 UI를 렌더링하는 React 컴포넌트
+ */
 export default function Cart() {
   const navigate = useNavigate();
   const {

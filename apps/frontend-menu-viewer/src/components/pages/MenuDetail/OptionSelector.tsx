@@ -35,6 +35,13 @@ export default function OptionSelector({
   );
 }
 
+/**
+ * 선택 입력의 타입과 선택 상태에 따라 라디오 버튼 또는 체크박스 아이콘을 렌더링합니다.
+ *
+ * @param type - 'radio' 또는 'checkbox' 중 하나로, 렌더링할 아이콘의 유형을 지정합니다.
+ * @param checked - 선택 여부를 나타냅니다.
+ * @returns 선택 상태에 맞는 라디오 버튼 또는 체크박스 아이콘 컴포넌트
+ */
 function SelectorIcon({
   type,
   checked,

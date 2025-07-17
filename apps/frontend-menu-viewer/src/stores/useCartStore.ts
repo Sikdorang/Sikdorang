@@ -14,6 +14,15 @@ interface CartStore {
   selectAllItems: () => void;
 }
 
+/**
+ * 메뉴 ID와 선택된 옵션을 기반으로 장바구니 아이템의 고유 ID를 생성합니다.
+ *
+ * 옵션 그룹과 아이템 ID를 정렬하여 일관된 ID를 보장합니다.
+ *
+ * @param menuId - 메뉴의 고유 식별자
+ * @param options - 옵션 그룹별로 선택된 아이템 ID 목록
+ * @returns 생성된 고유 아이템 ID 문자열
+ */
 function generateItemId(menuId: string, options: OptionSelection) {
   return `${menuId}::${Object.entries(options)
     .map(([groupId, itemIds]) => `${groupId}:${[...itemIds].sort().join(',')}`)

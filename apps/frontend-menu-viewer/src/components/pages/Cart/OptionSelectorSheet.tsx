@@ -14,6 +14,11 @@ interface Props {
   onClose: () => void;
 }
 
+/**
+ * 메뉴 옵션을 선택할 수 있는 모달 시트를 렌더링합니다.
+ *
+ * 사용자는 옵션 그룹별로 옵션을 선택하거나 해제할 수 있으며, 모든 필수 옵션이 선택된 경우에만 "변경하기" 버튼이 활성화됩니다. 변경 버튼 클릭 시 선택된 옵션과 가격 정보를 업데이트하고 시트를 닫습니다.
+ */
 export default function OptionSelectorSheet({
   menu,
   selectedOptions,
