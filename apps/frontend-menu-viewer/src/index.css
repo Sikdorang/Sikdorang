@@ -8,6 +8,17 @@
   font-display: swap;
 }
 
+@keyframes sheet-enter {
+  0% {
+    opacity: 0;
+    transform: translateY(50%);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
 @keyframes button-enter {
   0% {
     opacity: 0;
@@ -18,7 +29,6 @@
     transform: translateY(0);
   }
 }
-
 
 @keyframes toast-enter {
   0% {
@@ -40,6 +50,10 @@
     opacity: 0;
     transform: translateY(20px);
   }
+}
+
+.animate-sheet-in {
+  animation: sheet-enter 0.2s ease-in-out forwards;
 }
 
 .animate-button-in {

@@ -3,13 +3,12 @@ import CheckBox from '../components/common/CheckBox';
 import Header from '../components/common/Header';
 import OutlineButton from '../components/common/OutlineButton';
 import QuantityCounter from '../components/common/QuantityCounter';
-import OptionDropDown from '../components/pages/Cart/OptionDropDown';
+import OptionSelectorSheet from '../components/pages/Cart/OptionSelectorSheet';
 import { ROUTES } from '../constants/routes';
 import { useCartStore } from '../stores/useCartStore';
 import { useMenuSelectionStore } from '../stores/useMenuSelectionStore';
 import formatNumber from '../utilities/formatNumber';
 import { getStoreId } from '../utilities/getStoreId';
-import { isAllRequiredSelected } from '../utilities/isAllRequiredSelected';
 import { showCustomToast } from '../utilities/showToast';
 import BaseButton from '@/components/common/BaseButton';
 import { useEffect } from 'react';
@@ -25,6 +24,7 @@ export default function Cart() {
     clearCart,
     getSelectedItemCount,
     updateItem,
+    selectAllItems,
   } = useCartStore();
   const {
     menuId,
@@ -42,7 +42,7 @@ export default function Cart() {
 
   return (
     <div className="min-w-xs mx-auto flex h-full w-full flex-col">
-      <Header title="주문하기" />
+      <Header title="주문하기" onBackClick={() => selectAllItems()} />
       <div className="wrapper flex w-full flex-1 flex-col pt-6">
         <ul className="flex flex-col gap-6 mb-6">
           {items.map((item) => (
@@ -120,55 +120,15 @@ export default function Cart() {
           메뉴 더 추가하기
         </OutlineButton>
         {menu && (
-          <div className="z-40 fixed inset-0 bg-black/25 min-w-xs xl:mx-auto xl:max-w-5xl w-full h-full">
-            <div className="scrollbar-hide overflow-y-auto absolute bg-white bottom-0 h-5/6 w-full rounded-t-2xl ">
-              <div className="pt-5 wrapper bg-white sticky top-0 mb-6 flex items-center justify-between gap-12 pb-2">
-                <h2 className="text-mb-3 text-gray-900">{menu.name}</h2>
-                <button
-                  onClick={() => {
-                    resetSelection();
-                  }}
-                >
-                  엑스
-                </button>
-              </div>
-              <ul className="space-y-3 wrapper">
-                {menu.optionGroups.map((group) => (
-                  <OptionDropDown
-                    key={group.id}
-                    group={group}
-                    selectedOptionIds={selectedOptions[group.id] ?? new Set()}
-                    onToggle={(itemId) =>
-                      toggleOption(
-                        group.id,
-                        itemId,
-                        group.maxSelectable === 1 && group.required,
-                      )
-                    }
-                  />
-                ))}
-              </ul>
-              <div className="h-48"></div>
-            </div>
-            <ButtonWrapper>
-              <BaseButton
-                disabled={
-                  !isAllRequiredSelected(menu.optionGroups, selectedOptions)
-                }
-                onClick={() => {
-                  if (menuId) {
-                    updateItem(menuId, {
-                      optionPrice: optionPrice,
-                      selectedOptions: selectedOptions,
-                    });
-                    resetSelection();
-                  }
-                }}
-              >
-                변경하기
-              </BaseButton>
-            </ButtonWrapper>
-          </div>
+          <OptionSelectorSheet
+            menu={menu}
+            selectedOptions={selectedOptions}
+            optionPrice={optionPrice}
+            menuId={menuId}
+            onToggle={toggleOption}
+            onUpdate={updateItem}
+            onClose={resetSelection}
+          />
         )}
 
         {items.length > 0 && (
