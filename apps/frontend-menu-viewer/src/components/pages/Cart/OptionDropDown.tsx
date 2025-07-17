@@ -42,7 +42,10 @@ export default function OptionDropDown({
         <ul className="space-y-1 mt-5">
           {group.items.map((item) =>
             selectedOptionIds.has(item.id) ? (
-              <li className="text-mc-1 text-gray-800 flex items-center">
+              <li
+                key={item.id}
+                className="text-mc-1 text-gray-800 flex items-center"
+              >
                 <CheckSvg />
                 <span>{item.name}</span>
               </li>
