@@ -3,21 +3,46 @@ import CheckBox from '../components/common/CheckBox';
 import Header from '../components/common/Header';
 import OutlineButton from '../components/common/OutlineButton';
 import QuantityCounter from '../components/common/QuantityCounter';
+import OptionSelectorSheet from '../components/pages/Cart/OptionSelectorSheet';
 import { ROUTES } from '../constants/routes';
 import { useCartStore } from '../stores/useCartStore';
+import { useMenuSelectionStore } from '../stores/useMenuSelectionStore';
 import formatNumber from '../utilities/formatNumber';
 import { getStoreId } from '../utilities/getStoreId';
 import { showCustomToast } from '../utilities/showToast';
 import BaseButton from '@/components/common/BaseButton';
+import { useEffect } from 'react';
 import { useNavigate } from 'react-router';
 
 export default function Cart() {
   const navigate = useNavigate();
-  const { items, getTotalPrice, setQuantity, toggleSelect, clearCart } =
-    useCartStore();
+  const {
+    items,
+    getTotalPrice,
+    setQuantity,
+    toggleSelect,
+    clearCart,
+    getSelectedItemCount,
+    updateItem,
+    selectAllItems,
+  } = useCartStore();
+  const {
+    menuId,
+    menu,
+    startEdit,
+    optionPrice,
+    selectedOptions,
+    toggleOption,
+    resetSelection,
+  } = useMenuSelectionStore();
+
+  useEffect(() => {
+    resetSelection();
+  }, []);
+
   return (
     <div className="min-w-xs mx-auto flex h-full w-full flex-col">
-      <Header title="주문하기" />
+      <Header title="주문하기" onBackClick={() => selectAllItems()} />
       <div className="wrapper flex w-full flex-1 flex-col pt-6">
         <ul className="flex flex-col gap-6 mb-6">
           {items.map((item) => (
@@ -34,10 +59,10 @@ export default function Cart() {
                     )}
                   </div>
                   <div className="flex flex-col w-full">
-                    <h2 className="text-mb-6 mb-2 text-gray-700">
+                    <h2 className="text-mb-5 mb-2 text-gray-700">
                       {item.originalItem.name}
                     </h2>
-                    <ul className="flex mb-3 flex-col gap-2">
+                    <ul className="flex mb-3 flex-col gap-1">
                       {item.originalItem.optionGroups.map((group) => {
                         const selectedOptionsSet =
                           item.selectedOptions[group.id];
@@ -69,8 +94,11 @@ export default function Cart() {
                       )}
                       원
                     </p>
-                    <div className="mt-3 flex gap-3 justify-end w-full">
-                      <button className="text-mc-1 text-gray-700 flex flex-col items-center justify-center py-1 h-10 px-3 border border-gray-200 rounded-2xl bg-white ">
+                    <div className="mt-3 flex gap-3 justify-end items-center w-full">
+                      <button
+                        onClick={() => startEdit(item)}
+                        className="text-mc-1 text-gray-700 flex flex-col items-center justify-center py-1 h-7 px-3 border border-gray-200 rounded-2xl bg-white "
+                      >
                         옵션 변경
                       </button>
                       <QuantityCounter
@@ -91,10 +119,22 @@ export default function Cart() {
         >
           메뉴 더 추가하기
         </OutlineButton>
+        {menu && (
+          <OptionSelectorSheet
+            menu={menu}
+            selectedOptions={selectedOptions}
+            optionPrice={optionPrice}
+            menuId={menuId}
+            onToggle={toggleOption}
+            onUpdate={updateItem}
+            onClose={resetSelection}
+          />
+        )}
 
         {items.length > 0 && (
           <ButtonWrapper>
             <BaseButton
+              disabled={getSelectedItemCount() === 0}
               onClick={() => {
                 clearCart();
                 navigate(ROUTES.STORES.DETAIL(getStoreId()), { replace: true });
@@ -112,7 +152,7 @@ export default function Cart() {
                   <span>주문하기</span>
                 </p>
                 <p className="text-xs font-bold leading-[150%] tracking-[-2%]  flex h-6 w-6 flex-col items-center justify-center rounded-full bg-white text-gray-800">
-                  {items.length}
+                  {getSelectedItemCount()}
                 </p>
               </div>
             </BaseButton>

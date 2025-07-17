@@ -5,13 +5,16 @@ import { useNavigate } from 'react-router';
 interface HeaderProps {
   title: string;
   backPath?: string;
+  onBackClick?: () => void;
 }
 
-export default function Header({ title, backPath }: HeaderProps) {
+export default function Header({ title, backPath, onBackClick }: HeaderProps) {
   const navigate = useNavigate();
   const canGoBack = window.history.length > 1;
 
   const handleBack = () => {
+    onBackClick?.();
+
     if (backPath) {
       navigate(backPath, { replace: true });
     } else if (canGoBack) {

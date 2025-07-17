@@ -20,7 +20,7 @@ export default function Home() {
   const { storeId } = useParams<{ storeId: string }>();
   if (!storeId) return <div>error</div>;
 
-  const { items, getTotalPrice } = useCartStore();
+  const { items, getTotalPrice, getSelectedItemCount } = useCartStore();
   const {
     data: storeInfo,
     isLoading: isStoreInfoLoading,
@@ -187,7 +187,7 @@ export default function Home() {
                 <span>주문하기</span>
               </p>
               <p className="text-xs font-bold leading-[150%] tracking-[-2%]  flex h-6 w-6 flex-col items-center justify-center rounded-full bg-white text-gray-800">
-                {items.length}
+                {getSelectedItemCount()}
               </p>
             </div>
           </BaseButton>

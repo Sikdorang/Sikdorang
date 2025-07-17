@@ -60,3 +60,13 @@ interface IStoreInfo {
   name: string;
   infoItems: IStoreInfoItem[];
 }
+
+interface ICartItem {
+  id: string;
+  selected: boolean;
+  originalItem: IMenuDetail;
+  optionPrice: number;
+  quantity: number;
+  selectedOptions: OptionSelection;
+  optionItemPriceMap: Record<string, number>;
+}

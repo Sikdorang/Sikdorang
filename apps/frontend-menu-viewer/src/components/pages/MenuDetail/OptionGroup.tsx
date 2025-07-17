@@ -1,6 +1,7 @@
 import { showCustomToast } from '../../../utilities/showToast';
 import Chip from '../../common/Chip';
 import Divider from '../../common/Divider';
+import MinMaxText from '../../common/MinMaxText';
 import OptionSelector from './OptionSelector';
 
 interface Props {
@@ -26,17 +27,12 @@ export default function OptionGroup({
             <h2 className="text-mb-3 text-gray-800">{group.title}</h2>
             {group.required && <Chip label="필수" color="blue" />}
           </div>
-          {type === 'checkbox' && (
-            <p className="text-mc-2 mt-2 flex items-center gap-1 text-gray-500">
-              {group.minSelectable && (
-                <>
-                  <span> 최소 {group.minSelectable}개</span>
-                  <div className="h-1 w-1 rounded-full bg-gray-500"></div>
-                </>
-              )}
-              <span> 최대 {group.maxSelectable}개 선택</span>
-            </p>
-          )}
+          <div className="mt-2">
+            <MinMaxText
+              minSelectable={group.minSelectable}
+              maxSelectable={group.maxSelectable}
+            />
+          </div>
         </div>
         <div className="flex flex-col gap-6">
           {group.items.map((item) => (
@@ -54,7 +50,7 @@ export default function OptionGroup({
                 ) {
                   showCustomToast({
                     icon: 'error',
-                    message: '이미 최대 개수만큼 선택하셨어요!',
+                    message: `최대 ${group.maxSelectable}개까지만 선택할 수 있어요`,
                   });
                 } else {
                   onToggle(item.id);

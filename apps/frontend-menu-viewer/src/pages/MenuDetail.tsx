@@ -9,6 +9,7 @@ import { useFetchMenuDetailQuery } from '../hooks/useFetchMenuDetailQuery';
 import { useCartStore } from '../stores/useCartStore';
 import { useMenuSelectionStore } from '../stores/useMenuSelectionStore';
 import formatNumber from '../utilities/formatNumber';
+import { isAllRequiredSelected } from '../utilities/isAllRequiredSelected';
 import { useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router';
 
@@ -28,20 +29,6 @@ export default function MenuDetail() {
     optionItemPriceMap,
   } = useMenuSelectionStore();
   const { addItem } = useCartStore();
-
-  function isAllRequiredSelected(
-    optionGroups: IOptionGroup[],
-    selectedOptions: Record<string, Set<string>>,
-  ) {
-    return optionGroups.every((group) => {
-      if (!group.required) return true;
-      const selectedCount = selectedOptions[group.id]?.size ?? 0;
-      const minSelectable = group.minSelectable ?? 0;
-      return (
-        selectedCount >= minSelectable && selectedCount <= group.maxSelectable
-      );
-    });
-  }
 
   useEffect(() => {
     window.scrollTo(0, 0);

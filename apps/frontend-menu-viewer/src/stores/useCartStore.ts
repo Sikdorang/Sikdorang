@@ -1,24 +1,17 @@
 import { create } from 'zustand';
 import { immer } from 'zustand/middleware/immer';
 
-interface CartItem {
-  id: string;
-  selected: boolean;
-  originalItem: IMenuDetail;
-  optionPrice: number;
-  quantity: number;
-  selectedOptions: OptionSelection;
-  optionItemPriceMap: Record<string, number>;
-}
-
 interface CartStore {
-  items: CartItem[];
-  addItem: (item: Omit<CartItem, 'id' | 'selected'>) => void;
+  items: ICartItem[];
+  addItem: (item: Omit<ICartItem, 'id' | 'selected'>) => void;
+  updateItem: (id: string, updates: Partial<ICartItem>) => void;
   removeItem: (id: string) => void;
   toggleSelect: (id: string) => void;
   setQuantity: (id: string, quantity: number) => void;
   clearCart: () => void;
   getTotalPrice: () => number;
+  getSelectedItemCount: () => number;
+  selectAllItems: () => void;
 }
 
 function generateItemId(menuId: string, options: OptionSelection) {
@@ -41,6 +34,21 @@ export const useCartStore = create<CartStore>()(
         } else {
           state.items.push({ ...item, selected: true, id });
         }
+      }),
+    updateItem: (id, updates) =>
+      set((state) => {
+        const itemIndex = state.items.findIndex((i) => i.id === id);
+        if (itemIndex === -1) return;
+
+        const item = state.items[itemIndex];
+        const updatedItem = { ...item, ...updates };
+
+        const newId = generateItemId(
+          updatedItem.originalItem.id,
+          updatedItem.selectedOptions,
+        );
+        updatedItem.id = newId;
+        state.items[itemIndex] = updatedItem;
       }),
 
     removeItem: (id) =>
@@ -75,5 +83,16 @@ export const useCartStore = create<CartStore>()(
         );
       }, 0);
     },
+
+    getSelectedItemCount: () => {
+      return get().items.filter((item) => item.selected).length;
+    },
+
+    selectAllItems: () =>
+      set((state) => {
+        state.items.forEach((item) => {
+          item.selected = true;
+        });
+      }),
   })),
 );
