@@ -5,7 +5,7 @@ import MinMaxText from '../../common/MinMaxText';
 import OptionSelector from './OptionSelector';
 
 interface Props {
-  group: IOptionGroup;
+  group: ISelectableOptionGroup;
   selectedOptionIds: Set<string>;
   onToggle: (itemId: string) => void;
 }

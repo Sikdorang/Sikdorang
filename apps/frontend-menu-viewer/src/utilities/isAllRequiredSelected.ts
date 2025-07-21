@@ -1,5 +1,5 @@
 export function isAllRequiredSelected(
-  optionGroups: IOptionGroup[],
+  optionGroups: ISelectableOptionGroup[],
   selectedOptions: Record<string, Set<string>>,
 ) {
   return optionGroups.every((group) => {

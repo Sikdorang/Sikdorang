@@ -7,7 +7,7 @@ import ChervonUpSvg from '@/assets/icons/ic_chervon_up.svg?react';
 import { useState } from 'react';
 
 interface Props {
-  group: IOptionGroup;
+  group: ISelectableOptionGroup;
   selectedOptionIds: Set<string>;
   onToggle: (itemId: string) => void;
 }
