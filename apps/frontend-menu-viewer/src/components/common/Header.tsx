@@ -24,7 +24,7 @@ export default function Header({ title, backPath, onBackClick }: HeaderProps) {
     }
   };
   return (
-    <div className="sticky top-0 z-20 h-14 bg-white">
+    <div className="sticky top-0 z-20 h-14 min-h-14 bg-white">
       <div className="wrapper flex h-full w-full items-center">
         {(canGoBack || backPath) && (
           <ChervonLeftThickSvg

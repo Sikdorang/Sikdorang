@@ -74,20 +74,29 @@ interface ICartItem {
   optionItemPriceMap: Record<string, number>;
 }
 
-interface IOrderItem {
+type OrderMenuStateType =
+  | 'MENU_UNAVAILABLE'
+  | 'OPTION_UNAVAILABLE'
+  | 'AVAILABLE'
+  | 'SOLDOUT'
+  | 'PRICE_CHANGED';
+
+interface IOrderMenuItem {
   id: string;
   name: string;
+  state: OrderMenuStateType;
   menuPrice: number;
   quantity: number;
   optionGroups: IBaseOptionGroup[];
   optionPrice: number;
 }
 
-interface IOrder {
+interface IOrderItem {
   id: string;
   userId: string;
   storeId: string;
   createdAt: string;
   totalPrice: number;
-  items: IOrderItem[];
+  availableMenuIds: string[];
+  items: IOrderMenuItem[];
 }

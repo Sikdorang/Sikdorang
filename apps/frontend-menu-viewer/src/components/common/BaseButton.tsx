@@ -3,16 +3,16 @@ import { type ButtonHTMLAttributes, type PropsWithChildren } from 'react';
 interface Props
   extends ButtonHTMLAttributes<HTMLButtonElement>,
     PropsWithChildren {
-  color?: 'default' | 'black';
+  color?: 'yellow' | 'black';
 }
 
 export default function BaseButton({
   children,
-  color = 'default',
+  color = 'black',
   ...props
 }: Props) {
   const colorMap = {
-    default: 'text-main-900 bg-main-500',
+    yellow: 'text-main-900 bg-main-500',
     black: 'text-white bg-gray-800',
   };
   return (

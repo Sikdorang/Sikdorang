@@ -7,7 +7,7 @@ import { ROUTES } from '../constants/routes';
 import { useFetchMenusQuery } from '../hooks/useFetchMenusQuery';
 import useFetchStoreInfoQuery from '../hooks/useFetchStoreInfoQuery';
 import { useCartStore } from '../stores/useCartStore';
-import formatNumber from '../utilities/formatNumber';
+import { formatNumber } from '../utilities/format';
 import BellSvg from '@/assets/icons/ic_bell.svg?react';
 import BillSvg from '@/assets/icons/ic_bill.svg?react';
 import Divider from '@/components/common/Divider';
