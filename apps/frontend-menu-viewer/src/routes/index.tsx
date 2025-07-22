@@ -3,9 +3,9 @@ import MenuDetail from '../pages/MenuDetail';
 import { ROUTES } from '@/constants/routes';
 import CallStaff from '@/pages/CallStaff';
 import CheckUserAgent from '@/pages/CheckUserAgent';
-import Home from '@/pages/Home';
 import Login from '@/pages/Login';
 import Orders from '@/pages/Orders';
+import Store from '@/pages/Store';
 import { createBrowserRouter, RouterProvider } from 'react-router';
 
 const router = createBrowserRouter([
@@ -15,7 +15,7 @@ const router = createBrowserRouter([
   },
   {
     path: ROUTES.STORES.DETAIL(),
-    element: <Home />,
+    element: <Store />,
   },
   {
     path: ROUTES.MENUS.DETAIL(),

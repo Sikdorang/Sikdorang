@@ -1,18 +1,19 @@
-import ButtonWrapper from '../components/common/ButtonWrapper';
-import CheckBox from '../components/common/CheckBox';
-import Header from '../components/common/Header';
-import OutlineButton from '../components/common/OutlineButton';
-import QuantityCounter from '../components/common/QuantityCounter';
-import CartEmptyView from '../components/pages/Cart/CartEmptyView';
-import OptionSelectorSheet from '../components/pages/Cart/OptionSelectorSheet';
-import { ROUTES } from '../constants/routes';
-import { useCartStore } from '../stores/useCartStore';
-import { useMenuSelectionStore } from '../stores/useMenuSelectionStore';
-import { formatNumber } from '../utilities/format';
-import { getStoreId } from '../utilities/getStoreId';
-import { showCustomToast } from '../utilities/showToast';
 import CancelSvg from '@/assets/icons/ic_cancel.svg?react';
 import BaseButton from '@/components/common/BaseButton';
+import BottomSpace from '@/components/common/BottomSpace';
+import ButtonWrapper from '@/components/common/ButtonWrapper';
+import CheckBox from '@/components/common/CheckBox';
+import Header from '@/components/common/Header';
+import OutlineButton from '@/components/common/OutlineButton';
+import QuantityCounter from '@/components/common/QuantityCounter';
+import CartEmptyView from '@/components/pages/Cart/CartEmptyView';
+import OptionSelectorSheet from '@/components/pages/Cart/OptionSelectorSheet';
+import { ROUTES } from '@/constants/routes';
+import { useCartStore } from '@/stores/useCartStore';
+import { useMenuSelectionStore } from '@/stores/useMenuSelectionStore';
+import { formatNumber } from '@/utilities/format';
+import { getStoreId } from '@/utilities/getStoreId';
+import { showCustomToast } from '@/utilities/showToast';
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router';
 
@@ -182,7 +183,7 @@ export default function Cart() {
               </BaseButton>
             </ButtonWrapper>
           )}
-          <div className="h-48"></div>
+          <BottomSpace />
         </div>
       )}
     </div>

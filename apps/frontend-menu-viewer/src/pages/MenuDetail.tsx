@@ -1,113 +1,24 @@
-import BaseButton from '../components/common/BaseButton';
-import ButtonWrapper from '../components/common/ButtonWrapper';
-import Chip from '../components/common/Chip';
-import Header from '../components/common/Header';
-import QuantityCounter from '../components/common/QuantityCounter';
-import Carousel from '../components/pages/MenuDetail/Carousel';
-import OptionGroup from '../components/pages/MenuDetail/OptionGroup';
-import { useFetchMenuDetailQuery } from '../hooks/useFetchMenuDetailQuery';
-import { useCartStore } from '../stores/useCartStore';
-import { useMenuSelectionStore } from '../stores/useMenuSelectionStore';
-import { formatNumber } from '../utilities/format';
-import { isAllRequiredSelected } from '../utilities/isAllRequiredSelected';
-import { useEffect } from 'react';
-import { useNavigate, useParams } from 'react-router';
+import BaseResponsiveLayout from '@/components/common/BaseResponsiveLayout';
+import ErrorView from '@/components/common/ErrorView';
+import Header from '@/components/common/Header';
+import MenuDetailSkeleton from '@/components/pages/MenuDetail/MenuDetailSkeleton';
+import MenuSection from '@/components/pages/MenuDetail/MenuSection';
+import useScrollToTop from '@/hooks/useScrollToTop';
+import { Suspense } from 'react';
+import { useParams } from 'react-router';
 
 export default function MenuDetail() {
-  const navigate = useNavigate();
+  useScrollToTop();
+
   const { menuId } = useParams<{ menuId: string }>();
-  if (!menuId) return <div>error</div>;
-
-  const { data, isLoading, isError } = useFetchMenuDetailQuery(menuId);
-  const {
-    startMenu,
-    quantity,
-    setQuantity,
-    selectedOptions,
-    toggleOption,
-    optionPrice,
-    optionItemPriceMap,
-  } = useMenuSelectionStore();
-  const { addItem } = useCartStore();
-
-  useEffect(() => {
-    window.scrollTo(0, 0);
-  }, []);
-
-  useEffect(() => {
-    if (data) {
-      startMenu(data);
-
-      // radio 버튼은 첫 옵션 자동 선택
-      for (const group of data.optionGroups) {
-        if (
-          group.required &&
-          group.maxSelectable === 1 &&
-          group.items.length > 0
-        ) {
-          toggleOption(group.id, group.items[0].id, true);
-        }
-      }
-    }
-  }, [data]);
-
-  if (isLoading) return <div>loading</div>;
-  if (isError || !data) return <div>error</div>;
+  if (!menuId) return <ErrorView />;
 
   return (
-    <div className="min-w-xs mx-auto w-full">
+    <BaseResponsiveLayout>
       <Header title="메뉴보기" />
-      <div className="wrapper">
-        <div className="mb-3 mt-6">
-          <Carousel imgUrls={data.imgUrls} />
-        </div>
-
-        <div className="mb-2 flex items-center gap-1">
-          {data.isNew && <Chip label="신메뉴" color="green" />}
-          {data.isPopular && <Chip label="인기" color="red" />}
-        </div>
-        <h1 className="text-mb-3 text-gray-700">{data?.name}</h1>
-        <p className="text-mb-4 mb-3 text-gray-700">{data.description}</p>
-        <div className="mb-6 flex items-center justify-between">
-          <div className="text-mb-1 text-gray-800">
-            {formatNumber(data.price ?? 0)}원
-          </div>
-          <QuantityCounter value={quantity} onChange={setQuantity} />
-        </div>
-      </div>
-      {data.optionGroups.map((group) => (
-        <OptionGroup
-          key={group.id}
-          group={group}
-          selectedOptionIds={selectedOptions[group.id] ?? new Set()}
-          onToggle={(itemId) =>
-            toggleOption(
-              group.id,
-              itemId,
-              group.maxSelectable === 1 && group.required,
-            )
-          }
-        />
-      ))}
-      <div className="h-48"></div>
-      <ButtonWrapper>
-        <BaseButton
-          onClick={() => {
-            addItem({
-              originalItem: data,
-              optionPrice: optionPrice,
-              quantity: quantity,
-              selectedOptions: selectedOptions,
-              optionItemPriceMap: optionItemPriceMap,
-            });
-            navigate(-1);
-          }}
-          disabled={!isAllRequiredSelected(data.optionGroups, selectedOptions)}
-        >
-          총 {formatNumber(((data.price ?? 0) + optionPrice) * quantity)}원 ·
-          담기
-        </BaseButton>
-      </ButtonWrapper>
-    </div>
+      <Suspense fallback={<MenuDetailSkeleton />}>
+        <MenuSection menuId={menuId} />
+      </Suspense>
+    </BaseResponsiveLayout>
   );
 }

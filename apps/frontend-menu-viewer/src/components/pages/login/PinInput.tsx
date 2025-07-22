@@ -1,12 +1,50 @@
 import ErrorSvg from '@/assets/icons/ic_error_red.svg?react';
+import { ROUTES } from '@/constants/routes';
+import { getStoreId } from '@/utilities/getStoreId';
+import { getDeviceType } from '@/utilities/parseUserAgent';
+import { showCustomToast } from '@/utilities/showToast';
 import { useEffect, useRef, useState } from 'react';
+import { useNavigate } from 'react-router';
 
 export default function PinInput() {
   const answer = '12345';
+  const navigate = useNavigate();
   const [values, setValues] = useState(Array(5).fill(''));
   const [activeIndex, setActiveIndex] = useState(0);
   const [isError, setIsError] = useState(false);
   const inputsRef = useRef<(HTMLInputElement | null)[]>([]);
+
+  useEffect(() => {
+    const deviceType = getDeviceType();
+    if (deviceType === 'mobile') {
+      showCustomToast({ icon: 'error', message: '잘못된 접근이에요.' });
+      navigate(ROUTES.ROOT);
+    }
+  }, [navigate]);
+
+  useEffect(() => {
+    const joined = values.join('');
+    if (joined.length === 5) {
+      if (joined === answer) {
+        setIsError(false);
+        showCustomToast({ icon: 'check', message: '로그인에 성공했어요.' });
+        navigate(ROUTES.STORES.DETAIL(getStoreId()));
+      } else {
+        setIsError(true);
+      }
+    } else {
+      setIsError(false);
+    }
+  }, [values, answer, navigate]);
+
+  useEffect(() => {
+    if (activeIndex >= 0) {
+      const input = inputsRef.current[activeIndex];
+      if (input) {
+        input.focus();
+      }
+    }
+  }, [activeIndex]);
 
   const handleChange = (index: number, value: string) => {
     if (!/^\d?$/.test(value)) return; // pin 번호 정책 확인 필요
@@ -21,28 +59,6 @@ export default function PinInput() {
       inputsRef.current[nextIndex]?.focus();
     }
   };
-
-  useEffect(() => {
-    const joined = values.join('');
-    if (joined.length === 5) {
-      if (joined === answer) {
-        setIsError(false);
-      } else {
-        setIsError(true);
-      }
-    } else {
-      setIsError(false);
-    }
-  }, [values]);
-
-  useEffect(() => {
-    if (activeIndex >= 0) {
-      const input = inputsRef.current[activeIndex];
-      if (input) {
-        input.focus();
-      }
-    }
-  }, [activeIndex]);
 
   const handleKeyDown = (
     index: number,
@@ -95,7 +111,9 @@ export default function PinInput() {
             <input
               key={idx}
               data-index={idx}
-              ref={(el) => (inputsRef.current[idx] = el)}
+              ref={(el) => {
+                inputsRef.current[idx] = el;
+              }}
               type={activeIndex == idx ? 'text' : 'password'}
               inputMode="numeric"
               maxLength={1}

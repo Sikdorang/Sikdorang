@@ -5,7 +5,7 @@ interface Props {
   items: IMenuListItem[];
 }
 
-export default function CategoryMenuGroup({ category, items }: Props) {
+export default function MenuGroup({ category, items }: Props) {
   return (
     <li className="wrapper flex flex-col pt-3">
       <h2 className="text-mb-3 text-gray-800">

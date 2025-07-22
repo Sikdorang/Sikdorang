@@ -20,6 +20,7 @@ function generateItemId(menuId: string, options: OptionSelection) {
     .sort()
     .join('|')}`;
 }
+
 export const useCartStore = create<CartStore>()(
   immer((set, get) => ({
     items: [],
@@ -35,6 +36,7 @@ export const useCartStore = create<CartStore>()(
           state.items.push({ ...item, selected: true, id });
         }
       }),
+
     updateItem: (id, updates) =>
       set((state) => {
         const itemIndex = state.items.findIndex((i) => i.id === id);

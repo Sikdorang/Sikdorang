@@ -1,7 +1,8 @@
-import { useFetchOrdersQuery } from '../../../hooks/useFetchOrdersQuery';
 import OrderEmptyView from './OrderEmptyView';
 import OrderList from './OrderList';
 import OrderSummary from './OrderSummary';
+import BottomSpace from '@/components/common/BottomSpace';
+import { useFetchOrdersQuery } from '@/hooks/useFetchOrdersQuery';
 
 export default function OrderSection() {
   const { data } = useFetchOrdersQuery('123');
@@ -11,7 +12,7 @@ export default function OrderSection() {
       {!data || data.length == 0 ? (
         <OrderEmptyView />
       ) : (
-        <div className="wrapper flex w-full flex-1 flex-col pt-6">
+        <div className="wrapper flex w-full flex-col pt-6">
           <OrderSummary
             totalCount={data.length ?? 0}
             totalPrice={
@@ -19,7 +20,7 @@ export default function OrderSection() {
             }
           />
           <OrderList orders={data} />
-          <div className="h-48"></div>
+          <BottomSpace />
         </div>
       )}
     </>
