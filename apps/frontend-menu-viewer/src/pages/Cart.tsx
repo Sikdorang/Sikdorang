@@ -52,83 +52,87 @@ export default function Cart() {
       ) : (
         <div className="wrapper flex w-full flex-1 flex-col pt-6">
           <ul className="flex flex-col gap-6 mb-6">
-            {items.map((item) => (
-              <li key={item.id}>
-                <div className="flex gap-3">
-                  <CheckBox
-                    onClick={() => toggleSelect(item.id)}
-                    checked={item.selected}
-                  />
-                  <div className="flex w-full gap-2">
-                    <div className="overflow-hidden w-[5.25rem] h-[5.25rem] sm:w-[11.25rem] sm:h-[11.25rem] aspect-square rounded-2xl bg-gray-100 shrink-0">
-                      {item.originalItem.imgUrls.length > 0 && (
-                        <img src={item.originalItem.imgUrls[0]} />
-                      )}
-                    </div>
-                    <div className="flex flex-col w-full">
-                      <div className="flex gap-3 w-full">
-                        <div className="flex-1">
-                          <h2 className="text-mb-5 mb-2 text-gray-700">
-                            {item.originalItem.name}
-                          </h2>
-
-                          {item.originalItem.optionGroups.length > 0 && (
-                            <ul className="flex mb-3 flex-col gap-1">
-                              {item.originalItem.optionGroups.map((group) => {
-                                const selectedOptionsSet =
-                                  item.selectedOptions[group.id];
-                                if (
-                                  !selectedOptionsSet ||
-                                  selectedOptionsSet.size === 0
-                                )
-                                  return null;
-
-                                const selectedOptionLabels = group.items
-                                  .filter((option) =>
-                                    selectedOptionsSet.has(option.id),
-                                  )
-                                  .map((option) => option.name)
-                                  .join(', ');
-
-                                return (
-                                  <li
-                                    key={group.id}
-                                    className="text-mc-2 text-gray-500"
-                                  >
-                                    {group.title}: {selectedOptionLabels}
-                                  </li>
-                                );
-                              })}
-                            </ul>
-                          )}
-
-                          <p className="text-mb-3 text-gray-700">
-                            {formatNumber(
-                              (item.originalItem.price ?? 0) + item.optionPrice,
-                            )}
-                            원
-                          </p>
-                        </div>
-                        <CancelSvg onClick={() => removeItem(item.id)} />
-                      </div>
-                      <div className="mt-3 flex gap-3 justify-end items-center w-full">
-                        {item.originalItem.optionGroups.length > 0 && (
-                          <button
-                            onClick={() => startEdit(item)}
-                            className="text-mc-1 text-gray-700 flex flex-col items-center justify-center py-1 h-7 px-3 border border-gray-200 rounded-2xl bg-white "
-                          >
-                            옵션 변경
-                          </button>
+            {items.map((item, idx) => (
+              <>
+                <li key={item.id}>
+                  <div className="flex gap-3">
+                    <CheckBox
+                      onClick={() => toggleSelect(item.id)}
+                      checked={item.selected}
+                    />
+                    <div className="flex w-full gap-2">
+                      <div className="overflow-hidden w-[5.25rem] h-[5.25rem] sm:w-[11.25rem] sm:h-[11.25rem] aspect-square rounded-2xl bg-gray-100 shrink-0">
+                        {item.originalItem.imgUrls.length > 0 && (
+                          <img src={item.originalItem.imgUrls[0]} />
                         )}
-                        <QuantityCounter
-                          value={item.quantity}
-                          onChange={(value) => setQuantity(item.id, value)}
-                        />
+                      </div>
+                      <div className="flex flex-col w-full">
+                        <div className="flex gap-3 w-full">
+                          <div className="flex-1">
+                            <h2 className="text-mb-5 mb-2 text-gray-700">
+                              {item.originalItem.name}
+                            </h2>
+
+                            {item.originalItem.optionGroups.length > 0 && (
+                              <ul className="flex mb-3 flex-col gap-1">
+                                {item.originalItem.optionGroups.map((group) => {
+                                  const selectedOptionsSet =
+                                    item.selectedOptions[group.id];
+                                  if (
+                                    !selectedOptionsSet ||
+                                    selectedOptionsSet.size === 0
+                                  )
+                                    return null;
+
+                                  const selectedOptionLabels = group.items
+                                    .filter((option) =>
+                                      selectedOptionsSet.has(option.id),
+                                    )
+                                    .map((option) => option.name)
+                                    .join(', ');
+
+                                  return (
+                                    <li
+                                      key={group.id}
+                                      className="text-mc-2 text-gray-500"
+                                    >
+                                      {group.title}: {selectedOptionLabels}
+                                    </li>
+                                  );
+                                })}
+                              </ul>
+                            )}
+
+                            <p className="text-mb-3 text-gray-700">
+                              {formatNumber(
+                                (item.originalItem.price ?? 0) +
+                                  item.optionPrice,
+                              )}
+                              원
+                            </p>
+                          </div>
+                          <CancelSvg onClick={() => removeItem(item.id)} />
+                        </div>
+                        <div className="mt-3 flex gap-3 justify-end items-center w-full">
+                          {item.originalItem.optionGroups.length > 0 && (
+                            <button
+                              onClick={() => startEdit(item)}
+                              className="text-mc-1 text-gray-700 flex flex-col items-center justify-center py-1 h-7 px-3 border border-gray-200 rounded-2xl bg-white "
+                            >
+                              옵션 변경
+                            </button>
+                          )}
+                          <QuantityCounter
+                            value={item.quantity}
+                            onChange={(value) => setQuantity(item.id, value)}
+                          />
+                        </div>
                       </div>
                     </div>
                   </div>
-                </div>
-              </li>
+                </li>
+                {items.length - 1 > idx && <hr className="border-gray-100" />}
+              </>
             ))}
           </ul>
           <OutlineButton
