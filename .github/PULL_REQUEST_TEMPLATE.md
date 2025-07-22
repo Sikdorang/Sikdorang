@@ -6,7 +6,7 @@ PR TITLE
 
 `@coderabbitai summary` : summary 알아서 생성
 
-`no-review` : 태그 달면 리뷰 생성 안 함
+`ai-review` : 태그 달면 리뷰 생성
 -->
 
 ## 개요
