@@ -27,7 +27,7 @@ export default function OrderCard({
       <div className="p-4 flex flex-col gap-3">
         <ul className="flex flex-col gap-6">
           {order.items.map((item) => (
-            <li>
+            <li key={item.id}>
               <div
                 className={`${
                   (item.state === ORDER_MENU_STATE.MENU_UNAVAILABLE ||

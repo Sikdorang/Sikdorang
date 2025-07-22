@@ -19,14 +19,14 @@ export default function StoreOrderButton({
     <ButtonWrapper>
       <BaseButton onClick={onClick} color="black">
         <div className="flex items-center gap-2.5">
-          <p className="flex items-center gap-1">
+          <div className="flex items-center gap-1">
             <span>총 {formatNumber(totalPrice)}원</span>
-            <p className="h-1 w-1 rounded-full bg-white" />
+            <div className="h-1 w-1 rounded-full bg-white" />
             <span>주문하기</span>
-          </p>
-          <p className="text-xs font-bold leading-[150%] tracking-[-2%] flex h-6 w-6 items-center justify-center rounded-full bg-white text-gray-800">
+          </div>
+          <div className="text-xs font-bold leading-[150%] tracking-[-2%] flex h-6 w-6 items-center justify-center rounded-full bg-white text-gray-800">
             {itemCount}
-          </p>
+          </div>
         </div>
       </BaseButton>
     </ButtonWrapper>

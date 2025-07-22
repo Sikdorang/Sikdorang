@@ -167,18 +167,18 @@ export default function Cart() {
                 color="black"
               >
                 <div className="flex items-center gap-2.5">
-                  <p className="flex items-center gap-1">
+                  <div className="flex items-center gap-1">
                     <span>총 {formatNumber(getTotalPrice())}원</span>
-                    <p
+                    <div
                       className={`h-1 w-1 rounded-full transition-colors duration-300 ${getSelectedItemCount() === 0 ? 'bg-gray-400' : 'bg-white'}`}
-                    ></p>
+                    ></div>
                     <span>주문하기</span>
-                  </p>
-                  <p
+                  </div>
+                  <div
                     className={`transition-colors duration-300 text-xs font-bold leading-[150%] tracking-[-2%] flex h-6 w-6 flex-col items-center justify-center rounded-full ${getSelectedItemCount() === 0 ? 'bg-gray-400 text-gray-100' : 'bg-white text-gray-800'} `}
                   >
                     {getSelectedItemCount()}
-                  </p>
+                  </div>
                 </div>
               </BaseButton>
             </ButtonWrapper>

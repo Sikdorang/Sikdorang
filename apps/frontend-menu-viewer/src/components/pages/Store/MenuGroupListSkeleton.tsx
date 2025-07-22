@@ -6,7 +6,7 @@ export default function MenuGroupListSkeleton() {
   return (
     <ul>
       {dummyArray.map((_, idx) => (
-        <div>
+        <div key={idx}>
           <MenuGroupSkeleton />
           {idx < dummyArray.length - 1 && (
             <div className="xl:mx-auto xl:max-w-5xl">

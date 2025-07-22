@@ -1,3 +1,4 @@
+import ErrorBoundary from '@/components/common/ErrorBoundary';
 import NotFoundView from '@/components/common/NotFoundView';
 import { ROUTES } from '@/constants/routes';
 import CallStaff from '@/pages/CallStaff';
@@ -13,30 +14,37 @@ const router = createBrowserRouter([
   {
     path: ROUTES.ROOT,
     element: <CheckUserAgent />,
+    errorElement: <ErrorBoundary />,
   },
   {
     path: ROUTES.STORES.DETAIL(),
     element: <Store />,
+    errorElement: <ErrorBoundary />,
   },
   {
     path: ROUTES.MENUS.DETAIL(),
     element: <MenuDetail />,
+    errorElement: <ErrorBoundary />,
   },
   {
     path: ROUTES.LOGIN,
     element: <Login />,
+    errorElement: <ErrorBoundary />,
   },
   {
     path: ROUTES.CALL_STAFF,
     element: <CallStaff />,
+    errorElement: <ErrorBoundary />,
   },
   {
     path: ROUTES.ORDERS,
     element: <Orders />,
+    errorElement: <ErrorBoundary />,
   },
   {
     path: ROUTES.CARTS,
     element: <Cart />,
+    errorElement: <ErrorBoundary />,
   },
   { path: '*', element: <NotFoundView /> },
 ]);

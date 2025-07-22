@@ -9,7 +9,7 @@ export default function QuantityCounter({
   value,
   onChange,
   min = 1,
-  max,
+  max = 99,
 }: QuantityCounterProps) {
   const handleDecrease = () => {
     if (value > min) onChange(value - 1);

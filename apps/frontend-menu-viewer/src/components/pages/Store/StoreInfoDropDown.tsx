@@ -75,7 +75,7 @@ export default function StoreInfoDropDown({ items }: Props) {
               <div className="flex flex-wrap aspect-square w-6 items-center justify-center text-gray-400">
                 {info.icon}
               </div>
-              <p className="flex flex-1 flex-wrap items-center gap-1">
+              <div className="flex flex-1 flex-wrap items-center gap-1">
                 <span className="text-mb-5 text-gray-700 ">{info.label}</span>
                 <div className="rounded-full bg-gray-200 w-[3px] h-[3px]"></div>
                 <span
@@ -83,7 +83,7 @@ export default function StoreInfoDropDown({ items }: Props) {
                 >
                   {item.value}
                 </span>
-              </p>
+              </div>
             </div>
           );
         })}
