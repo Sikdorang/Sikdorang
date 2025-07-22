@@ -1,17 +1,34 @@
-import { ROUTES } from '../constants/routes';
-import { getStoreId } from '../utilities/getStoreId';
+import BaseResponsiveLayout from '@/components/common/BaseResponsiveLayout';
+import LoadingView from '@/components/common/LoadingView';
+import { ROUTES } from '@/constants/routes';
+import { getStoreId } from '@/utilities/getStoreId';
 import { getDeviceType } from '@/utilities/parseUserAgent';
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router';
 
 export default function CheckUserAgent() {
   const navigate = useNavigate();
+
   useEffect(() => {
-    setTimeout(() => {
-      const userAgent = getDeviceType();
-      if (userAgent == 'mobile') navigate(ROUTES.STORES.DETAIL(getStoreId()));
-      else navigate(ROUTES.LOGIN);
-    }, 500);
-  }, []);
-  return <div>체크 중...</div>;
+    const redirectBasedOnDevice = () => {
+      const deviceType = getDeviceType();
+      const targetRoute =
+        deviceType === 'mobile'
+          ? ROUTES.STORES.DETAIL(getStoreId())
+          : ROUTES.LOGIN;
+      navigate(targetRoute);
+    };
+
+    const timer = setTimeout(redirectBasedOnDevice, 1000);
+
+    return () => clearTimeout(timer);
+  }, [navigate]);
+
+  return (
+    <BaseResponsiveLayout>
+      <div className="h-screen flex items-center justify-center">
+        <LoadingView />
+      </div>
+    </BaseResponsiveLayout>
+  );
 }

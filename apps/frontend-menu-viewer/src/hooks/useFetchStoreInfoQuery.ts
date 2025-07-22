@@ -1,11 +1,10 @@
 import { storeAPI } from '@/apis/store/store.api';
-import { useQuery } from '@tanstack/react-query';
+import { useSuspenseQuery } from '@tanstack/react-query';
 
 export default function useFetchStoreInfoQuery(storeId: string) {
-  return useQuery({
+  return useSuspenseQuery({
     queryKey: ['storeInfo', storeId],
     queryFn: () => storeAPI.fetchStoreInfo(storeId),
-    enabled: !!storeId,
     retry: false,
   });
 }

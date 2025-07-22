@@ -5,7 +5,7 @@ import MinMaxText from '../../common/MinMaxText';
 import OptionSelector from './OptionSelector';
 
 interface Props {
-  group: IOptionGroup;
+  group: ISelectableOptionGroup;
   selectedOptionIds: Set<string>;
   onToggle: (itemId: string) => void;
 }
@@ -19,7 +19,7 @@ export default function OptionGroup({
     group.required && group.maxSelectable === 1 ? 'radio' : 'checkbox';
   const isMaxReached = selectedOptionIds.size == group.maxSelectable;
   return (
-    <>
+    <div className="xl:mx-auto xl:max-w-5xl">
       <Divider />
       <div className="wrapper py-3">
         <div className="mb-6">
@@ -61,6 +61,6 @@ export default function OptionGroup({
           ))}
         </div>
       </div>
-    </>
+    </div>
   );
 }

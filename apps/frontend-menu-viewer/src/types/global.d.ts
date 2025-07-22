@@ -22,16 +22,19 @@ interface IMenuListItem extends IBaseMenu {
 interface IMenuDetail extends IBaseMenu {
   description?: string;
   imgUrls: string[];
-  optionGroups: IOptionGroup[];
+  optionGroups: ISelectableOptionGroup[];
 }
 
-interface IOptionGroup {
+interface IBaseOptionGroup {
   id: string;
   title: string;
+  items: IOptionItem[];
+}
+
+interface ISelectableOptionGroup extends IBaseOptionGroup {
   required: boolean;
   minSelectable?: number;
   maxSelectable: number;
-  items: IOptionItem[];
 }
 
 interface IOptionItem {
@@ -69,4 +72,31 @@ interface ICartItem {
   quantity: number;
   selectedOptions: OptionSelection;
   optionItemPriceMap: Record<string, number>;
+}
+
+type OrderMenuStateType =
+  | 'MENU_UNAVAILABLE'
+  | 'OPTION_UNAVAILABLE'
+  | 'AVAILABLE'
+  | 'SOLDOUT'
+  | 'PRICE_CHANGED';
+
+interface IOrderMenuItem {
+  id: string;
+  name: string;
+  state: OrderMenuStateType;
+  menuPrice: number;
+  quantity: number;
+  optionGroups: IBaseOptionGroup[];
+  optionPrice: number;
+}
+
+interface IOrderItem {
+  id: string;
+  userId: string;
+  storeId: string;
+  createdAt: string;
+  totalPrice: number;
+  availableMenuIds: string[];
+  items: IOrderMenuItem[];
 }

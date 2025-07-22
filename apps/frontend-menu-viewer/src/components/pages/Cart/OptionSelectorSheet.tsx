@@ -1,8 +1,9 @@
-import { isAllRequiredSelected } from '../../../utilities/isAllRequiredSelected';
-import BaseButton from '../../common/BaseButton';
-import ButtonWrapper from '../../common/ButtonWrapper';
 import OptionDropDown from './OptionDropDown';
 import CancelSvg from '@/assets/icons/ic_cancel.svg?react';
+import BaseButton from '@/components/common/BaseButton';
+import BottomSpace from '@/components/common/BottomSpace';
+import ButtonWrapper from '@/components/common/ButtonWrapper';
+import { isAllRequiredSelected } from '@/utilities/isAllRequiredSelected';
 
 interface Props {
   menu: IMenuDetail;
@@ -54,7 +55,7 @@ export default function OptionSelectorSheet({
             />
           ))}
         </ul>
-        <div className="h-48"></div>
+        <BottomSpace />
       </div>
       <ButtonWrapper>
         <BaseButton

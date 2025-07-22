@@ -1,8 +1,8 @@
 import { menuAPI } from '@/apis/menu/menu.api';
-import { useQuery } from '@tanstack/react-query';
+import { useSuspenseQuery } from '@tanstack/react-query';
 
 export function useFetchMenusQuery() {
-  return useQuery({
+  return useSuspenseQuery({
     queryKey: ['menus'],
     queryFn: () => menuAPI.fetchMenus(),
     retry: false,

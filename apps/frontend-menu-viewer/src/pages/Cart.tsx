@@ -1,16 +1,19 @@
-import ButtonWrapper from '../components/common/ButtonWrapper';
-import CheckBox from '../components/common/CheckBox';
-import Header from '../components/common/Header';
-import OutlineButton from '../components/common/OutlineButton';
-import QuantityCounter from '../components/common/QuantityCounter';
-import OptionSelectorSheet from '../components/pages/Cart/OptionSelectorSheet';
-import { ROUTES } from '../constants/routes';
-import { useCartStore } from '../stores/useCartStore';
-import { useMenuSelectionStore } from '../stores/useMenuSelectionStore';
-import formatNumber from '../utilities/formatNumber';
-import { getStoreId } from '../utilities/getStoreId';
-import { showCustomToast } from '../utilities/showToast';
+import CancelSvg from '@/assets/icons/ic_cancel.svg?react';
 import BaseButton from '@/components/common/BaseButton';
+import BottomSpace from '@/components/common/BottomSpace';
+import ButtonWrapper from '@/components/common/ButtonWrapper';
+import CheckBox from '@/components/common/CheckBox';
+import Header from '@/components/common/Header';
+import OutlineButton from '@/components/common/OutlineButton';
+import QuantityCounter from '@/components/common/QuantityCounter';
+import CartEmptyView from '@/components/pages/Cart/CartEmptyView';
+import OptionSelectorSheet from '@/components/pages/Cart/OptionSelectorSheet';
+import { ROUTES } from '@/constants/routes';
+import { useCartStore } from '@/stores/useCartStore';
+import { useMenuSelectionStore } from '@/stores/useMenuSelectionStore';
+import { formatNumber } from '@/utilities/format';
+import { getStoreId } from '@/utilities/getStoreId';
+import { showCustomToast } from '@/utilities/showToast';
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router';
 
@@ -25,6 +28,7 @@ export default function Cart() {
     getSelectedItemCount,
     updateItem,
     selectAllItems,
+    removeItem,
   } = useCartStore();
   const {
     menuId,
@@ -43,123 +47,149 @@ export default function Cart() {
   return (
     <div className="min-w-xs mx-auto flex h-full w-full flex-col">
       <Header title="주문하기" onBackClick={() => selectAllItems()} />
-      <div className="wrapper flex w-full flex-1 flex-col pt-6">
-        <ul className="flex flex-col gap-6 mb-6">
-          {items.map((item) => (
-            <li key={item.id}>
-              <div className="flex gap-3">
-                <CheckBox
-                  onClick={() => toggleSelect(item.id)}
-                  checked={item.selected}
-                />
-                <div className="flex w-full gap-2">
-                  <div className="overflow-hidden w-[5.25rem] h-[5.25rem] sm:w-[11.25rem] sm:h-[11.25rem] aspect-square rounded-2xl bg-gray-100 shrink-0">
-                    {item.originalItem.imgUrls.length > 0 && (
-                      <img src={item.originalItem.imgUrls[0]} />
-                    )}
-                  </div>
-                  <div className="flex flex-col w-full">
-                    <h2 className="text-mb-5 mb-2 text-gray-700">
-                      {item.originalItem.name}
-                    </h2>
-                    <ul className="flex mb-3 flex-col gap-1">
-                      {item.originalItem.optionGroups.map((group) => {
-                        const selectedOptionsSet =
-                          item.selectedOptions[group.id];
-                        if (
-                          !selectedOptionsSet ||
-                          selectedOptionsSet.size === 0
-                        )
-                          return null;
+      {items.length === 0 ? (
+        <CartEmptyView />
+      ) : (
+        <div className="wrapper flex w-full flex-1 flex-col pt-6">
+          <ul className="flex flex-col gap-6 mb-6">
+            {items.map((item, idx) => (
+              <>
+                <li key={item.id}>
+                  <div className="flex gap-3">
+                    <CheckBox
+                      onClick={() => toggleSelect(item.id)}
+                      checked={item.selected}
+                    />
+                    <div className="flex w-full gap-2">
+                      <div className="overflow-hidden w-[5.25rem] h-[5.25rem] sm:w-[11.25rem] sm:h-[11.25rem] aspect-square rounded-2xl bg-gray-100 shrink-0">
+                        {item.originalItem.imgUrls.length > 0 && (
+                          <img src={item.originalItem.imgUrls[0]} />
+                        )}
+                      </div>
+                      <div className="flex flex-col w-full">
+                        <div className="flex gap-3 w-full">
+                          <div className="flex-1">
+                            <h2 className="text-mb-5 mb-2 text-gray-700">
+                              {item.originalItem.name}
+                            </h2>
 
-                        const selectedOptionLabels = group.items
-                          .filter((option) => selectedOptionsSet.has(option.id))
-                          .map((option) => option.name)
-                          .join(', ');
+                            {item.originalItem.optionGroups.length > 0 && (
+                              <ul className="flex mb-3 flex-col gap-1">
+                                {item.originalItem.optionGroups.map((group) => {
+                                  const selectedOptionsSet =
+                                    item.selectedOptions[group.id];
+                                  if (
+                                    !selectedOptionsSet ||
+                                    selectedOptionsSet.size === 0
+                                  )
+                                    return null;
 
-                        return (
-                          <li
-                            key={group.id}
-                            className="text-mc-2 text-gray-500"
-                          >
-                            {group.title}: {selectedOptionLabels}
-                          </li>
-                        );
-                      })}
-                    </ul>
+                                  const selectedOptionLabels = group.items
+                                    .filter((option) =>
+                                      selectedOptionsSet.has(option.id),
+                                    )
+                                    .map((option) => option.name)
+                                    .join(', ');
 
-                    <p className="text-mb-3 text-gray-700">
-                      {formatNumber(
-                        (item.originalItem.price ?? 0) + item.optionPrice,
-                      )}
-                      원
-                    </p>
-                    <div className="mt-3 flex gap-3 justify-end items-center w-full">
-                      <button
-                        onClick={() => startEdit(item)}
-                        className="text-mc-1 text-gray-700 flex flex-col items-center justify-center py-1 h-7 px-3 border border-gray-200 rounded-2xl bg-white "
-                      >
-                        옵션 변경
-                      </button>
-                      <QuantityCounter
-                        value={item.quantity}
-                        onChange={(value) => setQuantity(item.id, value)}
-                      />
+                                  return (
+                                    <li
+                                      key={group.id}
+                                      className="text-mc-2 text-gray-500"
+                                    >
+                                      {group.title}: {selectedOptionLabels}
+                                    </li>
+                                  );
+                                })}
+                              </ul>
+                            )}
+
+                            <p className="text-mb-3 text-gray-700">
+                              {formatNumber(
+                                (item.originalItem.price ?? 0) +
+                                  item.optionPrice,
+                              )}
+                              원
+                            </p>
+                          </div>
+                          <CancelSvg onClick={() => removeItem(item.id)} />
+                        </div>
+                        <div className="mt-3 flex gap-3 justify-end items-center w-full">
+                          {item.originalItem.optionGroups.length > 0 && (
+                            <button
+                              onClick={() => startEdit(item)}
+                              className="text-mc-1 text-gray-700 flex flex-col items-center justify-center py-1 h-7 px-3 border border-gray-200 rounded-2xl bg-white "
+                            >
+                              옵션 변경
+                            </button>
+                          )}
+                          <QuantityCounter
+                            value={item.quantity}
+                            onChange={(value) => setQuantity(item.id, value)}
+                          />
+                        </div>
+                      </div>
                     </div>
                   </div>
-                </div>
-              </div>
-            </li>
-          ))}
-        </ul>
-        <OutlineButton
-          onClick={() => {
-            navigate(ROUTES.STORES.DETAIL(getStoreId()), { replace: true });
-          }}
-        >
-          메뉴 더 추가하기
-        </OutlineButton>
-        {menu && (
-          <OptionSelectorSheet
-            menu={menu}
-            selectedOptions={selectedOptions}
-            optionPrice={optionPrice}
-            menuId={menuId}
-            onToggle={toggleOption}
-            onUpdate={updateItem}
-            onClose={resetSelection}
-          />
-        )}
+                </li>
+                {items.length - 1 > idx && <hr className="border-gray-100" />}
+              </>
+            ))}
+          </ul>
+          <OutlineButton
+            onClick={() => {
+              navigate(ROUTES.STORES.DETAIL(getStoreId()), { replace: true });
+            }}
+          >
+            메뉴 더 추가하기
+          </OutlineButton>
+          {menu && (
+            <OptionSelectorSheet
+              menu={menu}
+              selectedOptions={selectedOptions}
+              optionPrice={optionPrice}
+              menuId={menuId}
+              onToggle={toggleOption}
+              onUpdate={updateItem}
+              onClose={resetSelection}
+            />
+          )}
 
-        {items.length > 0 && (
-          <ButtonWrapper>
-            <BaseButton
-              disabled={getSelectedItemCount() === 0}
-              onClick={() => {
-                clearCart();
-                navigate(ROUTES.STORES.DETAIL(getStoreId()), { replace: true });
-                showCustomToast({
-                  icon: 'check',
-                  message: '주문을 완료 했어요!\n조금만 기다려주세요.',
-                });
-              }}
-              color="black"
-            >
-              <div className="flex items-center gap-2.5">
-                <p className="flex items-center gap-1">
-                  <span>총 {formatNumber(getTotalPrice())}원</span>
-                  <p className="h-1 w-1 rounded-full bg-white"></p>
-                  <span>주문하기</span>
-                </p>
-                <p className="text-xs font-bold leading-[150%] tracking-[-2%]  flex h-6 w-6 flex-col items-center justify-center rounded-full bg-white text-gray-800">
-                  {getSelectedItemCount()}
-                </p>
-              </div>
-            </BaseButton>
-          </ButtonWrapper>
-        )}
-        <div className="h-48"></div>
-      </div>
+          {items.length > 0 && (
+            <ButtonWrapper>
+              <BaseButton
+                disabled={getSelectedItemCount() === 0}
+                onClick={() => {
+                  clearCart();
+                  navigate(ROUTES.STORES.DETAIL(getStoreId()), {
+                    replace: true,
+                  });
+                  showCustomToast({
+                    icon: 'check',
+                    message: '주문을 완료 했어요!\n조금만 기다려주세요.',
+                  });
+                }}
+                color="black"
+              >
+                <div className="flex items-center gap-2.5">
+                  <div className="flex items-center gap-1">
+                    <span>총 {formatNumber(getTotalPrice())}원</span>
+                    <div
+                      className={`h-1 w-1 rounded-full transition-colors duration-300 ${getSelectedItemCount() === 0 ? 'bg-gray-400' : 'bg-white'}`}
+                    ></div>
+                    <span>주문하기</span>
+                  </div>
+                  <div
+                    className={`transition-colors duration-300 text-xs font-bold leading-[150%] tracking-[-2%] flex h-6 w-6 flex-col items-center justify-center rounded-full ${getSelectedItemCount() === 0 ? 'bg-gray-400 text-gray-100' : 'bg-white text-gray-800'} `}
+                  >
+                    {getSelectedItemCount()}
+                  </div>
+                </div>
+              </BaseButton>
+            </ButtonWrapper>
+          )}
+          <BottomSpace />
+        </div>
+      )}
     </div>
   );
 }

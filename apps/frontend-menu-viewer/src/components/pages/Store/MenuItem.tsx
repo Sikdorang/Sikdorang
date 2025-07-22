@@ -1,6 +1,6 @@
-import { ROUTES } from '../../../constants/routes';
 import Chip from '@/components/common/Chip';
-import formatNumber from '@/utilities/formatNumber';
+import { ROUTES } from '@/constants/routes';
+import { formatNumber } from '@/utilities/format';
 import { Link } from 'react-router';
 
 interface Props extends IMenuListItem {}

@@ -8,6 +8,22 @@
   font-display: swap;
 }
 
+@keyframes shake {
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+  25% {
+    transform: translateX(-3px);
+  }
+  50% {
+    transform: translateX(3px);
+  }
+  75% {
+    transform: translateX(-2px);
+  }
+}
+
 @keyframes sheet-enter {
   0% {
     opacity: 0;
@@ -50,6 +66,10 @@
     opacity: 0;
     transform: translateY(20px);
   }
+}
+
+.animate-shake {
+  animation: shake 0.3s ease-in-out;
 }
 
 .animate-sheet-in {
