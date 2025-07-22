@@ -1,6 +1,7 @@
-import CharacterEmptyImage from '@/assets/images/img_character_empty.svg?react';
+import ErrorAnimation from '@/assets/lotties/lottie_error.json';
 import { ROUTES } from '@/constants/routes';
 import { getStoreId } from '@/utilities/getStoreId';
+import Lottie from 'lottie-react';
 import { useNavigate } from 'react-router';
 
 export default function ErrorView() {
@@ -9,7 +10,7 @@ export default function ErrorView() {
   return (
     <div className="wrapper flex-1 flex flex-col items-center justify-center">
       <div className="pb-10 flex flex-col items-center justify-center">
-        <CharacterEmptyImage />
+        <Lottie animationData={ErrorAnimation} loop={false} />
         <p className="text-mt-1 text-gray-900 mb-2.5 text-center">
           앗 !
           <br />
