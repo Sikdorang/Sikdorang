@@ -1,5 +1,4 @@
 import BottomSpace from '@/components/common/BottomSpace';
-import ErrorView from '@/components/common/ErrorView';
 import AddToCartButton from '@/components/pages/MenuDetail/AddToCartButton';
 import MenuInfo from '@/components/pages/MenuDetail/MenuInfo';
 import OptionGroupList from '@/components/pages/MenuDetail/OptionGroupList';
@@ -16,7 +15,7 @@ interface Props {
 
 export default function MenuSection({ menuId }: Props) {
   const navigate = useNavigate();
-  const { data, isError } = useFetchMenuDetailQuery(menuId);
+  const { data } = useFetchMenuDetailQuery(menuId);
   const {
     startMenu,
     quantity,
@@ -45,7 +44,7 @@ export default function MenuSection({ menuId }: Props) {
     }
   }, [data]);
 
-  if (isError || !data) return <ErrorView />;
+  if (!data) throw new Error();
 
   return (
     <>

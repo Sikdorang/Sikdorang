@@ -1,5 +1,4 @@
 import BaseResponsiveLayout from '@/components/common/BaseResponsiveLayout';
-import ErrorView from '@/components/common/ErrorView';
 import Header from '@/components/common/Header';
 import MenuDetailSkeleton from '@/components/pages/MenuDetail/MenuDetailSkeleton';
 import MenuSection from '@/components/pages/MenuDetail/MenuSection';
@@ -11,7 +10,7 @@ export default function MenuDetail() {
   useScrollToTop();
 
   const { menuId } = useParams<{ menuId: string }>();
-  if (!menuId) return <ErrorView />;
+  if (!menuId) throw new Error();
 
   return (
     <BaseResponsiveLayout>
