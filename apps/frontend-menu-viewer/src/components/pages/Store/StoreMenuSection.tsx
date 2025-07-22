@@ -1,4 +1,3 @@
-import ErrorView from '@/components/common/ErrorView';
 import CategoryTabList from '@/components/pages/Store/CategoryTabList';
 import MenuGroupList from '@/components/pages/Store/MenuGroupList';
 import RecommendationButton from '@/components/pages/Store/RecommendationButton';
@@ -11,7 +10,7 @@ import { useNavigate } from 'react-router';
 
 export default function StoreMenuSection() {
   const navigate = useNavigate();
-  const { data, isError } = useFetchMenusQuery();
+  const { data } = useFetchMenusQuery();
   const { items, getTotalPrice, getSelectedItemCount } = useCartStore();
 
   const [selectedId, setSelectedId] = useState<string | null>(null);
@@ -84,8 +83,6 @@ export default function StoreMenuSection() {
       behavior: 'smooth',
     });
   }, [selectedId]);
-
-  if (isError) return <ErrorView />;
 
   return (
     <>
