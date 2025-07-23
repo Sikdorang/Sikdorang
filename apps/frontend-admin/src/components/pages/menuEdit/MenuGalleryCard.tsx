@@ -19,6 +19,7 @@ export default function MenuGalleryCard({
   onDelete,
   item,
 }: MenuGalleryCardProps) {
+
   const router = useRouter();
 
   return (

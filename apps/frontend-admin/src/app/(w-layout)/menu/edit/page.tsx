@@ -26,6 +26,7 @@ import MenuGalleryCard from '@/components/pages/menuEdit/MenuGalleryCard';
 import MenuTableRow from '@/components/pages/menuEdit/MenuTableRow';
 import { useEditModal } from '@/contexts/EditModalContext';
 import { useWarningModal } from '@/contexts/WarningModalContext';
+
 import { IMenuTableItem } from '@/types/model/menu';
 import GalleryIcon from '@public/icons/ic_grid.svg';
 import TableIcon from '@public/icons/ic_list.svg';
@@ -126,6 +127,7 @@ export default function MenuEditPage() {
     //     return true;
     //   });
     // });
+
   };
 
   return (
