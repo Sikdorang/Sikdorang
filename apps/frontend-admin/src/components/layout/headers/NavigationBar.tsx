@@ -33,10 +33,7 @@ const NAV_STRUCTURE = [
     key: 'shop',
     label: '매장 정보 관리',
     basePath: '/shop',
-    tabs: [
-      { name: '매장정보', href: '/store/info' },
-      { name: '직원관리', href: '/store/staff' },
-    ],
+    tabs: [],
   },
   {
     key: 'dashboard',
