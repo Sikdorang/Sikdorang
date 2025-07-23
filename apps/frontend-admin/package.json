@@ -39,8 +39,14 @@
     "eslint-config-next": "15.3.4",
     "eslint-plugin-import": "^2.32.0",
     "globals": "^16.2.0",
+    "msw": "^2.10.4",
     "prettier": "^3.6.2",
     "tailwindcss": "^4",
     "typescript": "^5"
+  },
+  "msw": {
+    "workerDirectory": [
+      "public"
+    ]
   }
 }
