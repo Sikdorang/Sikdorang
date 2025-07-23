@@ -1,6 +1,7 @@
 'use client';
 
 import { TooltipModalPresenter } from '../../../../components/common/modals/TooltipModalPresenter';
+import MenuGalleryCardSkeleton from '../../../../components/pages/menuEdit/MenuCardSkeleton';
 import {
   default as CategoryButton,
   default as FilterOptionButton,
@@ -15,15 +16,22 @@ import EditModal, {
   EditModaSelectInput,
   EditToggleSwitch,
 } from '@/components/common/modals/EditModal';
+import {
+  default as DeleteMenuModal,
+  WarningModalActions,
+  WarningModalBody,
+  WarningModalHeader,
+} from '@/components/common/modals/WarningModal';
 import MenuGalleryCard from '@/components/pages/menuEdit/MenuGalleryCard';
 import MenuTableRow from '@/components/pages/menuEdit/MenuTableRow';
 import { useEditModal } from '@/contexts/EditModalContext';
+import { useWarningModal } from '@/contexts/WarningModalContext';
 import { IMenuTableItem } from '@/types/model/menu';
 import GalleryIcon from '@public/icons/ic_grid.svg';
 import TableIcon from '@public/icons/ic_list.svg';
 import AddIcon from '@public/icons/ic_plus.svg';
 import Image from 'next/image';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 const categories = [
   { id: 1, text: '전체', count: 1 },
@@ -74,6 +82,15 @@ const menuList: IMenuTableItem[] = [
 export default function MenuEditPage() {
   const [searchValue, setSearchValue] = useState('');
   const [selectedCategory, setSelectedCategory] = useState(1);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setIsLoading(false);
+    }, 3000);
+
+    return () => clearTimeout(timer);
+  }, []);
 
   const [viewType, setViewType] = useState<'table' | 'gallery'>('table');
 
@@ -92,6 +109,23 @@ export default function MenuEditPage() {
   const handleCreateCategory = () => {
     setIsTooltipModal(true);
     openModal('createCategory');
+  };
+
+  const { openModal: openDeleteMenuModal } = useWarningModal();
+  // 삭제 버튼 클릭
+  const handleDelete = (menuId: number) => {
+    openDeleteMenuModal(String(menuId));
+    // setCategories((prevCategories) => {
+    //   return prevCategories.filter((category) => {
+    //     if (category.id === categoryId) return false;
+    //     if (category.children) {
+    //       category.children = category.children.filter(
+    //         (child) => child.id !== categoryId,
+    //       );
+    //     }
+    //     return true;
+    //   });
+    // });
   };
 
   return (
@@ -245,17 +279,22 @@ export default function MenuEditPage() {
         ) : (
           <>
             <div className="grid grid-cols-3 gap-4">
-              {menuList.map((item) => (
-                <MenuGalleryCard
-                  key={item.id}
-                  item={{
-                    id: 0,
-                    tags: ['인기', '신메뉴'],
-                    name: '아아',
-                    price: '100',
-                  }}
-                />
-              ))}
+              {isLoading
+                ? menuList.map((_, idx) => (
+                    <MenuGalleryCardSkeleton key={idx} />
+                  ))
+                : menuList.map((item) => (
+                    <MenuGalleryCard
+                      key={item.id}
+                      onDelete={handleDelete}
+                      item={{
+                        id: 0,
+                        tags: ['인기', '신메뉴'],
+                        name: '아아',
+                        price: '100',
+                      }}
+                    />
+                  ))}
             </div>
           </>
         )}
@@ -263,18 +302,6 @@ export default function MenuEditPage() {
 
       {currentModal !== null && (
         <EditModal>
-          {currentModal === 'createCategory' && (
-            <>
-              <EditModalHeader onSave={handleCreateCategory}>
-                카테고리 추가
-              </EditModalHeader>
-              <EditModalTextInput
-                label="카테고리명"
-                placeholder="카테고리명을 입력해주세요."
-              />
-            </>
-          )}
-
           {currentModal === 'modifyMenu' && (
             <>
               <EditModalHeader onSave={() => {}}>
@@ -352,6 +379,15 @@ export default function MenuEditPage() {
           )}
         </EditModal>
       )}
+
+      <DeleteMenuModal>
+        <WarningModalHeader>메뉴 삭제</WarningModalHeader>
+        <WarningModalBody>
+          메뉴를 정말 삭제할까요 ?
+          <br />한 번 삭제하면 복구할 수 없어요 !
+        </WarningModalBody>
+        <WarningModalActions onConfirm={() => {}} />
+      </DeleteMenuModal>
     </div>
   );
 }

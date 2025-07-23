@@ -1,9 +1,10 @@
 'use client';
+
 import { createContext, ReactNode, useContext, useState } from 'react';
 
 interface WarningModalContextType {
   isOpen: boolean;
-  message: string;
+  message: number;
   openModal: (message: string) => void;
   closeModal: () => void;
   confirmWarning: (onConfirm: () => void) => void;
@@ -15,15 +16,15 @@ const WarningModalContext = createContext<WarningModalContextType | undefined>(
 
 export function WarningModalProvider({ children }: { children: ReactNode }) {
   const [isOpen, setIsOpen] = useState(false);
-  const [message, setMessage] = useState('');
+  const [message, setMessage] = useState(0);
 
   const openModal = (msg: string) => {
-    setMessage(msg);
+    setMessage(msg as unknown as number);
     setIsOpen(true);
   };
   const closeModal = () => {
     setIsOpen(false);
-    setMessage('');
+    setMessage(0);
   };
   const confirmWarning = (onConfirm: () => void) => {
     onConfirm();
