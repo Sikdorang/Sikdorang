@@ -1,12 +1,12 @@
+import MenuCustomDropdown from '../../pages/menuEdit/MenuCustomDropdown';
+import TextInput from './TextInput';
 import AddElementButton from '@/components/common/buttons/CtaButton';
+import ToggleSwitch from '@/components/common/buttons/ToggleSwitch';
 import MenuOptionElement from '@/components/pages/menuEdit/MenuOptionElement';
 import EmptyOptionIcon from '@public/icons/ic_dotted_plus.svg';
 import CancelIcon from '@public/icons/ic_x.svg';
-
-import ToggleSwitch from '@/components/common/buttons/ToggleSwitch';
 import Image from 'next/image';
 import React from 'react';
-import TextInput from './TextInput';
 
 interface Option {
   id: string;
@@ -66,11 +66,12 @@ export default function OptionInput({
           />
 
           <div className="flex">
-            <span className="grow"></span>
+            <div className="grow-1"></div>
             <AddElementButton
               text="항목 추가하기"
               size="small"
               color="white"
+              width="fit"
               onClick={onAddOption}
             />
           </div>
@@ -103,9 +104,16 @@ export default function OptionInput({
           <div className="flex">
             <span className="grow"></span>
             <div className="flex flex-col items-end gap-4">
-              <button className="text-sm text-gray-600 hover:text-gray-800">
-                옵션 선택 최대 제한
-              </button>
+              <div className="flex justify-center items-center gap-2 text-sm text-gray-600 hover:text-gray-800">
+                <div>옵션 선택 최대 제한</div>
+                <MenuCustomDropdown
+                  options={[1, 2, 3, 4]}
+                  selectedOption={0}
+                  onChange={function (value: string): void {
+                    throw new Error('Function not implemented.');
+                  }}
+                />
+              </div>
               <ToggleSwitch
                 isOn={false}
                 onToggle={() => {}}

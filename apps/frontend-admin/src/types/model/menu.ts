@@ -22,3 +22,8 @@ export interface IMenuOption {
   name: string;
   price?: number;
 }
+
+export interface IToggleSwitch {
+  label: string;
+  value?: boolean;
+}

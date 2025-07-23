@@ -1,3 +1,4 @@
+import { TooltipModalPresenter } from './TooltipModalPresenter';
 import {
   default as AddButton,
   default as CategoryButton,
@@ -8,13 +9,18 @@ import ImageInput from '@/components/common/inputs/ImageInput';
 import OptionInput from '@/components/common/inputs/OptionInput';
 import TextInput from '@/components/common/inputs/TextInput';
 import { useEditModal } from '@/contexts/EditModalContext';
-import { IMenuOption } from '@/types/model/menu';
+import { IToggleSwitch } from '@/types/model/menu';
+import { EditModalFormData } from '@/types/request/modal';
 import AddIcon from '@public/icons/ic_plus.svg';
 import CloseIcon from '@public/icons/ic_x.svg';
 import Image from 'next/image';
 import React, { ReactNode, useState } from 'react';
 
-export default function EditModal({ children }: { children: ReactNode }) {
+interface EditModalProps {
+  children: ReactNode;
+}
+
+export default function EditModal({ children }: EditModalProps) {
   const { isOpen, closeModal } = useEditModal();
 
   if (!isOpen) return null;
@@ -25,7 +31,7 @@ export default function EditModal({ children }: { children: ReactNode }) {
       onClick={closeModal}
     >
       <div
-        className="max-h-[80vh] w-full max-w-4xl overflow-y-auto rounded-2xl bg-white p-8 shadow-xl"
+        className={`relative max-h-[80vh] w-full max-w-4xl overflow-y-auto bg-white shadow-xl rounded-2xl p-8`}
         onClick={(e) => e.stopPropagation()}
       >
         {children}
@@ -39,7 +45,7 @@ export function EditModalHeader({
   onSave,
 }: {
   children: ReactNode;
-  onSave: (name: string) => void;
+  onSave: (data: EditModalFormData) => void;
 }) {
   const { closeModal, saveEdit } = useEditModal();
 
@@ -66,31 +72,33 @@ export function EditModalHeader({
   );
 }
 
-interface EditModalBodyProps {
+interface EditFieldProps {
   label?: string;
   placeholder?: string;
 }
 
-export function EditModalTextInput({ label, placeholder }: EditModalBodyProps) {
-  const { name, setName } = useEditModal();
+export function EditModalTextInput({
+  label,
+  placeholder,
+  field = 'name',
+}: EditFieldProps & { field?: keyof EditModalFormData }) {
+  const { formData, updateField } = useEditModal();
 
   return (
     <div className="mb-4">
       <TextInput
         label={label}
         placeholder={placeholder}
-        value={name}
-        onChange={(e) => setName(e.target.value)}
+        value={(formData[field] as string) ?? ''}
+        onChange={(e) => updateField(field, e.target.value)}
         maxLength={30}
       />
     </div>
   );
 }
 
-export function EditModaSelectInput({
-  label,
-  placeholder,
-}: EditModalBodyProps) {
+export function EditModaSelectInput({ label }: EditFieldProps) {
+  const { formData, updateField } = useEditModal();
   const contents = [
     { id: 1, text: '전체', count: 1 },
     { id: 2, text: '한식', count: 3 },
@@ -99,83 +107,76 @@ export function EditModaSelectInput({
     { id: 5, text: '양식', count: 1 },
   ];
 
-  const [selectedContent, setSelectedContent] = useState(1);
+  const [selected, setSelected] = useState(formData.category ?? 1);
+
+  const handleSelect = (id: number) => {
+    setSelected(id);
+    updateField('category', id);
+  };
 
   return (
     <div className="mb-4">
-      <div className="grow-1 text-mobile-body-l-semibold mb-4 text-gray-900">
+      <div className="mb-4 grow-1 text-mobile-body-l-semibold text-gray-900">
         {label}
       </div>
       <div className="flex gap-2">
-        {contents.map((cat) => (
+        <div className="flex gap-2 grow-1">
+          {contents.map((cat) => (
+            <CategoryButton
+              key={cat.id}
+              text={cat.text}
+              color={selected === cat.id ? 'black' : 'white'}
+              size="small"
+              width="fit"
+              onClick={() => handleSelect(cat.id)}
+            />
+          ))}
+        </div>
+        <TooltipModalPresenter isTextInput={true}>
           <CategoryButton
-            key={cat.id}
-            text={cat.text}
-            color={selectedContent === cat.id ? 'black' : 'white'}
+            text="카테고리 추가"
+            color="gray"
             size="small"
             width="fit"
             right={
               <span className="text-mobile-body-s-semibold text-gray-200">
-                {cat.count}
+                <Image src={AddIcon} alt="plus" />
               </span>
             }
-            onClick={() => setSelectedContent(cat.id)}
+            onClick={() => {}}
           />
-        ))}
-        <CategoryButton
-          text="카테고리 추가"
-          color="gray"
-          size="small"
-          width="fit"
-          right={
-            <span className="text-mobile-body-s-semibold text-gray-200">
-              <Image src={AddIcon} alt="plus" />
-            </span>
-          }
-        />
+        </TooltipModalPresenter>
       </div>
     </div>
   );
 }
 
-export function EditModalImageInput({
-  label,
-  placeholder,
-}: EditModalBodyProps) {
-  const { name, setName } = useEditModal();
+export function EditModalImageInput({ label }: EditFieldProps) {
+  const { formData, updateField } = useEditModal();
 
   return (
     <div className="mb-4 flex flex-col gap-4">
-      <div className="flex">
-        <div className="grow-1 text-mobile-body-l-semibold text-gray-900">
-          {label}
-        </div>
-        <AddButton
-          text="사진 추가하기"
-          color="black"
-          width="fit"
-          size="small"
-        />
-      </div>
-      <ImageInput images={[]} setImages={() => {}} />
+      <ImageInput
+        images={formData.images}
+        setImages={(imgs) => updateField('images', imgs)}
+      />
     </div>
   );
 }
 
-export function EditModalOptionInput({
-  label,
-  placeholder,
-}: EditModalBodyProps) {
-  const [options, setOptions] = React.useState<IMenuOption[]>([]);
+export function EditModalOptionInput({ label }: EditFieldProps) {
+  const { formData, updateField } = useEditModal();
+  const [options, setOptions] = React.useState(formData.options);
 
   const handleAddOption = () => {
-    const newOption: IMenuOption = {
-      id: Date.now().toString(),
-      name: '',
-      price: 0,
-    };
-    setOptions((prev) => [...prev, newOption]);
+    setOptions((prev) => [
+      ...prev,
+      { id: Date.now().toString(), name: '', price: 0 },
+    ]);
   };
+
+  // push local state into context whenever it changes
+  React.useEffect(() => updateField('options', options), [options]);
 
   return (
     <div className="mb-4 flex flex-col gap-4">
@@ -188,12 +189,13 @@ export function EditModalOptionInput({
           color="black"
           width="fit"
           size="small"
+          onClick={handleAddOption}
         />
       </div>
       <OptionInput
         options={options}
         onOptionsChange={setOptions}
-        optionName={''}
+        optionName=""
         onOptionNameChange={() => {}}
         onDelete={() => {}}
         onAddOption={handleAddOption}
@@ -202,14 +204,9 @@ export function EditModalOptionInput({
   );
 }
 
-interface ToggleSwitchItem {
-  label: string;
-  initialValue?: boolean;
-}
-
 interface EditToggleSwitchProps {
   label: string;
-  toggleSwitchItems: ToggleSwitchItem[];
+  toggleSwitchItems: IToggleSwitch[];
 }
 
 export function EditToggleSwitch({
@@ -227,7 +224,7 @@ export function EditToggleSwitch({
         {toggleSwitchItems.map((item, idx) => (
           <ToggleSwitch
             key={item.label + idx}
-            isOn={item.initialValue ?? false}
+            isOn={item.value ?? false}
             onToggle={() => {}}
             label={item.label}
           />

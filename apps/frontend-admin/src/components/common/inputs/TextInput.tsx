@@ -1,3 +1,4 @@
+import MenuCustomLabel from '../../pages/menuEdit/MenuCustomLabel';
 import CancelIcon from '@public/icons/ic_cancel.svg';
 import Image from 'next/image';
 import React from 'react';
@@ -5,6 +6,7 @@ import React from 'react';
 interface TextInputProps extends React.InputHTMLAttributes<HTMLInputElement> {
   label?: string;
   labelClassName?: string;
+  isRequired?: boolean;
   maxLength?: number;
   error?: boolean;
   onClear?: () => void;
@@ -20,15 +22,20 @@ export default function TextInput({
   maxLength = 50,
   disabled = false,
   error = false,
+  isRequired = false,
   ...rest
 }: TextInputProps) {
   return (
     <div className="w-full">
-      <label
-        className={`text-mobile-head-l-semibold mb-2 block text-gray-800 ${labelClassName}`}
-      >
-        {label}
-      </label>
+      <div className="flex items-center gap-2 mb-2">
+        <div
+          className={`text-mobile-head-l-semibold block text-gray-800 ${labelClassName}`}
+        >
+          {label}
+        </div>
+        {isRequired ? <MenuCustomLabel text="필수" isTag={true} /> : undefined}
+      </div>
+
       <div
         className={`relative flex items-center rounded-2xl border bg-white px-6 py-4 transition-colors ${
           error

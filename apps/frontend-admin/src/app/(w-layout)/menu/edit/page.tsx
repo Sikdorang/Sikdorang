@@ -1,15 +1,12 @@
 'use client';
 
+import { TooltipModalPresenter } from '../../../../components/common/modals/TooltipModalPresenter';
 import {
   default as CategoryButton,
   default as FilterOptionButton,
   default as TableControlButton,
 } from '@/components/common/buttons/CtaButton';
 import SearchInput from '@/components/common/inputs/TextInput';
-import GalleryIcon from '@public/icons/ic_grid.svg';
-import TableIcon from '@public/icons/ic_list.svg';
-import AddIcon from '@public/icons/ic_plus.svg';
-
 import EditModal, {
   EditModalHeader,
   EditModalImageInput,
@@ -18,10 +15,13 @@ import EditModal, {
   EditModaSelectInput,
   EditToggleSwitch,
 } from '@/components/common/modals/EditModal';
-import { useEditModal } from '@/contexts/EditModalContext';
-
+import MenuGalleryCard from '@/components/pages/menuEdit/MenuGalleryCard';
 import MenuTableRow from '@/components/pages/menuEdit/MenuTableRow';
+import { useEditModal } from '@/contexts/EditModalContext';
 import { IMenuTableItem } from '@/types/model/menu';
+import GalleryIcon from '@public/icons/ic_grid.svg';
+import TableIcon from '@public/icons/ic_list.svg';
+import AddIcon from '@public/icons/ic_plus.svg';
 import Image from 'next/image';
 import { useState } from 'react';
 
@@ -77,13 +77,21 @@ export default function MenuEditPage() {
 
   const [viewType, setViewType] = useState<'table' | 'gallery'>('table');
 
-  const { openModal: openMenuEditModal } = useEditModal();
-  const { openModal: openMenuCreateModal } = useEditModal();
-  const handleEdit = (menuId: number) => {
-    openMenuEditModal(menuId.toString());
+  const { openModal, currentModal } = useEditModal();
+  const [isTooltipModal, setIsTooltipModal] = useState(false);
+  const handleEdit = () => {
+    setIsTooltipModal(false);
+    openModal('modifyMenu');
   };
+
   const handleCreate = () => {
-    openMenuCreateModal();
+    setIsTooltipModal(false);
+    openModal('createMenu');
+  };
+
+  const handleCreateCategory = () => {
+    setIsTooltipModal(true);
+    openModal('createCategory');
   };
 
   return (
@@ -108,26 +116,24 @@ export default function MenuEditPage() {
                 color={selectedCategory === cat.id ? 'black' : 'white'}
                 size="small"
                 width="fit"
-                right={
-                  <span className="text-mobile-body-s-semibold text-gray-200">
-                    {cat.count}
-                  </span>
-                }
                 onClick={() => setSelectedCategory(cat.id)}
               />
             ))}
           </div>
-          <CategoryButton
-            text="카테고리 추가"
-            color="gray"
-            size="small"
-            width="fit"
-            right={
-              <span className="text-mobile-body-s-semibold text-gray-200">
-                <Image src={AddIcon} alt="plus" />
-              </span>
-            }
-          />
+          <TooltipModalPresenter isTextInput={true}>
+            <CategoryButton
+              text="카테고리 추가"
+              color="gray"
+              size="small"
+              width="fit"
+              right={
+                <span className="text-mobile-body-s-semibold text-gray-200">
+                  <Image src={AddIcon} alt="plus" />
+                </span>
+              }
+              onClick={() => {}}
+            />
+          </TooltipModalPresenter>
         </div>
       </div>
 
@@ -187,12 +193,12 @@ export default function MenuEditPage() {
             />
           )}
         </div>
-        <div className="flex gap-2 pt-2">
+        <div className="flex gap-4 pt-2">
           {filterOptions.map((option) => (
             <FilterOptionButton
               key={option.id}
               text={option.text}
-              color="gray"
+              color="white"
               size="small"
               width="fit"
             />
@@ -238,89 +244,114 @@ export default function MenuEditPage() {
           </>
         ) : (
           <>
-            <div className="grid grid-cols-3 gap-2">
+            <div className="grid grid-cols-3 gap-4">
               {menuList.map((item) => (
-                <div key={item.id} className="flex flex-col gap-2">
-                  <div className="h-[300px] w-full rounded-lg bg-gray-200"></div>
-                  <div className="text-mobile-body-m-semibold text-gray-900">
-                    {item.name}
-                  </div>
-                  <div className="text-mobile-body-s-semibold text-gray-600">
-                    {item.price}
-                  </div>
-                </div>
+                <MenuGalleryCard
+                  key={item.id}
+                  item={{
+                    id: 0,
+                    tags: ['인기', '신메뉴'],
+                    name: '아아',
+                    price: '100',
+                  }}
+                />
               ))}
             </div>
           </>
         )}
       </div>
 
-      <EditModal>
-        <EditModalHeader onSave={() => {}}>세부사항 편집하기</EditModalHeader>
-        <EditModalTextInput
-          label="메뉴 설명"
-          placeholder="메뉴설명을 입력해주세요."
-        />
-        <EditModalImageInput
-          label="메뉴 이미지"
-          placeholder="메뉴이미지를 추가해주세요."
-        />
-        <EditModalOptionInput
-          label="메뉴 옵션"
-          placeholder="옵션을 추가해주세요."
-        />
-        <EditToggleSwitch
-          label="메뉴 강조"
-          toggleSwitchItems={[
-            { label: '인기 메뉴로 표시', initialValue: true },
-            { label: '신 메뉴로 표시', initialValue: false },
-          ]}
-        />
-        <EditToggleSwitch
-          label="판매중"
-          toggleSwitchItems={[
-            { label: '판매중', initialValue: true },
-            { label: '숨김', initialValue: false },
-            { label: '품절', initialValue: false },
-          ]}
-        />
-      </EditModal>
+      {currentModal !== null && (
+        <EditModal>
+          {currentModal === 'createCategory' && (
+            <>
+              <EditModalHeader onSave={handleCreateCategory}>
+                카테고리 추가
+              </EditModalHeader>
+              <EditModalTextInput
+                label="카테고리명"
+                placeholder="카테고리명을 입력해주세요."
+              />
+            </>
+          )}
 
-      <EditModal>
-        <EditModalHeader onSave={() => {}}>메뉴 추가하기</EditModalHeader>
-        <EditModalTextInput
-          label="메뉴명"
-          placeholder="메뉴명을 입력해주세요."
-        />
-        <EditModalTextInput label="가격" placeholder="가격을 입력해주세요." />
-        <EditModaSelectInput
-          label="카테고리"
-          placeholder="카테고리를 선택해주세요."
-        />
-        <EditModalImageInput
-          label="메뉴 이미지"
-          placeholder="메뉴이미지를 추가해주세요."
-        />
-        <EditModalOptionInput
-          label="메뉴 옵션"
-          placeholder="옵션을 추가해주세요."
-        />
-        <EditToggleSwitch
-          label="메뉴 강조"
-          toggleSwitchItems={[
-            { label: '인기 메뉴로 표시', initialValue: true },
-            { label: '신 메뉴로 표시', initialValue: false },
-          ]}
-        />
-        <EditToggleSwitch
-          label="판매중"
-          toggleSwitchItems={[
-            { label: '판매중', initialValue: true },
-            { label: '숨김', initialValue: false },
-            { label: '품절', initialValue: false },
-          ]}
-        />
-      </EditModal>
+          {currentModal === 'modifyMenu' && (
+            <>
+              <EditModalHeader onSave={() => {}}>
+                세부사항 편집하기
+              </EditModalHeader>
+              <EditModalTextInput
+                label="메뉴 설명"
+                placeholder="메뉴설명을 입력해주세요."
+              />
+              <EditModalImageInput
+                label="메뉴 이미지"
+                placeholder="메뉴이미지를 추가해주세요."
+              />
+              <EditModalOptionInput
+                label="메뉴 옵션"
+                placeholder="옵션을 추가해주세요."
+              />
+              <EditToggleSwitch
+                label="메뉴 강조"
+                toggleSwitchItems={[
+                  { label: '인기 메뉴로 표시', value: true },
+                  { label: '신 메뉴로 표시', value: false },
+                ]}
+              />
+              <EditToggleSwitch
+                label="판매중"
+                toggleSwitchItems={[
+                  { label: '판매중', value: true },
+                  { label: '숨김', value: false },
+                  { label: '품절', value: false },
+                ]}
+              />
+            </>
+          )}
+
+          {currentModal === 'createMenu' && (
+            <>
+              <EditModalHeader onSave={() => {}}>메뉴 추가하기</EditModalHeader>
+              <EditModalTextInput
+                label="메뉴명"
+                placeholder="메뉴명을 입력해주세요."
+              />
+              <EditModalTextInput
+                label="가격"
+                placeholder="가격을 입력해주세요."
+              />
+              <EditModaSelectInput
+                label="카테고리"
+                placeholder="카테고리를 선택해주세요."
+              />
+              <EditModalImageInput
+                label="메뉴 이미지"
+                placeholder="메뉴이미지를 추가해주세요."
+              />
+              <EditModalOptionInput
+                label="메뉴 옵션"
+                placeholder="옵션을 추가해주세요."
+              />
+              <EditToggleSwitch
+                label="메뉴 강조"
+                toggleSwitchItems={[
+                  { label: '인기 메뉴로 표시', value: true },
+                  { label: '신 메뉴로 표시', value: false },
+                ]}
+              />
+              <EditToggleSwitch
+                label="판매중"
+                toggleSwitchItems={[
+                  { label: '판매중', value: true },
+                  { label: '숨김', value: false },
+                  { label: '품절', value: false },
+                ]}
+              />
+            </>
+          )}
+        </EditModal>
+      )}
     </div>
   );
 }

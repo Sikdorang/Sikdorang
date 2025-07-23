@@ -2,6 +2,19 @@
 
 import { default as SaveButton } from '@/components/common/buttons/CtaButton';
 import {
+  EditModalHeader,
+  EditModalTextInput,
+  default as MenuEditModal,
+} from '@/components/common/modals/EditModal';
+import {
+  default as DeleteMenuModal,
+  WarningModalActions,
+  WarningModalBody,
+  WarningModalHeader,
+} from '@/components/common/modals/WarningModal';
+import { useEditModal } from '@/contexts/EditModalContext';
+import { useWarningModal } from '@/contexts/WarningModalContext';
+import {
   closestCenter,
   DndContext,
   DragEndEvent,
@@ -20,31 +33,13 @@ import {
   verticalListSortingStrategy,
 } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
-import { useState } from 'react';
-
-import {
-  default as CategoryEditModal,
-  EditModalHeader,
-  EditModalTextInput,
-  default as MenuEditModal,
-} from '@/components/common/modals/EditModal';
-import { useEditModal } from '@/contexts/EditModalContext';
-
-import {
-  default as DeleteCategoryModal,
-  default as DeleteMenuModal,
-  WarningModalActions,
-  WarningModalBody,
-  WarningModalHeader,
-} from '@/components/common/modals/WarningModal';
-import { useWarningModal } from '@/contexts/WarningModalContext';
-
 import ChevronDownIcon from '@public/icons/ic_chevron_down.svg';
 import ChevronRightIcon from '@public/icons/ic_chevron_right.svg';
 import DragIcon from '@public/icons/ic_dots.svg';
 import EditIcon from '@public/icons/ic_pencil.svg';
 import DeleteIcon from '@public/icons/ic_trashcan.svg';
 import Image from 'next/image';
+import { useState } from 'react';
 
 interface CategoryItem {
   id: string;
@@ -407,7 +402,7 @@ export default function MenuCategoryPage() {
         </DragOverlay>
       </DndContext>
 
-      <CategoryEditModal>
+      {/* <CategoryEditModal>
         <EditModalHeader onSave={handleSave}>
           카테고리명 수정하기
         </EditModalHeader>
@@ -415,7 +410,20 @@ export default function MenuCategoryPage() {
           label="카테고리명"
           placeholder="카테고리명을 입력해주세요."
         />
-      </CategoryEditModal>
+      </CategoryEditModal> */}
+
+      {/* 
+      <DeleteCategoryModal>
+        <WarningModalHeader>카테고리 삭제</WarningModalHeader>
+        <WarningModalBody>
+          카테고리를 정말 삭제할까요?
+          <br />
+          카테고리와 안에 있는 메뉴들이 모두 사라져요.
+          <br />
+          한 번 삭제하면 복구할 수 없어요 !
+        </WarningModalBody>
+        <WarningModalActions onConfirm={() => {}} />
+      </DeleteCategoryModal> */}
 
       <MenuEditModal>
         <EditModalHeader onSave={handleSave}>메뉴명 수정하기</EditModalHeader>
@@ -424,17 +432,6 @@ export default function MenuCategoryPage() {
           placeholder="메뉴명을 입력해주세요."
         />
       </MenuEditModal>
-
-      <DeleteCategoryModal>
-        <WarningModalHeader>카테고리 삭제</WarningModalHeader>
-        <WarningModalBody>
-          카테고리를 정말 삭제할까요?
-          <br />
-          카테고리와 안에 있는 메뉴들이 모두 사라져요.
-          <br />한 번 삭제하면 복구할 수 없어요 !
-        </WarningModalBody>
-        <WarningModalActions onConfirm={() => {}} />
-      </DeleteCategoryModal>
 
       <DeleteMenuModal>
         <WarningModalHeader>메뉴 삭제</WarningModalHeader>

@@ -2,9 +2,10 @@ import { forwardRef } from 'react';
 
 interface MenuCustomLabelProps {
   text: string;
-  variant?: 'default' | 'red' | 'blue' | 'purple' | 'orange';
+  variant?: 'default' | 'red' | 'blue' | 'purple' | 'orange' | 'green';
   hover?: boolean;
   isStatus?: boolean;
+  isTag?: boolean;
   onClick?: () => void;
   className?: string;
 }
@@ -16,6 +17,7 @@ const MenuCustomLabel = forwardRef<HTMLDivElement, MenuCustomLabelProps>(
       variant = 'default',
       hover = true,
       isStatus = false,
+      isTag = false,
       onClick,
       className = '',
     },
@@ -30,6 +32,18 @@ const MenuCustomLabel = forwardRef<HTMLDivElement, MenuCustomLabelProps>(
         variant = 'orange';
       } else if (text === '품절') {
         variant = 'purple';
+      } else if (text === '신메뉴') {
+        variant = 'green';
+      } else if (text === '인기') {
+        variant = 'red';
+      }
+    }
+
+    if (isTag) {
+      if (text === '신메뉴') {
+        variant = 'green';
+      } else if (text === '인기' || text === '필수') {
+        variant = 'red';
       }
     }
 
@@ -42,9 +56,13 @@ const MenuCustomLabel = forwardRef<HTMLDivElement, MenuCustomLabelProps>(
           ? `bg-chip-blueBg text-chip-blueText border-none ${hover ? 'hover:bg-chip-blueBg' : ''}`
           : variant === 'purple'
             ? `bg-chip-purpleBg text-chip-purpleText border-none ${hover ? 'hover:bg-chip-purpleBg' : ''}`
-            : text === '카테고리 선택' && !isStatus
-              ? `bg-w text-gray-400 border-gray-300 ${hoverClass}`
-              : `bg-w text-gray-700 border-gray-300 ${hoverClass}`;
+            : variant === 'red'
+              ? `bg-chip-redBg text-chip-redText border-none ${hover ? 'hover:bg-chip-redBg' : ''}`
+              : variant === 'green'
+                ? `bg-chip-greenBg text-chip-greenText border-none ${hover ? 'hover:bg-chip-greenBg' : ''}`
+                : text === '카테고리 선택' && !isStatus
+                  ? `bg-w text-gray-400 border-gray-300 ${hoverClass}`
+                  : `bg-w text-gray-700 border-gray-300 ${hoverClass}`;
 
     return (
       <div
@@ -53,7 +71,7 @@ const MenuCustomLabel = forwardRef<HTMLDivElement, MenuCustomLabelProps>(
         onClick={onClick}
       >
         <span>
-          {isStatus ? '· ' : ''} {text}
+          {isStatus && !isTag ? '· ' : ''} {text}
         </span>
       </div>
     );

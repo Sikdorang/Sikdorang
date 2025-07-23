@@ -1,3 +1,4 @@
+import AddButton from '../buttons/CtaButton';
 import { IMenuImageItem } from '@/types/model/menu';
 import {
   DndContext,
@@ -15,15 +16,13 @@ import {
   verticalListSortingStrategy,
 } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
-import { LexoRank } from 'lexorank';
-import React, { useEffect, useState } from 'react';
-import { v4 as uuidv4 } from 'uuid';
-
 import DraggableIcon from '@public/icons/ic_dots.svg';
 import EmptyImageIcon from '@public/icons/ic_picture.svg';
-import AddIcon from '@public/icons/ic_plus.svg';
 import DeleteIcon from '@public/icons/ic_x.svg';
+import { LexoRank } from 'lexorank';
 import Image from 'next/image';
+import React, { useEffect, useRef, useState } from 'react';
+import { v4 as uuidv4 } from 'uuid';
 
 interface MenuImageGalleryProps {
   images?: IMenuImageItem[];
@@ -113,8 +112,35 @@ export default function MenuImageGallery({
     }
   };
 
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const handleClick = () => {
+    fileInputRef.current?.click(); // input을 강제로 클릭
+  };
+
   return (
     <div>
+      <div className="flex items-center mb-4">
+        <div className="text-mobile-body-l-semibold grow-1">메뉴 사진</div>
+        <>
+          <AddButton
+            text="사진 추가하기"
+            color="black"
+            width="fit"
+            size="small"
+            onClick={handleClick}
+          />
+          <input
+            type="file"
+            multiple
+            accept="image/*"
+            onChange={handleImageUpload}
+            ref={fileInputRef}
+            className="hidden"
+          />
+        </>
+      </div>
+
       <div className="mb-4 flex h-64 w-full items-center justify-center rounded-xl bg-gray-100">
         {selectedImage ? (
           <img
@@ -177,18 +203,6 @@ export default function MenuImageGallery({
                   />
                 );
               })}
-            {(images?.length || 0) < maxImages && (
-              <label className="flex h-16 w-16 shrink-0 cursor-pointer items-center justify-center rounded-md bg-gray-100 hover:bg-gray-200">
-                <Image src={AddIcon} alt="add" width={12} height={12} />
-                <input
-                  type="file"
-                  multiple
-                  accept="image/*"
-                  onChange={handleImageUpload}
-                  className="hidden"
-                />
-              </label>
-            )}
           </div>
         </SortableContext>
       </DndContext>

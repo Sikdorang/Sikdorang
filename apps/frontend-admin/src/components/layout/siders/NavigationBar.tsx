@@ -8,7 +8,6 @@ import DashboardIcon from '@public/icons/ic_histogram.svg';
 import MenuManagementIcon from '@public/icons/ic_paper.svg';
 import CollapsingIcon from '@public/icons/ic_screen.svg';
 import ShopManagementIcon from '@public/icons/ic_shop.svg';
-
 import Image from 'next/image';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
@@ -86,7 +85,7 @@ export default function NavigationBar({
               <div className="mt-2 flex flex-col gap-1">
                 <Link
                   href="/menu/edit"
-                  className={`text-mobile-body-s-semibold flex items-center gap-3 rounded-lg px-4 py-3 text-left transition-colors ${
+                  className={`text-mobile-body-s-semibold flex items-center gap-3 rounded-lg px-12 py-3 text-left transition-colors ${
                     pathname === '/menu/edit'
                       ? 'bg-main-500 text-bk'
                       : 'hover:bg-main-500/20 text-gray-200'
@@ -96,7 +95,7 @@ export default function NavigationBar({
                 </Link>
                 <Link
                   href="/menu/category"
-                  className={`text-mobile-body-s-semibold flex items-center gap-3 rounded-lg px-4 py-3 text-left transition-colors ${
+                  className={`text-mobile-body-s-semibold flex items-center gap-3 rounded-lg px-12 py-3 text-left transition-colors ${
                     pathname === '/menu/category'
                       ? 'bg-main-500 text-bk'
                       : 'hover:bg-main-500/10 text-gray-200'
@@ -107,23 +106,6 @@ export default function NavigationBar({
               </div>
             )}
           </div>
-
-          <Link
-            href="/preview"
-            className={`text-mobile-body-m-semibold flex items-center gap-3 rounded-lg px-4 py-2 transition-colors ${
-              pathname === '/preview'
-                ? 'text-main-500'
-                : 'hover:bg-main-500/10 text-gray-100'
-            } ${collapsed ? 'justify-center' : ''}`}
-          >
-            <Image
-              src={PreviewMenuIcon}
-              width={20}
-              height={20}
-              alt="Preview Menu"
-            />
-            {!collapsed && <span>내 메뉴판 보기</span>}
-          </Link>
 
           <Link
             href="/recommend"
@@ -160,6 +142,23 @@ export default function NavigationBar({
           </Link>
 
           <Link
+            href="/preview"
+            className={`text-mobile-body-m-semibold flex items-center gap-3 rounded-lg px-4 py-2 transition-colors ${
+              pathname === '/preview'
+                ? 'text-main-500'
+                : 'hover:bg-main-500/10 text-gray-100'
+            } ${collapsed ? 'justify-center' : ''}`}
+          >
+            <Image
+              src={PreviewMenuIcon}
+              width={20}
+              height={20}
+              alt="Preview Menu"
+            />
+            {!collapsed && <span>내 메뉴판 보기</span>}
+          </Link>
+
+          <Link
             href="/dashboard"
             className={`text-mobile-body-m-semibold flex items-center gap-3 rounded-lg px-4 py-2 transition-colors ${
               pathname === '/dashboard'
@@ -182,7 +181,7 @@ export default function NavigationBar({
         <nav className="flex flex-col gap-2 px-4">
           <Link
             href="/settings"
-            className={`text-mobile-body-m-semibold flex items-center gap-3 rounded-lg px-4 py-2 text-gray-100 transition-colors ${
+            className={`text-mobile-body-m-semibold flex items-center gap-3 rounded-lg px-2 py-2 text-gray-100 transition-colors ${
               pathname === '/settings'
                 ? 'text-main-500'
                 : 'hover:bg-main-500/10 text-gray-100'
