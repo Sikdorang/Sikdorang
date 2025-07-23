@@ -1,5 +1,6 @@
-import type { Metadata } from 'next';
 import '../styles/global.css';
+import MswProvider from '@/mocks/MswProvider';
+import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
   title: 'Sikdorang Admin',
@@ -13,7 +14,9 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className="custom-scrollbar">
-      <body>{children}</body>
+      <body>
+        <MswProvider>{children}</MswProvider>
+      </body>
     </html>
   );
 }
