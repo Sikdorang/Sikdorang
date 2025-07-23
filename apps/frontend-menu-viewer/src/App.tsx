@@ -1,14 +1,21 @@
+import GlobalErrorBoundary from './components/common/GlobalErrorBoundary.tsx';
+import Router from './routes/index.tsx';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { Toaster } from 'react-hot-toast';
-import Router from './routes/index.tsx';
 
 export default function App() {
   const queryClient = new QueryClient();
 
   return (
-    <QueryClientProvider client={queryClient}>
-      <Toaster />
-      <Router />
-    </QueryClientProvider>
+    <GlobalErrorBoundary>
+      <QueryClientProvider client={queryClient}>
+        <Toaster
+          containerStyle={{
+            bottom: '7rem',
+          }}
+        />
+        <Router />
+      </QueryClientProvider>
+    </GlobalErrorBoundary>
   );
 }
