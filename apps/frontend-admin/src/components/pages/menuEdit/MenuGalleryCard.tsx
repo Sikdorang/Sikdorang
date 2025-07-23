@@ -6,6 +6,7 @@ import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 
 interface MenuGalleryCardProps {
+  onDelete: (menuId: number) => void;
   item: {
     id: number;
     tags: string[];
@@ -14,7 +15,11 @@ interface MenuGalleryCardProps {
   };
 }
 
-export default function MenuGalleryCard({ item }: MenuGalleryCardProps) {
+export default function MenuGalleryCard({
+  onDelete,
+  item,
+}: MenuGalleryCardProps) {
+
   const router = useRouter();
 
   return (
@@ -27,7 +32,10 @@ export default function MenuGalleryCard({ item }: MenuGalleryCardProps) {
         <button
           className="absolute right-2 top-2 rounded-full p-1 hover:bg-gray-200"
           aria-label="닫기"
-          onClick={() => {}}
+          onClick={(e) => {
+            e.stopPropagation();
+            onDelete(item.id);
+          }}
         >
           <Image src={CloseIcon} alt="닫기" width={20} height={20} />
         </button>
