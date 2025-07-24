@@ -1,16 +1,19 @@
 import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { Category, PrismaClient } from '@prisma/client';
 
+import { CreateCategoryDto } from './dto/create-category.dto';
+
 @Injectable()
 export class CategoryService {
   private readonly prisma = new PrismaClient();
 
-  async createCategory(dto: { category: string; order: string }) {
+  async createCategory(createCategoryDto: CreateCategoryDto, storeId: number) {
     try {
       const category: Category = await this.prisma.category.create({
         data: {
-          category: dto.category,
-          order: dto.order,
+          category: createCategoryDto.category,
+          order: createCategoryDto.order,
+          store: { connect: { id: storeId } },
         },
       });
       return { message: '카테고리 생성 성공', ...category };

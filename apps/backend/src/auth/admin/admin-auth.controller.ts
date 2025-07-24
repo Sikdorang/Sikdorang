@@ -9,7 +9,7 @@ import {
 } from '@nestjs/common';
 import { Request, Response } from 'express';
 
-import { AuthService } from './auth.service';
+import { AuthService } from './admin-auth.service';
 import { KakaoRedirectSwagger } from './swagger/kakao-redirect.swagger';
 import { LogoutSwagger } from './swagger/logout.swagger';
 import { RefreshAccessTokenSwagger } from './swagger/refresh-access-token.swagger';

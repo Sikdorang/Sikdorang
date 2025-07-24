@@ -1,7 +1,17 @@
 import { Injectable, InternalServerErrorException } from '@nestjs/common';
-import { PrismaClient } from '@prisma/client';
+import { Day, PrismaClient } from '@prisma/client';
 
 import { CreateStoreDto } from './dto/create-store.dto';
+
+const dayToKorean: Record<string, string> = {
+  MON: '월',
+  TUE: '화',
+  WED: '수',
+  THU: '목',
+  FRI: '금',
+  SAT: '토',
+  SUN: '일',
+};
 
 @Injectable()
 export class StoreService {
@@ -9,9 +19,32 @@ export class StoreService {
 
   async create(createStoreDto: CreateStoreDto, storeId: number) {
     try {
-      const data = { ...createStoreDto, storeId };
+      const data = { ...createStoreDto };
+
+      if (data.time) {
+        await this.prisma.hours.deleteMany({
+          where: { storeId },
+        });
+
+        const hoursData = data.time.map((t) => ({
+          storeId: storeId,
+          day: t.day.toUpperCase() as Day,
+          startHour: t.startHour,
+          startMin: t.startMin,
+          endHour: t.endHour,
+          endMin: t.endMin,
+          open: t.open,
+        }));
+
+        await this.prisma.hours.createMany({
+          data: hoursData,
+        });
+
+        delete data.time;
+      }
+
       return this.prisma.store.update({
-        where: { id: data.storeId },
+        where: { id: storeId },
         data,
       });
     } catch (error) {
@@ -23,9 +56,58 @@ export class StoreService {
   }
   async getStore(storeId: number) {
     try {
-      return await this.prisma.store.findMany({
+      //가게 정보 조회
+      const store = await this.prisma.store.findFirst({
+        where: { id: storeId },
+      });
+
+      //순서 조회
+      const infoOrder = await this.prisma.informationOrder.findFirst({
         where: { storeId },
       });
+
+      //영업 시간 조회
+      const hours = await this.prisma.hours.findMany({
+        where: { storeId },
+        orderBy: { day: 'asc' },
+      });
+
+      //영업 시간 데이터 가공
+      const openHourValue = hours
+        .filter((h) => h.open)
+        .map(
+          (h) =>
+            `${dayToKorean[h.day]} ${String(h.startHour).padStart(2, '0')}:${String(h.startMin).padStart(2, '0')}~${String(h.endHour).padStart(2, '0')}:${String(h.endMin).padStart(2, '0')}`,
+        )
+        .join(', ');
+
+      //정보 가공
+      const infoItems = [
+        { key: 'openHour', value: openHourValue },
+        { key: 'description', value: store?.description },
+        {
+          key: 'wifi',
+          value: `ID ${store?.wifiId} / PW ${store?.wifiPassword}`,
+        },
+        { key: 'phoneNumber', value: store?.phoneNumber },
+        { key: 'naverPlace', value: store?.naverPlace },
+        {
+          key: 'corkage',
+          value:
+            store?.corkagePossible === true
+              ? store?.corkageFree === true
+                ? '가능 (무료)'
+                : '가능 (유료)'
+              : '불가능',
+        },
+        { key: 'toilet', value: store?.toilet },
+      ];
+
+      return {
+        id: storeId,
+        name: store?.store,
+        order: infoOrder,
+      };
     } catch (error) {
       console.error('Store get 에러:', error);
       throw new InternalServerErrorException(
