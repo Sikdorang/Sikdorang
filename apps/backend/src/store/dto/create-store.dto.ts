@@ -1,5 +1,21 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { IsBoolean, IsOptional, IsString } from 'class-validator';
+import { Type } from 'class-transformer';
+import {
+  IsArray,
+  IsBoolean,
+  IsOptional,
+  IsString,
+  ValidateNested,
+} from 'class-validator';
+
+class StoreHourDto {
+  day: string;
+  startHour: number;
+  startMin: number;
+  endHour: number;
+  endMin: number;
+  open: boolean;
+}
 
 export class CreateStoreDto {
   @ApiProperty({ description: '가게 이름', example: '매장-12345' })
@@ -63,4 +79,14 @@ export class CreateStoreDto {
   @IsOptional()
   @IsString()
   toilet?: string;
+
+  @ApiPropertyOptional({
+    description: '운영 시간 정보',
+    type: [StoreHourDto],
+  })
+  @IsOptional()
+  @IsArray()
+  @ValidateNested({ each: true })
+  @Type(() => StoreHourDto)
+  time?: StoreHourDto[];
 }

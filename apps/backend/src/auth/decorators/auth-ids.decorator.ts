@@ -9,6 +9,7 @@ interface RequestWithUser extends Request {
   user?: {
     userId: number;
     kakaoId: string;
+    storeId?: number;
   };
 }
 
@@ -22,5 +23,16 @@ export const UserId = createParamDecorator(
     }
 
     return userId;
+  },
+);
+export const StoreId = createParamDecorator(
+  (data: unknown, ctx: ExecutionContext): number => {
+    const request = ctx.switchToHttp().getRequest<RequestWithUser>();
+    const storeId = request.user?.storeId;
+    if (!storeId || typeof storeId !== 'number') {
+      throw new UnauthorizedException('유효하지 않은 매장 정보입니다.');
+    }
+
+    return storeId;
   },
 );

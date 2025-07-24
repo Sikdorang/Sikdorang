@@ -7,7 +7,7 @@ import {
 import { PrismaClient } from '@prisma/client';
 import axios from 'axios';
 
-import { JwtService } from './jwt.service';
+import { JwtService } from '../jwt.service';
 
 interface KakaoUser {
   id: number;
@@ -30,8 +30,19 @@ export class AuthService {
       if (!user) {
         user = await this.createUser(kakaoUser);
       }
+      const store = await this.prisma.store.findFirst({
+        where: { userId: user.id },
+        select: { id: true },
+      });
+
+      const storeId = store?.id;
+
       // JWT 토큰 생성
-      const payload = { userId: user.id, kakaoId: user.kakaoId.toString() };
+      const payload = {
+        userId: user.id,
+        kakaoId: user.kakaoId.toString(),
+        storeId: storeId,
+      };
       const jwtAccessToken = this.jwtService.sign(payload, '1h');
       const jwtRefreshToken = this.jwtService.sign(payload, '1y');
 
@@ -62,6 +73,7 @@ export class AuthService {
 
   async createUser(kakaoUser: KakaoUser): Promise<any> {
     let user;
+    let store;
     try {
       user = await this.prisma.user.create({
         data: {
@@ -82,16 +94,18 @@ export class AuthService {
 
     try {
       const randomStoreName = `매장-${Math.floor(Math.random() * 100000)}`;
-      await this.prisma.store.create({
+      const randomPinNumber = String(Math.floor(Math.random() * 100000));
+      store = await this.prisma.store.create({
         data: {
           store: randomStoreName,
           userId: user.id,
+          pinNumber: randomPinNumber,
         },
       });
     } catch (e) {
       console.error('Store 생성 중 에러:', e);
     }
-    return user;
+    return { ...user, storeId: store?.id };
   }
 
   async getKakaoAccessToken(code: string): Promise<string> {
@@ -147,11 +161,13 @@ export class AuthService {
   async refreshAccessToken(refreshToken: string): Promise<string> {
     try {
       const payload = this.jwtService.verify(refreshToken);
-      const { userId, kakaoId } = payload as {
+      console.log(payload);
+      const { userId, kakaoId, storeId } = payload as {
         userId: number;
         kakaoId: number;
+        storeId: number;
       };
-      return this.jwtService.sign({ userId, kakaoId }, '1h');
+      return this.jwtService.sign({ userId, kakaoId, storeId }, '1h');
     } catch (e) {
       console.error('refreshAccessToken 에러:', e);
       throw new InternalServerErrorException(
