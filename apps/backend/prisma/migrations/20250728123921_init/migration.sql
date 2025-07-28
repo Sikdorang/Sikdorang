@@ -1,7 +1,7 @@
 -- CreateTable
 CREATE TABLE `RefreshToken` (
     `id` INTEGER NOT NULL AUTO_INCREMENT,
-    `token` VARCHAR(191) NOT NULL,
+    `token` VARCHAR(512) NOT NULL,
     `userId` INTEGER NOT NULL,
     `createdAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
     `expiresAt` DATETIME(3) NOT NULL,
@@ -80,6 +80,38 @@ CREATE TABLE `InformationOrder` (
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
+-- CreateTable
+CREATE TABLE `StoreTable` (
+    `id` INTEGER NOT NULL AUTO_INCREMENT,
+    `tableNumber` INTEGER NOT NULL,
+    `tableToken` VARCHAR(191) NOT NULL,
+    `storeId` INTEGER NOT NULL,
+
+    PRIMARY KEY (`id`)
+) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
+-- CreateTable
+CREATE TABLE `Menu` (
+    `id` INTEGER NOT NULL AUTO_INCREMENT,
+    `menu` VARCHAR(191) NOT NULL,
+    `price` INTEGER NOT NULL,
+    `status` ENUM('SALE', 'HIDDEN', 'SOLDOUT') NOT NULL,
+    `description` VARCHAR(191) NULL,
+    `new` BOOLEAN NOT NULL,
+    `recommended` BOOLEAN NOT NULL,
+    `popular` BOOLEAN NOT NULL,
+    `maxOption` INTEGER NOT NULL,
+    `minOptionLimit` INTEGER NOT NULL,
+    `optionRequired` BOOLEAN NOT NULL,
+    `order` VARCHAR(191) NOT NULL,
+    `categoryId` INTEGER NULL,
+    `storeId` INTEGER NOT NULL,
+
+    INDEX `Menu_storeId_idx`(`storeId`),
+    INDEX `Menu_categoryId_idx`(`categoryId`),
+    PRIMARY KEY (`id`)
+) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
 -- AddForeignKey
 ALTER TABLE `Store` ADD CONSTRAINT `Store_userId_fkey` FOREIGN KEY (`userId`) REFERENCES `User`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
@@ -91,3 +123,12 @@ ALTER TABLE `Hours` ADD CONSTRAINT `Hours_storeId_fkey` FOREIGN KEY (`storeId`) 
 
 -- AddForeignKey
 ALTER TABLE `InformationOrder` ADD CONSTRAINT `InformationOrder_storeId_fkey` FOREIGN KEY (`storeId`) REFERENCES `Store`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE `StoreTable` ADD CONSTRAINT `StoreTable_storeId_fkey` FOREIGN KEY (`storeId`) REFERENCES `Store`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE `Menu` ADD CONSTRAINT `Menu_categoryId_fkey` FOREIGN KEY (`categoryId`) REFERENCES `Category`(`id`) ON DELETE SET NULL ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE `Menu` ADD CONSTRAINT `Menu_storeId_fkey` FOREIGN KEY (`storeId`) REFERENCES `Store`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;

@@ -21,7 +21,7 @@ export class AuthController {
   @Get('kakao/redirect')
   @KakaoRedirectSwagger()
   async kakaoRedirect(@Query('code') code: string) {
-    return this.authService.kakaoLogin(code);
+    return this.authService.kakaoLogin({ code });
   }
 
   @Post('refresh')
@@ -33,8 +33,9 @@ export class AuthController {
     }
 
     try {
-      const newAccessToken =
-        await this.authService.refreshAccessToken(refreshToken);
+      const newAccessToken = await this.authService.refreshAccessToken({
+        refreshToken,
+      });
       return { accessToken: newAccessToken };
     } catch (error) {
       throw new UnauthorizedException('Invalid token');
@@ -47,7 +48,7 @@ export class AuthController {
     const refreshToken: string = req.cookies?.refreshToken;
 
     if (refreshToken) {
-      await this.authService.logout(refreshToken);
+      await this.authService.logout({ refreshToken });
     }
 
     res.clearCookie('accessToken', { httpOnly: true });

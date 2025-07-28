@@ -3,6 +3,7 @@ import { Type } from 'class-transformer';
 import {
   IsArray,
   IsBoolean,
+  IsNotEmpty,
   IsOptional,
   IsString,
   ValidateNested,
@@ -20,6 +21,7 @@ class StoreHourDto {
 export class CreateStoreDto {
   @ApiProperty({ description: '가게 이름', example: '매장-12345' })
   @IsOptional()
+  @IsNotEmpty()
   @IsString()
   store?: string;
 

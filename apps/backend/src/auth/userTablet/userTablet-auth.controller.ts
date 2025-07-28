@@ -20,7 +20,7 @@ export class UserTabletAuthController {
 
   @Post('logout')
   @LogoutSwagger()
-  async logout(@Res({ passthrough: true }) res: Response) {
+  logout(@Res({ passthrough: true }) res: Response) {
     res.clearCookie('pinAccessToken');
     return { message: '로그아웃 되었습니다.' };
   }

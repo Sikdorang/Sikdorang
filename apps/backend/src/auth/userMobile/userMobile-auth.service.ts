@@ -21,6 +21,7 @@ export class UserMobileAuthService {
       }
 
       const payload = {
+        tokenType: 'mobile-authorization',
         tableNumber: table.tableNumber,
         storeId: table.storeId,
       };
@@ -29,6 +30,7 @@ export class UserMobileAuthService {
 
       return jwtAccessToken;
     } catch (error) {
+      console.log(error);
       throw error;
     }
   }
