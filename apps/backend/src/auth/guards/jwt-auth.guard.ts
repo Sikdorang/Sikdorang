@@ -8,10 +8,11 @@ import { Request } from 'express';
 
 import { JwtService } from '../jwt.service';
 
+import { JwtPayload } from './jwt-payload-type';
 export function JwtAuthGuard(
-  extraHeaderKeys: string[] = [], // pin-authorization, mobile-authorization 등만 넘기면 됨
+  extraHeaderKeys: string[] = [], // pin-authorization, mobile-authorization, admin-authorization 등만 넘기면 됨
 ): new (...args: any[]) => CanActivate {
-  const allowedHeaderKeys = ['authorization', ...extraHeaderKeys];
+  const allowedHeaderKeys = [...extraHeaderKeys];
   @Injectable()
   class DynamicJwtAuthGuard implements CanActivate {
     constructor(private readonly jwtService: JwtService) {}
@@ -25,7 +26,11 @@ export function JwtAuthGuard(
           const token = authHeader.split(' ')[1];
 
           try {
-            const payload = this.jwtService.verify(token);
+            const payload = this.jwtService.verify(token) as JwtPayload;
+
+            if (payload.tokenType !== headerKey) {
+              continue;
+            }
             (request as any).user = payload;
             return true;
           } catch {

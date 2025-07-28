@@ -19,7 +19,7 @@ export class UserTabletAuthService {
       if (!store) {
         throw new UnauthorizedException('잘못된 핀번호입니다.');
       }
-      const payload = { storeId: store.id };
+      const payload = { storeId: store.id, tokenType: 'pin-authorization' };
       const jwtAccessToken = this.jwtService.sign(payload, '1y');
       return jwtAccessToken;
     } catch (error) {

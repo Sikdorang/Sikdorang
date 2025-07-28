@@ -1,18 +1,30 @@
 import { applyDecorators } from '@nestjs/common';
-import { ApiOperation, ApiParam, ApiResponse } from '@nestjs/swagger';
+import { ApiBody, ApiOperation, ApiResponse } from '@nestjs/swagger';
 
 export const GetMobileTokenSwagger = () =>
   applyDecorators(
-    ApiOperation({ summary: '모바일 UUID로 토큰 발급' }),
-    ApiParam({
-      name: 'uuid',
+    ApiOperation({
+      summary: '테이블 토큰 기반 모바일 토큰 발급',
+      description:
+        'QR로 발급받은 테이블 전용 토큰을 통해, 모바일에서 사용할 수 있는 토큰을 발급합니다.',
+    }),
+    ApiBody({
+      description: 'QR에서 발급된 테이블용 토큰',
       required: true,
-      description: '모바일 기기의 UUID',
-      example: 'a1b2c3d4-e5f6-7890-abcd-1234567890ef',
+      schema: {
+        type: 'object',
+        properties: {
+          tableToken: {
+            type: 'string',
+            example: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...',
+          },
+        },
+        required: ['tableToken'],
+      },
     }),
     ApiResponse({
-      status: 200,
-      description: '토큰 발급 성공',
+      status: 201,
+      description: '모바일 토큰 발급 성공',
       schema: {
         example: {
           mobileToken: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...',
@@ -20,11 +32,11 @@ export const GetMobileTokenSwagger = () =>
       },
     }),
     ApiResponse({
-      status: 404,
-      description: 'UUID가 존재하지 않음',
+      status: 400,
+      description: '유효하지 않은 테이블 토큰',
       schema: {
         example: {
-          message: '해당 UUID를 가진 사용자를 찾을 수 없습니다.',
+          message: '유효하지 않은 테이블 토큰입니다.',
         },
       },
     }),

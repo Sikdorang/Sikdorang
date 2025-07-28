@@ -22,7 +22,7 @@ export class AuthService {
     private readonly prisma: PrismaClient,
   ) {}
 
-  async kakaoLogin(code: string): Promise<any> {
+  async kakaoLogin({ code }: { code: string }): Promise<any> {
     try {
       const accessToken: string = await this.getKakaoAccessToken(code);
       const kakaoUser: KakaoUser = await this.getKakaoUserInfo(accessToken);
@@ -42,6 +42,7 @@ export class AuthService {
         userId: user.id,
         kakaoId: user.kakaoId.toString(),
         storeId: storeId,
+        tokenType: 'admin-authorization',
       };
       const jwtAccessToken = this.jwtService.sign(payload, '1h');
       const jwtRefreshToken = this.jwtService.sign(payload, '1y');
@@ -94,7 +95,9 @@ export class AuthService {
 
     try {
       const randomStoreName = `매장-${Math.floor(Math.random() * 100000)}`;
-      const randomPinNumber = String(Math.floor(Math.random() * 100000));
+      const randomPinNumber = String(
+        Math.floor(Math.random() * 100000),
+      ).padStart(5, '0');
       store = await this.prisma.store.create({
         data: {
           store: randomStoreName,
@@ -158,16 +161,24 @@ export class AuthService {
     }
   }
 
-  async refreshAccessToken(refreshToken: string): Promise<string> {
+  async refreshAccessToken({
+    refreshToken,
+  }: {
+    refreshToken: string;
+  }): Promise<string> {
     try {
       const payload = this.jwtService.verify(refreshToken);
-      console.log(payload);
-      const { userId, kakaoId, storeId } = payload as {
+
+      const { userId, kakaoId, storeId, tokenType } = payload as {
         userId: number;
         kakaoId: number;
         storeId: number;
+        tokenType: string;
       };
-      return this.jwtService.sign({ userId, kakaoId, storeId }, '1h');
+      return this.jwtService.sign(
+        { userId, kakaoId, storeId, tokenType },
+        '1h',
+      );
     } catch (e) {
       console.error('refreshAccessToken 에러:', e);
       throw new InternalServerErrorException(
@@ -176,7 +187,7 @@ export class AuthService {
     }
   }
 
-  async logout(refreshToken: string) {
+  async logout({ refreshToken }: { refreshToken: string }) {
     try {
       await this.prisma.refreshToken.deleteMany({
         where: { token: refreshToken },

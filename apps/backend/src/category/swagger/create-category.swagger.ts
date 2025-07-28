@@ -1,9 +1,18 @@
 import { applyDecorators } from '@nestjs/common';
-import { ApiOperation, ApiResponse } from '@nestjs/swagger';
+import { ApiBody, ApiOperation, ApiResponse } from '@nestjs/swagger';
 
 export const CreateCategorySwagger = () =>
   applyDecorators(
     ApiOperation({ summary: '카테고리 생성' }),
+    ApiBody({
+      description: '생성할 카테고리 정보',
+      schema: {
+        example: {
+          category: '한식',
+          order: '1',
+        },
+      },
+    }),
     ApiResponse({
       status: 201,
       description: '카테고리 생성 성공',
