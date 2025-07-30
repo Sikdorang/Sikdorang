@@ -8,13 +8,8 @@ import { StoreService } from './store.service';
 import { CreateStoreSwagger } from './swagger/create-store.swagger';
 import { GetStoreSwagger } from './swagger/get-store.swagger';
 
-const jwtAuthGuard = JwtAuthGuard([
-  'pin-authorization',
-  'mobile-authorization',
-]);
-
 @Controller('store')
-@UseGuards(jwtAuthGuard)
+@UseGuards(JwtAuthGuard(['pin-authorization', 'mobile-authorization']))
 export class StoreController {
   constructor(private readonly storeService: StoreService) {}
 

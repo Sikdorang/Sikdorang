@@ -1,17 +1,12 @@
-import { Controller, Delete, Param, UseGuards } from '@nestjs/common';
+import { Controller, Delete, Get, Param, UseGuards } from '@nestjs/common';
 
 import { StoreId } from '../auth/decorators/auth-ids.decorator';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 
 import { MenuService } from './menu.service';
 import { DeleteMenuSwagger } from './swagger/delete-menu.swagger';
+import { GetMenusByCategorySwagger } from './swagger/get-menus-by-category.swagger';
 
-const jwtAuthGuard = JwtAuthGuard([
-  'pin-authorization',
-  'mobile-authorization',
-]);
-const adminJwtAuthGuard = JwtAuthGuard(['admin-authorization']);
-const mobileJwtAuthGaurd = JwtAuthGuard(['mobile-authorization']);
 @Controller('menu')
 export class MenuController {
   constructor(private readonly menuService: MenuService) {}
@@ -21,10 +16,26 @@ export class MenuController {
   //  async create(@Body() dto: CreateMenuDto, @StoreId() storeId: number) {
   //    return await this.menuService.createMenu(dto, storeId);
   //  }
-  @UseGuards(mobileJwtAuthGaurd)
+  @UseGuards(JwtAuthGuard(['admin-authorization']))
   @Delete(':menuId')
   @DeleteMenuSwagger()
   async delete(@Param('menuId') menuId: number, @StoreId() storeId: number) {
-    return await this.menuService.deleteMenu(menuId, storeId);
+    return await this.menuService.deleteMenu({ menuId, storeId });
+  }
+
+  @UseGuards(
+    JwtAuthGuard([
+      'pin-authorization',
+      'mobile-authorization',
+      'admin-authorization',
+    ]),
+  )
+  @Get('/categoryId/:categoryId')
+  @GetMenusByCategorySwagger()
+  async getMenus(
+    @Param('categoryId') categoryId: number,
+    @StoreId() storeId: number,
+  ) {
+    return await this.menuService.getMenusByCategory({ categoryId, storeId });
   }
 }
