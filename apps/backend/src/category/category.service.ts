@@ -24,7 +24,7 @@ export class CategoryService {
         data: {
           category: createCategoryDto.category,
           order: createCategoryDto.order,
-          store: { connect: { id: storeId } },
+          storeId: storeId,
         },
       });
       return { message: '카테고리 생성 성공', ...category };

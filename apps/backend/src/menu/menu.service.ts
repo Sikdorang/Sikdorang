@@ -1,5 +1,11 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  Injectable,
+  InternalServerErrorException,
+  NotFoundException,
+} from '@nestjs/common';
 import { PrismaClient } from '@prisma/client';
+
+import { CreateMenusDto } from './dto/create-menu.dto';
 
 @Injectable()
 export class MenuService {
@@ -20,6 +26,7 @@ export class MenuService {
       });
     } catch (error) {
       console.log(error);
+      throw new InternalServerErrorException('메뉴 삭제 중 오류 발생');
     }
   }
   async getMenusByCategory({
@@ -35,6 +42,27 @@ export class MenuService {
       });
     } catch (error) {
       console.log(error);
+      throw new InternalServerErrorException('메뉴 받아오기 중 오류 발생');
+    }
+  }
+
+  async createMenus({
+    createMenusDtos,
+    storeId,
+  }: {
+    createMenusDtos: CreateMenusDto[];
+    storeId: number;
+  }) {
+    try {
+      return await this.prisma.menu.createMany({
+        data: createMenusDtos.map((dto) => ({
+          storeId,
+          ...dto,
+        })),
+      });
+    } catch (error) {
+      console.log(error);
+      throw new InternalServerErrorException('메뉴 생성 중 오류 발생');
     }
   }
 }
