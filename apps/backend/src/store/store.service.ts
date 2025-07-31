@@ -106,6 +106,7 @@ export class StoreService {
       return {
         id: storeId,
         name: store?.store,
+        infoItems,
         order: infoOrder,
       };
     } catch (error) {
