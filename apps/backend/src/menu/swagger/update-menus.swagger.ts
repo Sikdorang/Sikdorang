@@ -1,13 +1,13 @@
 import { applyDecorators } from '@nestjs/common';
 import { ApiBody, ApiOperation, ApiResponse } from '@nestjs/swagger';
 
-import { UpdateMenusDto } from '../dto/update-menus.dto';
+import { UpdateMenuDto } from '../dto/update-menu.dto';
 
 export function UpdateMenusSwagger() {
   return applyDecorators(
     ApiOperation({ summary: '여러 개의 메뉴 수정' }),
     ApiBody({
-      type: UpdateMenusDto,
+      type: UpdateMenuDto,
       isArray: true,
       description: '수정할 메뉴들의 배열',
       examples: {
