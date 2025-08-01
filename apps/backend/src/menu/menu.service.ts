@@ -5,8 +5,9 @@ import {
 } from '@nestjs/common';
 import { Menu, PrismaClient } from '@prisma/client';
 
-import { CreateMenusDto } from './dto/create-menus.dto';
-import { UpdateMenusDto } from './dto/update-menus.dto';
+import { CreateMenuDto } from './dto/create-menu.dto';
+import { UpdateMenuDetailsDto } from './dto/update-menu-details.dto';
+import { UpdateMenuDto } from './dto/update-menu.dto';
 
 @Injectable()
 export class MenuService {
@@ -51,7 +52,7 @@ export class MenuService {
     createMenusDtos,
     storeId,
   }: {
-    createMenusDtos: CreateMenusDto[];
+    createMenusDtos: CreateMenuDto[];
     storeId: number;
   }) {
     try {
@@ -71,7 +72,7 @@ export class MenuService {
     updateMenusDtos,
     storeId,
   }: {
-    updateMenusDtos: UpdateMenusDto[];
+    updateMenusDtos: UpdateMenuDto[];
     storeId: number;
   }) {
     try {
@@ -95,6 +96,31 @@ export class MenuService {
     } catch (error) {
       console.error(error);
       throw new InternalServerErrorException('메뉴 업데이트 중 오류 발생');
+    }
+  }
+
+  async updateMenuDetails({
+    updateMenuDetailsDto,
+    storeId,
+    menuId,
+  }: {
+    updateMenuDetailsDto: UpdateMenuDetailsDto;
+    storeId: number;
+    menuId: number;
+  }) {
+    try {
+      const updated = await this.prisma.menu.update({
+        where: {
+          id: menuId,
+          storeId,
+        },
+        data: updateMenuDetailsDto,
+      });
+
+      return updated;
+    } catch (error) {
+      console.error(error);
+      throw new InternalServerErrorException('메뉴 상세정보 수정 중 오류 발생');
     }
   }
 }

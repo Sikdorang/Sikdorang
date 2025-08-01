@@ -12,12 +12,14 @@ import {
 import { StoreId } from '../auth/decorators/auth-ids.decorator';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 
-import { CreateMenusDto } from './dto/create-menus.dto';
-import { UpdateMenusDto } from './dto/update-menus.dto';
+import { CreateMenuDto } from './dto/create-menu.dto';
+import { UpdateMenuDetailsDto } from './dto/update-menu-details.dto';
+import { UpdateMenuDto } from './dto/update-menu.dto';
 import { MenuService } from './menu.service';
 import { CreateMenusSwagger } from './swagger/create-menus.swagger';
 import { DeleteMenuSwagger } from './swagger/delete-menu.swagger';
 import { GetMenusByCategorySwagger } from './swagger/get-menus-by-category.swagger';
+import { UpdateMenuDetailsSwagger } from './swagger/update-menu-details.swagger';
 import { UpdateMenusSwagger } from './swagger/update-menus.swagger';
 const allAuthorization = [
   'pin-authorization',
@@ -34,7 +36,7 @@ export class MenuController {
   @CreateMenusSwagger()
   @UseGuards(JwtAuthGuard(adminAuthorization))
   async createMenus(
-    @Body() createMenusDtos: CreateMenusDto[],
+    @Body() createMenusDtos: CreateMenuDto[],
     @StoreId() storeId: number,
   ) {
     return await this.menuService.createMenus({ createMenusDtos, storeId });
@@ -62,21 +64,34 @@ export class MenuController {
     return await this.menuService.getMenusByCategory({ categoryId, storeId });
   }
 
-  //메뉴 상세 정보 등록하기
-
   //메뉴 상세 정보 수정하기
+  @UpdateMenuDetailsSwagger()
+  @UseGuards(JwtAuthGuard(adminAuthorization))
+  @Patch('/:menuId')
+  async updateMenuDetails(
+    @Param('menuId') menuId: number,
+    @Body() updateMenuDetailsDto: UpdateMenuDetailsDto,
+    @StoreId() storeId: number,
+  ) {
+    return await this.menuService.updateMenuDetails({
+      updateMenuDetailsDto,
+      storeId,
+      menuId,
+    });
+  }
 
   //메뉴 기본정보 여러개 수정하기
   @UpdateMenusSwagger()
   @UseGuards(JwtAuthGuard(adminAuthorization))
   @Patch()
   async updateMenus(
-    @Body() updateMenusDtos: UpdateMenusDto[],
+    @Body() updateMenusDtos: UpdateMenuDto[],
     @StoreId() storeId: number,
   ) {
-    return await this.menuService.updateMenus({ updateMenusDtos, storeId });
+    const result = this.menuService.updateMenus({ updateMenusDtos, storeId });
+    return result;
   }
-  //  @UpdateMenuSwagger()
+
   //메뉴 상세장보 가져오기
 
   //옵션

@@ -1,7 +1,7 @@
 import { applyDecorators } from '@nestjs/common';
 import { ApiBody, ApiOperation, ApiResponse } from '@nestjs/swagger';
 
-import { CreateMenusDto } from '../dto/create-menus.dto';
+import { CreateMenuDto } from '../dto/create-menu.dto';
 
 export function CreateMenusSwagger() {
   return applyDecorators(
@@ -9,7 +9,7 @@ export function CreateMenusSwagger() {
     ApiBody({
       description: '생성할 메뉴 목록',
       isArray: true,
-      type: CreateMenusDto,
+      type: CreateMenuDto,
       examples: {
         example1: {
           summary: '예시 요청',

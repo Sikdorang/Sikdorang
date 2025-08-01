@@ -12,9 +12,14 @@ enum status {
   SOLDOUT = 'SOLDOUT',
 }
 
-export class CreateMenusDto {
-  @ApiProperty({ description: '메뉴 이름', example: '김치찌개' })
+export class UpdateMenuDto {
+  @ApiProperty({ description: '메뉴 Id', example: '1' })
   @IsNotEmpty()
+  @IsNumber()
+  menuId: number;
+
+  @ApiProperty({ description: '메뉴 이름', example: '김치찌개' })
+  @IsOptional()
   @IsString()
   menu: string;
 
@@ -38,7 +43,7 @@ export class CreateMenusDto {
   status?: status;
 
   @ApiProperty({ description: '메뉴 순서', example: '1' })
-  @IsNotEmpty()
+  @IsOptional()
   @IsString()
   order: string;
 }
