@@ -3,9 +3,10 @@ import {
   InternalServerErrorException,
   NotFoundException,
 } from '@nestjs/common';
-import { PrismaClient } from '@prisma/client';
+import { Menu, PrismaClient } from '@prisma/client';
 
-import { CreateMenusDto } from './dto/create-menu.dto';
+import { CreateMenusDto } from './dto/create-menus.dto';
+import { UpdateMenusDto } from './dto/update-menus.dto';
 
 @Injectable()
 export class MenuService {
@@ -63,6 +64,37 @@ export class MenuService {
     } catch (error) {
       console.log(error);
       throw new InternalServerErrorException('메뉴 생성 중 오류 발생');
+    }
+  }
+
+  async updateMenus({
+    updateMenusDtos,
+    storeId,
+  }: {
+    updateMenusDtos: UpdateMenusDto[];
+    storeId: number;
+  }) {
+    try {
+      const results: Menu[] = [];
+
+      for (const dto of updateMenusDtos) {
+        const { menuId, ...data } = dto;
+
+        const updated = await this.prisma.menu.update({
+          where: {
+            id: menuId,
+            storeId,
+          },
+          data,
+        });
+
+        results.push(updated);
+      }
+
+      return results;
+    } catch (error) {
+      console.error(error);
+      throw new InternalServerErrorException('메뉴 업데이트 중 오류 발생');
     }
   }
 }
