@@ -1,9 +1,9 @@
 import { applyDecorators } from '@nestjs/common';
 import { ApiBody, ApiOperation, ApiResponse } from '@nestjs/swagger';
 
-import { CreateMenusDto } from '../dto/create-menu.dto';
+import { CreateMenusDto } from '../dto/create-menus.dto';
 
-export function CreateMenuSwagger() {
+export function CreateMenusSwagger() {
   return applyDecorators(
     ApiOperation({ summary: '메뉴 여러 개 생성' }),
     ApiBody({
