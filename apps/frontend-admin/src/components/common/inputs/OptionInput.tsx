@@ -107,11 +107,12 @@ export default function OptionInput({
               <div className="flex justify-center items-center gap-2 text-sm text-gray-600 hover:text-gray-800">
                 <div>옵션 선택 최대 제한</div>
                 <MenuCustomDropdown
-                  options={[1, 2, 3, 4]}
-                  selectedOption={0}
+                  options={['1', '2', '3', '4']}
+                  selectedOption={'0'}
                   onChange={function (value: string): void {
                     throw new Error('Function not implemented.');
                   }}
+                  isNumbers={true}
                 />
               </div>
               <ToggleSwitch

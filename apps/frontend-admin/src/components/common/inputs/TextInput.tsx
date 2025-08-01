@@ -27,14 +27,18 @@ export default function TextInput({
 }: TextInputProps) {
   return (
     <div className="w-full">
-      <div className="flex items-center gap-2 mb-2">
-        <div
-          className={`text-mobile-head-l-semibold block text-gray-800 ${labelClassName}`}
-        >
-          {label}
+      {label === '제목' ? undefined : (
+        <div className="flex items-center gap-2 mb-2">
+          <div
+            className={`text-mobile-head-l-semibold block text-gray-800 ${labelClassName}`}
+          >
+            {label}
+          </div>
+          {isRequired ? (
+            <MenuCustomLabel text="필수" isTag={true} />
+          ) : undefined}
         </div>
-        {isRequired ? <MenuCustomLabel text="필수" isTag={true} /> : undefined}
-      </div>
+      )}
 
       <div
         className={`relative flex items-center rounded-2xl border bg-white px-6 py-4 transition-colors ${

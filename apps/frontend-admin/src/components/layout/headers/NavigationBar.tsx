@@ -36,6 +36,12 @@ const NAV_STRUCTURE = [
     tabs: [],
   },
   {
+    key: 'editShop',
+    label: '매장 정보 가이드 수정',
+    basePath: '/shop/edit',
+    tabs: [],
+  },
+  {
     key: 'dashboard',
     label: '대시보드',
     basePath: '/dashboard',
@@ -50,11 +56,11 @@ const NAV_STRUCTURE = [
 ];
 
 function getActiveCategory(pathname: string) {
+  const exact = NAV_STRUCTURE.find((cat) => pathname === cat.basePath);
+  if (exact) return exact;
   return (
-    NAV_STRUCTURE.find(
-      (cat) =>
-        pathname === cat.basePath || pathname.startsWith(cat.basePath + '/'),
-    ) || NAV_STRUCTURE[0]
+    NAV_STRUCTURE.find((cat) => pathname.startsWith(cat.basePath + '/')) ||
+    NAV_STRUCTURE[0]
   );
 }
 
