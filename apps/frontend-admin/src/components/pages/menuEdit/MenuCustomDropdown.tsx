@@ -2,16 +2,18 @@ import MenuCustomDropdownItem from './MenuCustomDropdownItem';
 import { useEffect, useRef, useState } from 'react';
 
 interface MenuCustomDropdownProps {
-  options: number[];
-  selectedNumber: number;
+  options: string[];
+  selectedOption: string;
   isStatus?: boolean;
+  isNumbers?: boolean;
   onChange: (value: string) => void;
 }
 
 export default function MenuCustomDropdown({
   options,
-  selectedNumber,
+  selectedOption,
   isStatus = false,
+  isNumbers = false,
   onChange,
 }: MenuCustomDropdownProps) {
   const [isOpen, setIsOpen] = useState(false);
@@ -35,10 +37,11 @@ export default function MenuCustomDropdown({
   return (
     <div className="relative cursor-pointer" ref={selectRef}>
       <MenuCustomDropdownItem
-        text={selectedNumber ? `${selectedNumber}` : '0'}
+        text={selectedOption ? `${selectedOption}` : '0'}
         onClick={() => setIsOpen((prev) => !prev)}
         className="relative"
         isSelectedItem={true}
+        isNumbers={isNumbers}
       />
 
       {isOpen && (
@@ -52,7 +55,10 @@ export default function MenuCustomDropdown({
               }}
               className="flex w-full shrink-0 cursor-pointer items-center py-2 hover:bg-gray-100 first:rounded-t-xl last:rounded-b-xl"
             >
-              <MenuCustomDropdownItem text={`${option}`} />
+              <MenuCustomDropdownItem
+                text={`${option}`}
+                isNumbers={isNumbers}
+              />
             </div>
           ))}
         </div>

@@ -13,11 +13,13 @@ import Image from 'next/image';
 interface ShopGuideProps {
   label?: string;
   labelClassName?: string;
+  onEditClick: () => void;
 }
 
 export default function ShopGuide({
   label = '제목',
   labelClassName = '',
+  onEditClick,
   ...rest
 }: ShopGuideProps) {
   return (
@@ -33,7 +35,10 @@ export default function ShopGuide({
             <Image src={InfoIcon} width={20} height={20} alt={''} />
           </TooltipModalPresenter>
         </div>
-        <button className={`rounded-xl px-2 py-2 bg-gray-100`}>
+        <button
+          className={`rounded-xl px-2 py-2 bg-gray-100`}
+          onClick={onEditClick}
+        >
           <Image src={EditIcon} width={18} height={18} alt="gallery" />
         </button>
       </div>

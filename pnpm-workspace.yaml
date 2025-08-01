@@ -2,4 +2,5 @@ packages:
   - 'apps/backend'
   - 'apps/frontend-admin'
   - 'apps/frontend-user'
+  - 'apps/frontend-menu-viewer'
   - 'packages/*'
