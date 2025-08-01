@@ -3,7 +3,7 @@ import {
   InternalServerErrorException,
   NotFoundException,
 } from '@nestjs/common';
-import { Category, PrismaClient } from '@prisma/client';
+import { PrismaClient } from '@prisma/client';
 
 import { CreateCategoryDto } from './dto/create-category.dto';
 import { UpdateCategoryDto } from './dto/update-category.dto';
@@ -20,14 +20,13 @@ export class CategoryService {
     storeId: number;
   }) {
     try {
-      const category: Category = await this.prisma.category.create({
+      return await this.prisma.category.create({
         data: {
           category: createCategoryDto.category,
           order: createCategoryDto.order,
           storeId: storeId,
         },
       });
-      return { message: '카테고리 생성 성공', ...category };
     } catch (error) {
       console.log(error);
       throw new InternalServerErrorException('카테고리 생성 중 오류 발생');
