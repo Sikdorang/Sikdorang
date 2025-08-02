@@ -20,8 +20,26 @@ export class AuthController {
 
   @Get('kakao/redirect')
   @KakaoRedirectSwagger()
-  async kakaoRedirect(@Query('code') code: string) {
-    return this.authService.kakaoLogin({ code });
+  async kakaoRedirect(@Query('code') code: string, @Res() res: Response) {
+    const { accessToken, refreshToken } = await this.authService.kakaoLogin({
+      code,
+    });
+
+    res.cookie('admin-authorization', accessToken, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production', // 배포 시엔 반드시 true
+      sameSite: 'lax',
+      maxAge: 1000 * 60 * 60, // 1시간
+    });
+
+    res.cookie('refresh-token', refreshToken, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'lax',
+      maxAge: 1000 * 60 * 60 * 24 * 365, // 1년
+    });
+
+    res.redirect('http://localhost:3000/auth/callback');
   }
 
   @Post('refresh')
