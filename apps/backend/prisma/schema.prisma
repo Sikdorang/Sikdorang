@@ -57,6 +57,7 @@ model Menu {
 
   @@index([categoryId], map: "Menu_categoryId_idx")
   @@index([storeId], map: "Menu_storeId_idx")
+  menuOptions MenuOption[]
 }
 
 model MenuOption {
@@ -67,7 +68,19 @@ model MenuOption {
   optionRequired Boolean @default(false)
   menuId         Int
 
+  menu           Menu            @relation(fields: [menuId], references: [id], onDelete: Cascade)
+  optionDetails  OptionDetail[]
   @@index([menuId], map: "idx_menuId")
+}
+
+model OptionDetail {
+  id             Int     @id @default(autoincrement())
+  optionDetail   String
+  menuOptionId   Int
+  price          Int
+
+  menuOption     MenuOption     @relation(fields: [menuOptionId], references: [id], onDelete: Cascade)
+  @@index([menuOptionId], map: "idx_menuOptionId")
 }
 
 model RefreshToken {
