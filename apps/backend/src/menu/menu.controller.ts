@@ -13,10 +13,12 @@ import { StoreId } from '../auth/decorators/auth-ids.decorator';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 
 import { CreateMenuDto } from './dto/create-menu.dto';
+import { CreateOptionsDto } from './dto/create-option.dto';
 import { UpdateMenuDetailsDto } from './dto/update-menu-details.dto';
 import { UpdateMenuDto } from './dto/update-menu.dto';
 import { MenuService } from './menu.service';
 import { CreateMenusSwagger } from './swagger/create-menus.swagger';
+import { CreateOptionSwagger } from './swagger/create-option.swagger';
 import { DeleteMenuSwagger } from './swagger/delete-menu.swagger';
 import { GetMenusByCategorySwagger } from './swagger/get-menus-by-category.swagger';
 import { UpdateMenuDetailsSwagger } from './swagger/update-menu-details.swagger';
@@ -94,8 +96,12 @@ export class MenuController {
 
   //메뉴 상세장보 가져오기
 
-  //옵션
   //옵션 등록하기
-
+  @Post('/option')
+  @UseGuards(JwtAuthGuard(adminAuthorization))
+  @CreateOptionSwagger()
+  async createOption(@Body() createOptionDto: CreateOptionsDto) {
+    return await this.menuService.createOption({ createOptionDto });
+  }
   //사진
 }
