@@ -1,5 +1,5 @@
 import '../styles/global.css';
-import MswProvider from '@/mocks/MswProvider';
+import MswProvider from '@/providers/MswProvider';
 import type { Metadata } from 'next';
 
 export const metadata: Metadata = {

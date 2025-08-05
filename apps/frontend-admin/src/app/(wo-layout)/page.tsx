@@ -1,12 +1,11 @@
 'use client';
 
 import CtaButton from '@/components/common/buttons/CtaButton';
-import { useRouter } from 'next/navigation';
-export default function Home() {
-  const router = useRouter();
 
+export default function Home() {
   const handleClick = () => {
-    router.push('/menu/edit');
+    const KAKAO_LOGIN_URL = process.env.NEXT_PUBLIC_KAKAO_LOGIN_URL!;
+    window.location.href = KAKAO_LOGIN_URL;
   };
 
   return (
