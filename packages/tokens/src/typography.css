@@ -1,133 +1,94 @@
 @layer utilities {
-  /* ===== MOBILE ===== */
-  .text-mobile-title-xl-semibold {
-    font-family: 'Pretendard', sans-serif;
-    font-size: 24px;
-    font-weight: 600;
-    line-height: 150%;
-  }
-  .text-mobile-title-xl-regular {
-    font-family: 'Pretendard', sans-serif;
-    font-size: 24px;
-    font-weight: 400;
-    line-height: 150%;
+  .wrapper {
+    @apply min-w-xs px-5 xl:mx-auto xl:max-w-5xl;
   }
 
-  .text-mobile-head-l-semibold {
-    font-family: 'Pretendard', sans-serif;
-    font-size: 22px;
-    font-weight: 600;
-    line-height: 150%;
-  }
-  .text-mobile-head-l-regular {
-    font-family: 'Pretendard', sans-serif;
-    font-size: 22px;
-    font-weight: 400;
-    line-height: 150%;
+  .text-mt-1 {
+    @apply text-2xl font-semibold leading-[150%] tracking-[-4%];
   }
 
-  .text-mobile-body-l-semibold {
-    font-family: 'Pretendard', sans-serif;
-    font-size: 18px;
-    font-weight: 600;
-    line-height: 150%;
-  }
-  .text-mobile-body-l-regular {
-    font-family: 'Pretendard', sans-serif;
-    font-size: 18px;
-    font-weight: 400;
-    line-height: 150%;
+  .text-mt-2 {
+    @apply text-2xl font-normal leading-[150%] tracking-[-4%];
   }
 
-  .text-mobile-body-m-semibold {
-    font-family: 'Pretendard', sans-serif;
-    font-size: 16px;
-    font-weight: 600;
-    line-height: 150%;
-  }
-  .text-mobile-body-m-regular {
-    font-family: 'Pretendard', sans-serif;
-    font-size: 16px;
-    font-weight: 400;
-    line-height: 150%;
+  .text-mh-1 {
+    @apply text-[1.375rem] font-semibold leading-[150%] tracking-[-4%];
   }
 
-  .text-mobile-body-s-semibold {
-    font-family: 'Pretendard', sans-serif;
-    font-size: 14px;
-    font-weight: 600;
-    line-height: 150%;
-  }
-  .text-mobile-body-s-regular {
-    font-family: 'Pretendard', sans-serif;
-    font-size: 14px;
-    font-weight: 400;
-    line-height: 150%;
+  .text-mh-2 {
+    @apply text-[1.375rem] font-normal leading-[150%] tracking-[-4%];
   }
 
-  .text-mobile-caption-s-semibold {
-    font-family: 'Pretendard', sans-serif;
-    font-size: 12px;
-    font-weight: 600;
-    line-height: 150%;
-  }
-  .text-mobile-caption-s-regular {
-    font-family: 'Pretendard', sans-serif;
-    font-size: 12px;
-    font-weight: 400;
-    line-height: 150%;
+  .text-mb-1 {
+    @apply text-lg font-semibold leading-[150%] tracking-[-2%];
   }
 
-  .text-mobile-label-s-semibold {
-    font-family: 'Pretendard', sans-serif;
-    font-size: 10px;
-    font-weight: 600;
-    line-height: 150%;
-  }
-  .text-mobile-label-s-regular {
-    font-family: 'Pretendard', sans-serif;
-    font-size: 10px;
-    font-weight: 400;
-    line-height: 150%;
+  .text-mb-2 {
+    @apply text-lg font-normal leading-[150%] tracking-[-2%];
   }
 
-  /* ===== DESKTOP ===== */
-  .text-desktop-title-xl-semibold {
-    font-family: 'Pretendard', sans-serif;
-    font-size: 38px;
-    font-weight: 600;
-    line-height: 150%;
-  }
-  .text-desktop-title-xl-regular {
-    font-family: 'Pretendard', sans-serif;
-    font-size: 38px;
-    font-weight: 400;
-    line-height: 150%;
+  .text-mb-3 {
+    @apply text-base font-semibold leading-[150%] tracking-[-2%];
   }
 
-  .text-desktop-head-l-semibold {
-    font-family: 'Pretendard', sans-serif;
-    font-size: 28px;
-    font-weight: 600;
-    line-height: 150%;
-  }
-  .text-desktop-head-l-regular {
-    font-family: 'Pretendard', sans-serif;
-    font-size: 28px;
-    font-weight: 400;
-    line-height: 150%;
+  .text-mb-4 {
+    @apply text-base font-normal leading-[150%] tracking-[-2%];
   }
 
-  .text-desktop-head-s-semibold {
-    font-family: 'Pretendard', sans-serif;
-    font-size: 24px;
-    font-weight: 600;
-    line-height: 150%;
+  .text-mb-5 {
+    @apply text-sm font-semibold leading-[150%] tracking-[-2%];
   }
-  .text-desktop-head-s-regular {
-    font-family: 'Pretendard', sans-serif;
-    font-size: 24px;
-    font-weight: 400;
-    line-height: 150%;
+
+  .text-mb-6 {
+    @apply text-sm font-normal leading-[150%] tracking-[-2%];
+  }
+
+  .text-mc-1 {
+    @apply text-xs font-semibold leading-[150%] tracking-[-2%];
+  }
+
+  .text-mc-2 {
+    @apply text-xs font-normal leading-[150%] tracking-[-2%];
+  }
+
+  .text-ml-1 {
+    @apply text-[0.625rem] font-semibold leading-[150%] tracking-[-2%];
+  }
+
+  .text-ml-2 {
+    @apply text-xs font-normal leading-[150%] tracking-[-2%];
+  }
+
+  .scrollbar-hide {
+    -ms-overflow-style: none; /* IE and Edge */
+    scrollbar-width: none; /* Firefox */
+  }
+
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none; /* Chrome, Safari, Opera */
+  }
+
+  .text-dt-1 {
+    @apply text-2xl font-semibold leading-[150%] tracking-[-4%];
+  }
+
+  .text-dt-2 {
+    @apply text-2xl font-normal leading-[150%] tracking-[-4%];
+  }
+
+  .text-dh-1 {
+    @apply text-[1.375rem] font-semibold leading-[150%] tracking-[-4%];
+  }
+
+  .text-dh-2 {
+    @apply text-[1.375rem] font-normal leading-[150%] tracking-[-4%];
+  }
+
+  .text-dsh-1 {
+    @apply text-lg font-semibold leading-[150%] tracking-[-2%];
+  }
+
+  .text-dsh-2 {
+    @apply text-lg font-normal leading-[150%] tracking-[-2%];
   }
 }

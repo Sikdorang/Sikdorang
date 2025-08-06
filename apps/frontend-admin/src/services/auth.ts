@@ -2,9 +2,10 @@ import { axiosInstance } from '.';
 
 export const AuthAPI = {
   kakaoLogin: async (authCode: string) => {
-    const response = await axiosInstance.post('/auth/kakao/callback', {
-      code: authCode,
+    const response = await axiosInstance.get('/auth/kakao/redirect', {
+      params: { code: authCode },
     });
+    console.log(response);
     return response.data;
   },
 
