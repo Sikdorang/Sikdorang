@@ -22,6 +22,7 @@ import { CreateMenusSwagger } from './swagger/create-menus.swagger';
 import { CreateOptionSwagger } from './swagger/create-option.swagger';
 import { DeleteMenuSwagger } from './swagger/delete-menu.swagger';
 import { GetMenusByCategorySwagger } from './swagger/get-menus-by-category.swagger';
+import { UpdateImageSwagger } from './swagger/update-image.swagger';
 import { UpdateMenuDetailsSwagger } from './swagger/update-menu-details.swagger';
 import { UpdateMenusSwagger } from './swagger/update-menus.swagger';
 const allAuthorization = [
@@ -108,6 +109,7 @@ export class MenuController {
   //사진
   @Post('/:menuId/image')
   @UseGuards(JwtAuthGuard(adminAuthorization))
+  @UpdateImageSwagger()
   async updateImages(
     @Body() updateImageDtos: UpdateImageDto[],
     @Param('menuId') menuId: number,
