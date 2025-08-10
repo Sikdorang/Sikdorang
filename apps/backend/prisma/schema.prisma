@@ -13,6 +13,8 @@ model Category {
   order    String
   storeId  Int
 
+  menus    Menu[] @relation("CategoryMenus")
+
   @@index([storeId], map: "Category_storeId_fkey")
 }
 
@@ -59,6 +61,7 @@ model Menu {
   @@index([storeId], map: "Menu_storeId_idx")
   menuOptions MenuOption[]
   images      Image[]   
+  category    Category?   @relation("CategoryMenus", fields: [categoryId], references: [id], onDelete: Cascade)
 }
 
 model Image {
