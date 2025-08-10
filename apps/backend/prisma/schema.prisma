@@ -58,6 +58,18 @@ model Menu {
   @@index([categoryId], map: "Menu_categoryId_idx")
   @@index([storeId], map: "Menu_storeId_idx")
   menuOptions MenuOption[]
+  images      Image[]   
+}
+
+model Image {
+  id       Int     @id @default(autoincrement())
+  image    String  // 이미지 이름
+  menuId   Int     // 메뉴 아이디(FK)
+  deleted  Boolean @default(false) // 소프트 삭제
+  order    String  
+  menu     Menu    @relation(fields: [menuId], references: [id], onDelete: Cascade)
+
+  @@index([menuId], map: "Image_menuId_idx")
 }
 
 model MenuOption {

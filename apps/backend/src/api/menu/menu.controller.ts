@@ -14,6 +14,7 @@ import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 
 import { CreateMenuDto } from './dto/create-menu.dto';
 import { CreateOptionsDto } from './dto/create-option.dto';
+import { UpdateImageDto } from './dto/update-image.dto';
 import { UpdateMenuDetailsDto } from './dto/update-menu-details.dto';
 import { UpdateMenuDto } from './dto/update-menu.dto';
 import { MenuService } from './menu.service';
@@ -103,5 +104,19 @@ export class MenuController {
   async createOption(@Body() createOptionDto: CreateOptionsDto) {
     return await this.menuService.createOption({ createOptionDto });
   }
+
   //사진
+  @Post('/:menuId/image')
+  @UseGuards(JwtAuthGuard(adminAuthorization))
+  async updateImages(
+    @Body() updateImageDtos: UpdateImageDto[],
+    @Param('menuId') menuId: number,
+    @StoreId() storeId: number,
+  ) {
+    return await this.menuService.updateImage({
+      updateImageDtos,
+      menuId,
+      storeId,
+    });
+  }
 }
