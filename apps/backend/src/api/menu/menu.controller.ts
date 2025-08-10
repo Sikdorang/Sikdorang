@@ -14,6 +14,7 @@ import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 
 import { CreateMenuDto } from './dto/create-menu.dto';
 import { CreateOptionsDto } from './dto/create-option.dto';
+import { UpdateImageDto } from './dto/update-image.dto';
 import { UpdateMenuDetailsDto } from './dto/update-menu-details.dto';
 import { UpdateMenuDto } from './dto/update-menu.dto';
 import { MenuService } from './menu.service';
@@ -21,6 +22,7 @@ import { CreateMenusSwagger } from './swagger/create-menus.swagger';
 import { CreateOptionSwagger } from './swagger/create-option.swagger';
 import { DeleteMenuSwagger } from './swagger/delete-menu.swagger';
 import { GetMenusByCategorySwagger } from './swagger/get-menus-by-category.swagger';
+import { UpdateImageSwagger } from './swagger/update-image.swagger';
 import { UpdateMenuDetailsSwagger } from './swagger/update-menu-details.swagger';
 import { UpdateMenusSwagger } from './swagger/update-menus.swagger';
 const allAuthorization = [
@@ -103,5 +105,20 @@ export class MenuController {
   async createOption(@Body() createOptionDto: CreateOptionsDto) {
     return await this.menuService.createOption({ createOptionDto });
   }
+
   //사진
+  @Post('/:menuId/image')
+  @UseGuards(JwtAuthGuard(adminAuthorization))
+  @UpdateImageSwagger()
+  async updateImages(
+    @Body() updateImageDtos: UpdateImageDto[],
+    @Param('menuId') menuId: number,
+    @StoreId() storeId: number,
+  ) {
+    return await this.menuService.updateImage({
+      updateImageDtos,
+      menuId,
+      storeId,
+    });
+  }
 }

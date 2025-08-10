@@ -16,16 +16,21 @@ export function CreateOptionSwagger() {
             menuId: 5,
             options: [
               {
+                menuId: 5,
                 option: '맵기',
                 minOption: 1,
                 maxOption: 1,
                 optionRequired: true,
                 optionDetails: [
                   {
+                    menuOptionId: '있으면 update 없으면 create',
+                    optionDetailId: '있으면 update 없으면 create',
                     optionDetail: '안 매움',
                     price: 0,
                   },
                   {
+                    menuOptionId: '있으면 update 없으면 create',
+                    optionDetailId: '있으면 update 없으면 create',
                     optionDetail: '매움',
                     price: 500,
                   },
@@ -38,10 +43,14 @@ export function CreateOptionSwagger() {
                 optionRequired: false,
                 optionDetails: [
                   {
+                    menuOptionId: '있으면 update 없으면 create',
+                    optionDetailId: '있으면 update 없으면 create',
                     optionDetail: '보통',
                     price: 0,
                   },
                   {
+                    menuOptionId: '있으면 update 없으면 create',
+                    optionDetailId: '있으면 update 없으면 create',
                     optionDetail: '곱빼기',
                     price: 2000,
                   },

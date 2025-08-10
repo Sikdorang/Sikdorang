@@ -1,3 +1,7 @@
+import { extname } from 'path';
+
+import { PutObjectCommand, S3Client } from '@aws-sdk/client-s3';
+import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 import {
   Injectable,
   InternalServerErrorException,
@@ -7,13 +11,23 @@ import { Menu, PrismaClient } from '@prisma/client';
 
 import { CreateMenuDto } from './dto/create-menu.dto';
 import { CreateOptionsDto } from './dto/create-option.dto';
+import { UpdateImageDto } from './dto/update-image.dto';
 import { UpdateMenuDetailsDto } from './dto/update-menu-details.dto';
 import { UpdateMenuDto } from './dto/update-menu.dto';
-
 @Injectable()
 export class MenuService {
+  private s3: S3Client;
   private readonly prisma = new PrismaClient();
 
+  constructor() {
+    this.s3 = new S3Client({
+      region: process.env.AWS_REGION!,
+      credentials: {
+        accessKeyId: process.env.AWS_ACCESS_KEY_ID!,
+        secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY!,
+      },
+    });
+  }
   async deleteMenu({ menuId, storeId }: { menuId: number; storeId: number }) {
     try {
       const menu = await this.prisma.menu.findUnique({
@@ -188,5 +202,81 @@ export class MenuService {
       console.error(error);
       throw new InternalServerErrorException('옵션 생성 중 오류 발생');
     }
+  }
+
+  async updateImage({
+    updateImageDtos,
+    menuId,
+    storeId,
+  }: {
+    updateImageDtos: UpdateImageDto[];
+    menuId: number;
+    storeId: number;
+  }) {
+    const existingImages = await this.prisma.image.findMany({
+      where: {
+        menuId: menuId,
+        deleted: false,
+      },
+    });
+
+    const presignedUrls: {
+      key: string;
+      uploadUrl: string;
+      publicUrl: string;
+    }[] = [];
+
+    for (const dto of updateImageDtos) {
+      const matched = existingImages.find((img) => img.image === dto.image);
+
+      if (matched) {
+        if (dto.order !== undefined && dto.order !== matched.order) {
+          await this.prisma.image.update({
+            where: { id: matched.id },
+            data: { order: dto.order },
+          });
+        }
+      } else {
+        const ext = extname(dto.image).toLowerCase().replace('.', '');
+        const key = `stores/${storeId}/menus/${menuId}/${Date.now()}-${Math.random()
+          .toString(36)
+          .slice(2)}.${ext}`;
+
+        const cmd = new PutObjectCommand({
+          Bucket: process.env.AWS_BUCKET!,
+          Key: key,
+        });
+
+        const uploadUrl = await getSignedUrl(this.s3, cmd, { expiresIn: 300 });
+
+        await this.prisma.image.create({
+          data: {
+            menuId,
+            image: key,
+            order: dto.order,
+          },
+        });
+
+        presignedUrls.push({
+          key,
+          uploadUrl,
+          publicUrl: `${process.env.CF_DOMAIN}/${encodeURIComponent(key)}`,
+          originalName: dto.image,
+        });
+      }
+    }
+    const dtoImages = updateImageDtos.map((dto) => dto.image).filter(Boolean);
+    const toDelete = existingImages.filter(
+      (img) => !dtoImages.includes(img.image),
+    );
+
+    for (const img of toDelete) {
+      await this.prisma.image.update({
+        where: { id: img.id },
+        data: { deleted: true },
+      });
+    }
+
+    return presignedUrls;
   }
 }
