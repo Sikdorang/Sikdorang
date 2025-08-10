@@ -224,6 +224,7 @@ export class MenuService {
       key: string;
       uploadUrl: string;
       publicUrl: string;
+      originalName?: string;
     }[] = [];
 
     for (const dto of updateImageDtos) {
@@ -278,5 +279,86 @@ export class MenuService {
     }
 
     return presignedUrls;
+  }
+
+  async getAllMenus({ storeId }: { storeId: number }) {
+    const categories = await this.prisma.category.findMany({
+      where: { storeId },
+      orderBy: { order: 'asc' },
+      include: {
+        menus: {
+          orderBy: { order: 'asc' },
+          include: {
+            images: {
+              where: { deleted: false },
+              orderBy: { order: 'asc' },
+            },
+          },
+        },
+      },
+    });
+
+    return categories.map((category) => ({
+      id: category.id,
+      category: category.category,
+      items: category.menus.map((menu) => ({
+        id: menu.id,
+        name: menu.menu,
+        price: menu.price,
+        isNew: menu.new,
+        isPopular: menu.popular,
+        imgUrl: menu.images.length > 0 ? menu.images[0].image : undefined,
+      })),
+    }));
+  }
+
+  async getMenuDetail({
+    menuId,
+    storeId,
+  }: {
+    menuId: number;
+    storeId: number;
+  }) {
+    const menu = await this.prisma.menu.findUnique({
+      where: { id: menuId },
+      include: {
+        images: {
+          where: { deleted: false },
+          orderBy: { order: 'asc' },
+        },
+        menuOptions: {
+          include: {
+            optionDetails: true,
+          },
+        },
+      },
+    });
+
+    if (!menu) {
+      throw new NotFoundException('해당 메뉴를 찾을 수 없습니다.');
+    }
+
+    // 2. 응답 형식 변환
+    return {
+      id: menu.id.toString(),
+      name: menu.menu,
+      description: menu.description || '',
+      price: menu.price,
+      isNew: menu.new,
+      isPopular: menu.popular,
+      images: menu.images.map((img) => img.image),
+      optionGroups: menu.menuOptions.map((opt) => ({
+        groupId: opt.id.toString(),
+        title: opt.option,
+        required: opt.optionRequired,
+        minSelectable: opt.minOption,
+        maxSelectable: opt.maxOption,
+        items: opt.optionDetails.map((detail) => ({
+          optionId: detail.id.toString(),
+          name: detail.optionDetail,
+          price: detail.price,
+        })),
+      })),
+    };
   }
 }

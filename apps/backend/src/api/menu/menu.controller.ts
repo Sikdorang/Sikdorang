@@ -21,6 +21,8 @@ import { MenuService } from './menu.service';
 import { CreateMenusSwagger } from './swagger/create-menus.swagger';
 import { CreateOptionSwagger } from './swagger/create-option.swagger';
 import { DeleteMenuSwagger } from './swagger/delete-menu.swagger';
+import { GetAllMenusSwagger } from './swagger/get-AllMenus.swagger';
+import { GetMenuDetailSwagger } from './swagger/get-menu-detail.swagger';
 import { GetMenusByCategorySwagger } from './swagger/get-menus-by-category.swagger';
 import { UpdateImageSwagger } from './swagger/update-image.swagger';
 import { UpdateMenuDetailsSwagger } from './swagger/update-menu-details.swagger';
@@ -96,7 +98,26 @@ export class MenuController {
     return result;
   }
 
+  //가게 메뉴 다 가져오기
+  @Get('/menus')
+  @UseGuards(JwtAuthGuard(allAuthorization))
+  @GetAllMenusSwagger()
+  async getAllMenus(@StoreId() storeId: number) {
+    const result = this.menuService.getAllMenus({ storeId });
+    return result;
+  }
+
   //메뉴 상세장보 가져오기
+  @Get('/:menuId')
+  @UseGuards(JwtAuthGuard(allAuthorization))
+  @GetMenuDetailSwagger()
+  async getMenuDetail(
+    @StoreId() storeId: number,
+    @Param('menuId') menuId: number,
+  ) {
+    const result = this.menuService.getMenuDetail({ storeId, menuId });
+    return result;
+  }
 
   //옵션 등록하기
   @Post('/option')
