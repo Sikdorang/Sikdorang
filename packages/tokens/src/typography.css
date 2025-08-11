@@ -1,6 +1,6 @@
 @layer utilities {
   .wrapper {
-    @apply min-w-xs px-5 xl:mx-auto xl:max-w-5xl;
+    @apply min-w-xs max-w-[1400px] px-5 xl:mx-auto;
   }
 
   .text-mt-1 {

@@ -29,9 +29,7 @@ export default function TextInput({
     <div className="w-full">
       {label === '제목' ? undefined : (
         <div className="flex items-center gap-2 mb-2">
-          <div
-            className={`text-mobile-head-l-semibold block text-gray-800 ${labelClassName}`}
-          >
+          <div className={`text-mh-1 block text-gray-800 ${labelClassName}`}>
             {label}
           </div>
           {isRequired ? (
@@ -57,7 +55,7 @@ export default function TextInput({
           maxLength={maxLength}
           disabled={disabled}
           placeholder={placeholder}
-          className={`text-mobile-body-m-regular w-full border-none bg-transparent text-gray-800 outline-none placeholder:text-gray-300 ${disabled ? 'text-gray-300' : ''} `}
+          className={`text-mb-2 w-full border-none bg-transparent text-gray-800 outline-none placeholder:text-gray-300 ${disabled ? 'text-gray-300' : ''} `}
           {...rest}
         />
         {!disabled && value && (

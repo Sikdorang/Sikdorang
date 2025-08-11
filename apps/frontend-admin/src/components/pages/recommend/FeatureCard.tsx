@@ -1,5 +1,8 @@
+import CtaButton from '@/components/common/buttons/CtaButton';
+
 interface FeatureCardProps {
   title: string;
+  subTitle: string;
   description: string;
   subDescription?: string;
   image?: React.ReactNode;
@@ -8,6 +11,7 @@ interface FeatureCardProps {
 
 export default function FeatureCard({
   title,
+  subTitle,
   description,
   subDescription,
   image,
@@ -15,12 +19,27 @@ export default function FeatureCard({
 }: FeatureCardProps) {
   return (
     <div
-      className="bg-gray-100 rounded-2xl shadow-sm w-[320px] overflow-hidden flex flex-col"
+      className="bg-gray-100 rounded-2xl border border-gray-100 overflow-hidden flex flex-col shadow-sm transition-all duration-200 hover:shadow-lg"
       onClick={onClick}
     >
-      <div className="flex-1 flex items-center justify-center min-h-[200px] bg-white">
+      {/* 이미지 영역 */}
+      <div className="relative flex-1 flex items-center justify-center min-h-[200px] bg-white">
         {image}
+        <div className="absolute top-3 right-3">
+          <CtaButton
+            color="gray"
+            size="small"
+            width="fit"
+            text={subTitle}
+            onClick={(e) => {
+              e.stopPropagation(); // 카드 클릭 이벤트 방지
+              console.log('CTA clicked!');
+            }}
+          />
+        </div>
       </div>
+
+      {/* 텍스트 영역 */}
       <div className="bg-[#191A23] px-6 py-6">
         <div className="text-white text-lg font-bold mb-2">{title}</div>
         <div className="text-gray-100 text-base leading-normal">

@@ -18,11 +18,11 @@ export const useLogin = () => {
 
     try {
       const data = await AuthAPI.kakaoLogin(authCode);
-      console.log('아 제발 진짜: ', data);
-      // 쿠키 저장 (js-cookie 또는 document.cookie 등 프로젝트 상황에 맞게)
+
       document.cookie = `${KEYS.ACCESS_TOKEN}=${data.accessToken}; path=/; SameSite=Lax;`;
       document.cookie = `${KEYS.ACCESS_TOKEN}=${data.refreshToken}; path=/; SameSite=Lax;`;
       localStorage.setItem(KEYS.ACCESS_TOKEN, data.accessToken);
+      localStorage.setItem(KEYS.REFRESH_TOKEN, data.refreshToken);
 
       toast.success(SUCCESS_MESSAGES.loginSuccess);
       router.push('/menu/edit');

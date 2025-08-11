@@ -12,10 +12,8 @@ export default function Home() {
     <div className="bg-w flex min-h-screen flex-col items-center justify-center px-4">
       <div className="mx-auto flex w-full max-w-sm flex-col items-center justify-center text-center">
         <div className="mb-8">
-          <h1 className="text-desktop-title-xl-semibold text-bk mb-4">
-            환영합니다!
-          </h1>
-          <p className="text-mobile-body-l-semibold leading-relaxed text-gray-600">
+          <h1 className="text-dh-1 text-bk mb-4">환영합니다!</h1>
+          <p className="text-mb-1 text-gray-600">
             이제부터 식도랑과 함께
             <br />
             편하게 메뉴판 관리를 시작해요.
@@ -29,10 +27,11 @@ export default function Home() {
         <CtaButton
           text="카카오로 시작하기"
           size="large"
+          radius="xl"
           onClick={handleClick}
         />
 
-        <div className="text-mobile-body-s-semibold mt-5 flex select-none items-center justify-center gap-4 text-gray-300">
+        <div className="text-mb-3 mt-5 flex select-none items-center justify-center gap-4 text-gray-300">
           <span className="underline underline-offset-2">이용약관</span>
           <span className="mx-1">|</span>
           <span className="underline underline-offset-2">

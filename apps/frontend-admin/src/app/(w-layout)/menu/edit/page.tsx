@@ -1,7 +1,5 @@
 'use client';
 
-import { TooltipModalPresenter } from '../../../../components/common/modals/TooltipModalPresenter';
-import MenuGalleryCardSkeleton from '../../../../components/pages/menuEdit/MenuCardSkeleton';
 import {
   default as CategoryButton,
   default as FilterOptionButton,
@@ -16,31 +14,27 @@ import EditModal, {
   EditModaSelectInput,
   EditToggleSwitch,
 } from '@/components/common/modals/EditModal';
+import { TooltipModalPresenter } from '@/components/common/modals/TooltipModalPresenter';
 import {
   default as DeleteMenuModal,
   WarningModalActions,
   WarningModalBody,
   WarningModalHeader,
 } from '@/components/common/modals/WarningModal';
+import MenuGalleryCardSkeleton from '@/components/pages/menuEdit/MenuCardSkeleton';
 import MenuGalleryCard from '@/components/pages/menuEdit/MenuGalleryCard';
 import MenuTableRow from '@/components/pages/menuEdit/MenuTableRow';
+import { ERROR_MESSAGES } from '@/constants/messages';
 import { useEditModal } from '@/contexts/EditModalContext';
 import { useWarningModal } from '@/contexts/WarningModalContext';
-
+import { useManageCategory } from '@/hooks/useManageCategory';
 import { IMenuTableItem } from '@/types/model/menu';
 import GalleryIcon from '@public/icons/ic_grid.svg';
 import TableIcon from '@public/icons/ic_list.svg';
 import AddIcon from '@public/icons/ic_plus.svg';
+import { LexoRank } from 'lexorank';
 import Image from 'next/image';
 import { useEffect, useState } from 'react';
-
-const categories = [
-  { id: 1, text: '전체', count: 1 },
-  { id: 2, text: '한식', count: 3 },
-  { id: 3, text: '중식', count: 2 },
-  { id: 4, text: '일식', count: 4 },
-  { id: 5, text: '양식', count: 1 },
-];
 
 const filterOptions = [
   { id: 1, text: '전체' },
@@ -50,37 +44,51 @@ const filterOptions = [
   { id: 5, text: '미입력만 보기' },
 ];
 
-const menuList: IMenuTableItem[] = [
-  {
-    id: 1,
-    name: '참소라 무침',
-    price: 25000,
-    category: '안주',
-    status: '판매 중',
-    checked: false,
-    order: '1',
-  },
-  {
-    id: 2,
-    name: '아롱사태 수육',
-    price: 25000,
-    category: '안주',
-    status: '품절',
-    checked: true,
-    order: '1',
-  },
-  {
-    id: 3,
-    name: '앞다리살 수육',
-    price: 25000,
-    category: '안주',
-    status: '숨김',
-    checked: true,
-    order: '1',
-  },
-];
-
 export default function MenuEditPage() {
+  const {
+    categories,
+    isCategoriesLoading,
+    createCategory,
+    fetchCategories,
+    updateCategory,
+    removeCategory,
+  } = useManageCategory();
+
+  const [menuItems, setMenuItems] = useState<IMenuTableItem[]>([
+    {
+      id: 1,
+      name: '참소라 무침',
+      price: 25000,
+      category: '안주',
+      status: '판매 중',
+      checked: false,
+      order: '1',
+    },
+    {
+      id: 2,
+      name: '아롱사태 수육',
+      price: 25000,
+      category: '안주',
+      status: '품절',
+      checked: true,
+      order: '1',
+    },
+    {
+      id: 3,
+      name: '앞다리살 수육',
+      price: 25000,
+      category: '안주',
+      status: '숨김',
+      checked: true,
+      order: '1',
+    },
+  ]);
+
+  useEffect(() => {
+    fetchCategories();
+  }, []);
+  const [inputCategory, setInputCategory] = useState('');
+  const [categoryError, setCategoryError] = useState('');
   const [searchValue, setSearchValue] = useState('');
   const [selectedCategory, setSelectedCategory] = useState(1);
   const [isLoading, setIsLoading] = useState(true);
@@ -107,9 +115,40 @@ export default function MenuEditPage() {
     openModal('createMenu');
   };
 
-  const handleCreateCategory = () => {
-    setIsTooltipModal(true);
-    openModal('createCategory');
+  const handleCheckbox = (menuId: number) => {
+    setMenuItems((prev) =>
+      prev.map((item) =>
+        item.id === menuId ? { ...item, checked: !item.checked } : item,
+      ),
+    );
+  };
+
+  const handleCreateCategory = async (inputText: string) => {
+    if (categories.length >= 999) {
+      setCategoryError(ERROR_MESSAGES.maximumCategoryError);
+      return;
+    }
+    if (inputText === '') {
+      setCategoryError(ERROR_MESSAGES.emptyCategoryError);
+      return;
+    }
+    if (categories.some((cat) => cat.category === inputText)) {
+      setCategoryError(ERROR_MESSAGES.duplicatedCategoryError);
+      return;
+    }
+
+    let newOrder: string;
+    if (categories.length === 0) {
+      newOrder = LexoRank.middle().toString();
+    } else {
+      const lastOrder = categories[categories.length - 1].order;
+      newOrder = LexoRank.parse(lastOrder).genNext().toString();
+    }
+
+    await createCategory(inputText, newOrder);
+
+    fetchCategories();
+    setCategoryError('');
   };
 
   const { openModal: openDeleteMenuModal } = useWarningModal();
@@ -127,7 +166,6 @@ export default function MenuEditPage() {
     //     return true;
     //   });
     // });
-
   };
 
   return (
@@ -145,29 +183,60 @@ export default function MenuEditPage() {
 
         <div className="flex w-full gap-2">
           <div className="grow-1 flex gap-2">
-            {categories.map((cat) => (
-              <CategoryButton
-                key={cat.id}
-                text={cat.text}
-                color={selectedCategory === cat.id ? 'black' : 'white'}
-                size="small"
-                width="fit"
-                onClick={() => setSelectedCategory(cat.id)}
-              />
-            ))}
+            {isCategoriesLoading ? (
+              Array.from({ length: 5 }).map((_, idx) => (
+                <div
+                  key={idx}
+                  className="h-10 w-18 rounded-full bg-gray-200 animate-pulse"
+                />
+              ))
+            ) : (
+              <>
+                <CategoryButton
+                  key="all"
+                  text="전체"
+                  color={selectedCategory === 'all' ? 'black' : 'white'}
+                  size="small"
+                  width="fit"
+                  onClick={() => setSelectedCategory('all')}
+                  radius="full"
+                  right={
+                    <div className="text-mb-5 text-gray-200">
+                      {categories.length}
+                    </div>
+                  }
+                />
+                {categories.map((cat) => (
+                  <CategoryButton
+                    key={cat.id}
+                    text={cat.category}
+                    color={selectedCategory === cat.id ? 'black' : 'white'}
+                    size="small"
+                    radius="full"
+                    width="fit"
+                    onClick={() => setSelectedCategory(cat.id)}
+                  />
+                ))}
+              </>
+            )}
           </div>
-          <TooltipModalPresenter isTextInput={true}>
+          <TooltipModalPresenter
+            isTextInput={true}
+            onButtonClick={(inputText) => {
+              handleCreateCategory(inputText);
+            }}
+          >
             <CategoryButton
               text="카테고리 추가"
               color="gray"
               size="small"
               width="fit"
+              radius="full"
               right={
-                <span className="text-mobile-body-s-semibold text-gray-200">
-                  <Image src={AddIcon} alt="plus" />
+                <span>
+                  <Image src={AddIcon} width={16} height={16} alt="plus" />
                 </span>
               }
-              onClick={() => {}}
             />
           </TooltipModalPresenter>
         </div>
@@ -176,9 +245,12 @@ export default function MenuEditPage() {
       <div className="w-full border-b border-gray-100" />
 
       <div className="wrapper w-full p-4">
-        <div className="flex gap-2">
-          <div className="grow-1 flex items-center gap-2">
-            <div className="">전체 13</div>
+        <div className="flex gap-2 mb-6">
+          <div className="grow-1 flex items-center gap-2 ">
+            <div className="text-mh-1 flex gap-2">
+              <div className="text-gray-800">전체</div>
+              <div className="text-gray-600">13</div>
+            </div>
             <button
               className={`rounded-md px-2 py-2 ${
                 viewType === 'table' ? 'bg-gray-100' : 'hover:bg-gray-50'
@@ -204,18 +276,21 @@ export default function MenuEditPage() {
                 color="white"
                 size="small"
                 width="fit"
+                radius="xl"
                 onClick={handleCreate}
               />
               <TableControlButton
                 text="삭제하기"
                 color="gray"
                 size="small"
+                radius="xl"
                 width="fit"
               />
               <TableControlButton
                 text="변경사항 저장하기"
                 color="gray"
                 size="small"
+                radius="xl"
                 width="fit"
               />
             </>
@@ -225,6 +300,7 @@ export default function MenuEditPage() {
               color="yellow"
               size="small"
               width="fit"
+              radius="xl"
               onClick={handleCreate}
             />
           )}
@@ -237,6 +313,7 @@ export default function MenuEditPage() {
               color="white"
               size="small"
               width="fit"
+              radius="full"
             />
           ))}
         </div>
@@ -246,7 +323,7 @@ export default function MenuEditPage() {
         {viewType === 'table' ? (
           <>
             <table className="w-full table-auto border-separate border-spacing-0 overflow-hidden rounded-xl">
-              <thead className="text-mobile-body-m-semibold text-w rounded-lg border-b border-b-gray-400 bg-gray-700">
+              <thead className="text-mb-3 text-white rounded-lg border-b border-b-gray-400 bg-gray-800">
                 <tr>
                   <th className="w-[3%] whitespace-nowrap rounded-tl-xl px-5 py-5"></th>
                   <th className="w-[35%] whitespace-nowrap px-5 py-5 text-left">
@@ -266,13 +343,14 @@ export default function MenuEditPage() {
                   </th>
                 </tr>
               </thead>
-              <tbody className="text-mobile-body-m-regular rounded-t-none rounded-bl-xl rounded-br-xl border border-t-0 text-gray-600">
-                {menuList.map((item, idx) => (
+              <tbody className="text-mb-4 rounded-t-none rounded-bl-xl rounded-br-xl border border-t-0 text-gray-600">
+                {menuItems.map((item, idx) => (
                   <MenuTableRow
                     key={item.id}
                     item={item}
                     onEdit={handleEdit}
-                    isLastRow={idx === menuList.length - 1}
+                    onCheck={handleCheckbox}
+                    isLastRow={idx === menuItems.length - 1}
                   />
                 ))}
               </tbody>
@@ -282,10 +360,10 @@ export default function MenuEditPage() {
           <>
             <div className="grid grid-cols-3 gap-4">
               {isLoading
-                ? menuList.map((_, idx) => (
+                ? menuItems.map((_, idx) => (
                     <MenuGalleryCardSkeleton key={idx} />
                   ))
-                : menuList.map((item) => (
+                : menuItems.map((item) => (
                     <MenuGalleryCard
                       key={item.id}
                       onDelete={handleDelete}

@@ -24,7 +24,7 @@ const MenuCustomLabel = forwardRef<HTMLDivElement, MenuCustomLabelProps>(
     ref,
   ) => {
     const baseClass =
-      'inline-flex items-center text-mobile-body-s-semibold border rounded-xl focus:outline-none transition select-none';
+      'inline-flex items-center text-mb-5 border rounded-full focus:outline-none transition select-none';
     if (isStatus) {
       if (text === '판매 중') {
         variant = 'blue';
@@ -51,18 +51,18 @@ const MenuCustomLabel = forwardRef<HTMLDivElement, MenuCustomLabelProps>(
 
     const variantClass =
       variant === 'orange'
-        ? `bg-chip-orangeBg text-chip-orangeText border-none ${hover ? 'hover:bg-chip-orangeBg' : ''}`
+        ? `bg-orange-200 text-orange-500 border-none ${hover ? 'hover:bg-orange-200' : ''}`
         : variant === 'blue'
-          ? `bg-chip-blueBg text-chip-blueText border-none ${hover ? 'hover:bg-chip-blueBg' : ''}`
+          ? `bg-blue-200 text-blue-500 border-none ${hover ? 'hover:bg-blue-200' : ''}`
           : variant === 'purple'
-            ? `bg-chip-purpleBg text-chip-purpleText border-none ${hover ? 'hover:bg-chip-purpleBg' : ''}`
+            ? `bg-purple-200 text-purple-500 border-none ${hover ? 'hover:bg-purple-200' : ''}`
             : variant === 'red'
-              ? `bg-chip-redBg text-chip-redText border-none ${hover ? 'hover:bg-chip-redBg' : ''}`
+              ? `bg-red-200 text-red-500 border-none ${hover ? 'hover:bg-red-200' : ''}`
               : variant === 'green'
-                ? `bg-chip-greenBg text-chip-greenText border-none ${hover ? 'hover:bg-chip-greenBg' : ''}`
+                ? `bg-green-200 text-green-500 border-none ${hover ? 'hover:bg-green-200' : ''}`
                 : text === '카테고리 선택' && !isStatus
-                  ? `bg-w text-gray-400 border-gray-300 ${hoverClass}`
-                  : `bg-w text-gray-700 border-gray-300 ${hoverClass}`;
+                  ? `bg-white text-gray-400 border-gray-300 ${hoverClass}`
+                  : `bg-white text-gray-700 border-gray-300 ${hoverClass}`;
 
     return (
       <div
