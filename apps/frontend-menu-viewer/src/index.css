@@ -154,12 +154,13 @@
   --color-purple-500: #9c68b3;
 
   --shadow-sm: 0px 1px 4px rgba(0, 0, 0, 0.06);
+  --shadow-lg: 0px 8px 32px rgba(0, 0, 0, 0.16);
   --inner-shadow-sm: inset 0px 0px 5px rgba(0, 0, 0, 0.06);
 }
 
 @layer components {
   .wrapper {
-    @apply min-w-xs px-5 xl:mx-auto xl:max-w-5xl;
+    @apply min-w-xs mx-auto max-w-[1440px] px-5;
   }
 
   .text-mt-1 {

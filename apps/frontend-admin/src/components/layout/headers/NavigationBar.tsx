@@ -70,9 +70,7 @@ export default function TopNavigationBar() {
 
   return (
     <header className="flex items-center justify-between border-t border-gray-200 bg-white px-12 py-8">
-      <h2 className="text-desktop-head-s-semibold text-bk">
-        {activeCategory.label}
-      </h2>
+      <h2 className="text-dh-1 text-bk">{activeCategory.label}</h2>
 
       <nav className="flex items-center gap-6">
         {activeCategory.tabs.map((tab) => (
@@ -81,9 +79,8 @@ export default function TopNavigationBar() {
             href={tab.href}
             className={
               (pathname === tab.href
-                ? 'text-main-500 font-semibold'
-                : 'font-medium text-gray-400') +
-              ' text-mobile-body-m-semibold transition-colors'
+                ? 'text-main-500 text-mb-1'
+                : 'text-gray-400') + ' text-mb-1 transition-colors'
             }
           >
             {tab.name}

@@ -8,6 +8,7 @@ interface CtaButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   size?: 'small' | 'medium' | 'large';
   color?: 'yellow' | 'gray' | 'red' | 'white' | 'black';
   width?: 'full' | 'fit';
+  radius?: 'none' | 'sm' | 'md' | 'lg' | 'xl' | 'full';
   className?: string;
   left?: React.ReactNode;
   right?: React.ReactNode;
@@ -20,6 +21,7 @@ export default function CtaButton({
   className = '',
   color = 'yellow',
   width = 'full',
+  radius = 'lg',
   disabled,
   onClick,
   left,
@@ -33,29 +35,29 @@ export default function CtaButton({
   };
 
   const textSizeStyles = {
-    small: 'text-mobile-body-s-regular',
-    medium: 'text-mobile-body-s-regular',
-    large: 'text-mobile-body-m-semibold',
+    small: 'text-mb-6',
+    medium: 'text-mb-6',
+    large: 'text-mb-3',
   };
 
   const textColorStyles = {
     yellow: 'text-main-900',
     gray: 'text-gray-700',
-    red: 'text-w',
+    red: 'text-white',
     white: 'text-gray-700',
-    black: 'text-w',
+    black: 'text-white',
   };
 
   const backgroundColorStyles = {
     yellow: 'bg-main-500',
     gray: 'bg-gray-100',
     red: 'bg-system-error',
-    white: 'bg-w',
+    white: 'bg-white',
     black: 'bg-gray-800',
   };
 
   const hoverColorStyles = {
-    yellow: 'hover:bg-main-500',
+    yellow: 'hover:bg-main-600',
     gray: 'hover:bg-gray-200',
     red: 'hover:bg-system-error',
     white: 'hover:bg-gray-100',
@@ -68,6 +70,15 @@ export default function CtaButton({
     red: 'border-system-error',
     white: 'border-gray-200',
     black: 'border-gray-800',
+  };
+
+  const radiusStyles = {
+    none: 'rounded-none',
+    sm: 'rounded-sm',
+    md: 'rounded-md',
+    lg: 'rounded-lg',
+    xl: 'rounded-xl',
+    full: 'rounded-full',
   };
 
   const iconSizeStyles = {
@@ -88,7 +99,7 @@ export default function CtaButton({
 
   return (
     <button
-      className={`${backgroundColorStyles[color]} ${borderColorStyles[color]} ${hoverColorStyles[color]} ${flexStyle} rounded-xl border transition-colors duration-200 disabled:cursor-not-allowed disabled:opacity-50 ${sizeStyles[size]} ${className} `}
+      className={`${backgroundColorStyles[color]} ${borderColorStyles[color]} ${hoverColorStyles[color]} ${radiusStyles[radius]} ${flexStyle} border transition-colors duration-200 disabled:cursor-not-allowed disabled:opacity-50 ${sizeStyles[size]} ${className}`}
       disabled={disabled || isLoading}
       onClick={handleClick}
       {...props}

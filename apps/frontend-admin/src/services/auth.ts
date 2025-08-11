@@ -5,7 +5,6 @@ export const AuthAPI = {
     const response = await axiosInstance.get('/auth/kakao/redirect', {
       params: { code: authCode },
     });
-    console.log(response);
     return response.data;
   },
 

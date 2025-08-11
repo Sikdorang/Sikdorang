@@ -27,7 +27,7 @@ export default function NavigationBar({
 
   return (
     <aside
-      className={`flex h-screen flex-col justify-between bg-[#171929] px-0 py-6 transition-all duration-300 ${
+      className={`flex h-screen flex-col justify-between bg-gray-900 px-0 py-6 transition-all duration-300 ${
         collapsed ? 'w-[72px]' : 'w-[240px]'
       }`}
     >
@@ -48,7 +48,7 @@ export default function NavigationBar({
           <div>
             <Link
               href="/menu/edit"
-              className={`text-mobile-body-m-semibold flex items-center gap-3 rounded-lg px-4 py-2 transition-colors ${
+              className={`text-mb-3 flex items-center gap-3 rounded-lg px-4 py-2 transition-colors ${
                 pathname === '/menu/edit'
                   ? 'text-main-500'
                   : 'hover:bg-main-500/10 text-gray-100'
@@ -63,7 +63,7 @@ export default function NavigationBar({
               {!collapsed && <span>메뉴 관리</span>}
               {!collapsed && (
                 <button
-                  className={`text-mobile-body-m-semibold text-main-500 flex items-center gap-2 focus:outline-none ${
+                  className={`text-mb-5 text-main-500 flex items-center gap-2 focus:outline-none ${
                     collapsed ? 'justify-center px-2' : ''
                   }`}
                   onClick={() => !collapsed && setMenuOpen((v) => !v)}
@@ -85,7 +85,7 @@ export default function NavigationBar({
               <div className="mt-2 flex flex-col gap-1">
                 <Link
                   href="/menu/edit"
-                  className={`text-mobile-body-s-semibold flex items-center gap-3 rounded-lg px-12 py-3 text-left transition-colors ${
+                  className={`text-mb-5 flex items-center gap-3 rounded-lg px-12 py-3 text-left transition-colors ${
                     pathname === '/menu/edit'
                       ? 'bg-main-500 text-bk'
                       : 'hover:bg-main-500/20 text-gray-200'
@@ -95,7 +95,7 @@ export default function NavigationBar({
                 </Link>
                 <Link
                   href="/menu/category"
-                  className={`text-mobile-body-s-semibold flex items-center gap-3 rounded-lg px-12 py-3 text-left transition-colors ${
+                  className={`text-mb-5 flex items-center gap-3 rounded-lg px-12 py-3 text-left transition-colors ${
                     pathname === '/menu/category'
                       ? 'bg-main-500 text-bk'
                       : 'hover:bg-main-500/10 text-gray-200'
@@ -109,7 +109,7 @@ export default function NavigationBar({
 
           <Link
             href="/recommend"
-            className={`text-mobile-body-m-semibold flex items-center gap-3 rounded-lg px-4 py-2 transition-colors ${
+            className={`text-mb-3 flex items-center gap-3 rounded-lg px-4 py-2 transition-colors ${
               pathname === '/recommend'
                 ? 'text-main-500'
                 : 'hover:bg-main-500/10 text-gray-100'
@@ -126,7 +126,7 @@ export default function NavigationBar({
 
           <Link
             href="/shop"
-            className={`text-mobile-body-m-semibold flex items-center gap-3 rounded-lg px-4 py-2 transition-colors ${
+            className={`text-mb-3 flex items-center gap-3 rounded-lg px-4 py-2 transition-colors ${
               pathname === '/shop'
                 ? 'text-main-500'
                 : 'hover:bg-main-500/10 text-gray-100'
@@ -143,7 +143,7 @@ export default function NavigationBar({
 
           <Link
             href="/preview"
-            className={`text-mobile-body-m-semibold flex items-center gap-3 rounded-lg px-4 py-2 transition-colors ${
+            className={`text-mb-3 flex items-center gap-3 rounded-lg px-4 py-2 transition-colors ${
               pathname === '/preview'
                 ? 'text-main-500'
                 : 'hover:bg-main-500/10 text-gray-100'
@@ -160,7 +160,7 @@ export default function NavigationBar({
 
           <Link
             href="/dashboard"
-            className={`text-mobile-body-m-semibold flex items-center gap-3 rounded-lg px-4 py-2 transition-colors ${
+            className={`text-mb-3 flex items-center gap-3 rounded-lg px-4 py-2 transition-colors ${
               pathname === '/dashboard'
                 ? 'text-main-500'
                 : 'hover:bg-main-500/10 text-gray-100'
@@ -181,7 +181,7 @@ export default function NavigationBar({
         <nav className="flex flex-col gap-2 px-4">
           <Link
             href="/settings"
-            className={`text-mobile-body-m-semibold flex items-center gap-3 rounded-lg px-2 py-2 text-gray-100 transition-colors ${
+            className={`text-mb-3 flex items-center gap-3 rounded-lg px-2 py-2 text-gray-100 transition-colors ${
               pathname === '/settings'
                 ? 'text-main-500'
                 : 'hover:bg-main-500/10 text-gray-100'
@@ -193,7 +193,7 @@ export default function NavigationBar({
 
           <Link
             href="/logout"
-            className={`text-mobile-body-m-semibold flex items-center gap-3 rounded-lg px-2 py-2 text-gray-100 transition-colors ${
+            className={`text-mb-3 flex items-center gap-3 rounded-lg px-2 py-2 text-gray-100 transition-colors ${
               pathname === '/logout'
                 ? 'text-main-500'
                 : 'hover:bg-main-500/10 text-gray-100'
