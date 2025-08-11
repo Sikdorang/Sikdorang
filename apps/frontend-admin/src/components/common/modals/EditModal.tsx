@@ -90,7 +90,6 @@ export function EditModalTextInput({
   placeholder,
   field = 'name',
   value,
-  onChange,
   ...rest
 }: EditModalTextInputProps) {
   const { formData, updateField } = useEditModal();
