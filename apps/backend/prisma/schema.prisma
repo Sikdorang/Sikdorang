@@ -57,10 +57,11 @@ model Menu {
   categoryId  Int?
   storeId     Int
 
-  @@index([categoryId], map: "Menu_categoryId_idx")
-  @@index([storeId], map: "Menu_storeId_idx")
+  @@index([categoryId], map: "Menu_categoryId_fkey")
+  @@index([storeId], map: "Menu_storeId_fkey")
   menuOptions MenuOption[]
   images      Image[]   
+  orderItems  OrderItem[]
   category    Category?   @relation("CategoryMenus", fields: [categoryId], references: [id], onDelete: Cascade)
 }
 
@@ -85,7 +86,8 @@ model MenuOption {
 
   menu           Menu            @relation(fields: [menuId], references: [id], onDelete: Cascade)
   optionDetails  OptionDetail[]
-  @@index([menuId], map: "idx_menuId")
+  orderItemOptions OrderItemOption[]
+  @@index([menuId], map: "menuOption_menuId_fkey")
 }
 
 model OptionDetail {
@@ -95,7 +97,9 @@ model OptionDetail {
   price          Int
 
   menuOption     MenuOption     @relation(fields: [menuOptionId], references: [id], onDelete: Cascade)
-  @@index([menuOptionId], map: "idx_menuOptionId")
+  orderItemOptionDetails OrderItemOptionDetail[]
+  
+  @@index([menuOptionId], map: "optionDetail_menuOptionId_fkey")
 }
 
 model RefreshToken {
@@ -122,6 +126,8 @@ model Store {
   toilet          String?
   userId          Int
   createdAt       DateTime @default(now())
+
+  orders          Order[] 
 
   @@index([userId], map: "Store_userId_fkey")
 }
@@ -156,4 +162,56 @@ enum Status {
   SALE
   HIDDEN
   SOLDOUT
+}
+
+model Order {
+  id          Int       @id @default(autoincrement())
+  token       String    // 주문자 토큰
+  createdAt   DateTime  @default(now())
+  tableNumber Int?
+  storeId     Int
+
+  store       Store     @relation(fields: [storeId], references: [id], onDelete: Cascade)
+  orderItems  OrderItem[]
+
+  @@index([storeId], map: "Order_storeId_fkey")
+}
+
+model OrderItem {
+  id        Int      @id @default(autoincrement())
+  orderId   Int
+  menuId    Int
+  quantity  Int
+
+  order     Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  menu      Menu     @relation(fields: [menuId], references: [id], onDelete: Cascade)
+  options   OrderItemOption[]
+
+  @@index([orderId], map: "OrderItem_orderId_fkey")
+  @@index([menuId], map: "OrderItem_menuId_fkey")
+}
+
+model OrderItemOption {
+  id             Int      @id @default(autoincrement())
+  orderItemId    Int
+  menuOptionId   Int
+
+  orderItem      OrderItem     @relation(fields: [orderItemId], references: [id], onDelete: Cascade)
+  menuOption     MenuOption    @relation(fields: [menuOptionId], references: [id], onDelete: Cascade)
+  optionDetails  OrderItemOptionDetail[]
+
+  @@index([orderItemId], map: "OrderItemOption_orderItemId_fkey")
+  @@index([menuOptionId], map: "OrderItemOption_menuOptionId_fkey")
+}
+
+model OrderItemOptionDetail {
+  id                   Int     @id @default(autoincrement())
+  orderItemOptionId    Int
+  optionDetailId       Int
+
+  orderItemOption      OrderItemOption @relation(fields: [orderItemOptionId], references: [id], onDelete: Cascade)
+  optionDetail         OptionDetail    @relation(fields: [optionDetailId], references: [id], onDelete: Cascade)
+
+  @@index([orderItemOptionId], map: "OrderItemOptionDetail_orderItemOptionId_fkey")
+  @@index([optionDetailId], map: "OrderItemOptionDetail_optionDetailId_fkey")
 }

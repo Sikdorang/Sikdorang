@@ -308,6 +308,7 @@ export class MenuService {
         isNew: menu.new,
         isPopular: menu.popular,
         imgUrl: menu.images.length > 0 ? menu.images[0].image : undefined,
+        status: menu.status,
       })),
     }));
   }
@@ -346,6 +347,7 @@ export class MenuService {
       price: menu.price,
       isNew: menu.new,
       isPopular: menu.popular,
+      status: menu.status,
       images: menu.images.map((img) => img.image),
       optionGroups: menu.menuOptions.map((opt) => ({
         groupId: opt.id.toString(),
