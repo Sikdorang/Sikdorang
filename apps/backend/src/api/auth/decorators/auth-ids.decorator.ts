@@ -10,6 +10,7 @@ interface RequestWithUser extends Request {
     userId: number;
     kakaoId: string;
     storeId?: number;
+    tableNumber?: number;
   };
 }
 
@@ -25,6 +26,7 @@ export const UserId = createParamDecorator(
     return userId;
   },
 );
+
 export const StoreId = createParamDecorator(
   (data: unknown, ctx: ExecutionContext): number => {
     const request = ctx.switchToHttp().getRequest<RequestWithUser>();
@@ -34,5 +36,16 @@ export const StoreId = createParamDecorator(
     }
 
     return storeId;
+  },
+);
+
+export const TableNumber = createParamDecorator(
+  (data: unknown, ctx: ExecutionContext): number => {
+    const request = ctx.switchToHttp().getRequest<RequestWithUser>();
+    const tableNumber = request.user?.tableNumber;
+    if (!tableNumber || typeof tableNumber !== 'number') {
+      return -1;
+    }
+    return tableNumber;
   },
 );

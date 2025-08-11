@@ -4,6 +4,7 @@ import { ConfigModule } from '@nestjs/config';
 import { AuthModule } from './auth/auth.module';
 import { CategoryModule } from './category/category.module';
 import { MenuModule } from './menu/menu.module';
+import { OrderModule } from './order/order.module';
 import { StoreModule } from './store/store.module';
 
 @Module({
@@ -15,6 +16,7 @@ import { StoreModule } from './store/store.module';
     StoreModule,
     CategoryModule,
     MenuModule,
+    OrderModule,
   ],
 })
 export class AppModule {}
