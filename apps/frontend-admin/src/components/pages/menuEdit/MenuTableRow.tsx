@@ -1,36 +1,50 @@
-import { IMenuTableItem } from '@/types/model/menu';
-import CheckedIcon from '@public/icons/ic_checked_box.svg';
-import UncheckedIcon from '@public/icons/ic_empty_box.svg';
-
-import { default as EditButton } from '@/components/common/buttons/CtaButton';
-import Image from 'next/image';
 import {
   default as CategorySelect,
   default as StatusSelect,
 } from './MenuCustomSelect';
+import { default as EditButton } from '@/components/common/buttons/CtaButton';
+import { IMenuTableItem } from '@/types/model/menu';
+import CheckedIcon from '@public/icons/ic_checked_box.svg';
+import UncheckedIcon from '@public/icons/ic_empty_box.svg';
+import Image from 'next/image';
 
 interface MenuTableRowProps {
   item: IMenuTableItem;
   onEdit: (menuId: number) => void;
+  onCheck: (menuId: number) => void;
   isLastRow: boolean;
 }
 
 export default function MenuTableRow({
   item,
   onEdit,
+  onCheck,
   isLastRow,
 }: MenuTableRowProps) {
   return (
     <tr key={item.id}>
       <td
-        className={`items-center border-b border-l border-t border-gray-300 px-5 py-5 ${
+        className={`items-center border-b border-l border-t border-gray-300 pl-6 ${
           isLastRow ? 'rounded-bl-xl' : ''
         }`}
+        onClick={() => onCheck(item.id)}
       >
         {item.checked ? (
-          <Image src={CheckedIcon} alt="check" width={24} height={24} />
+          <Image
+            src={CheckedIcon}
+            alt="check"
+            width={24}
+            height={24}
+            className="opacity-100 scale-100 transition-all duration-200"
+          />
         ) : (
-          <Image src={UncheckedIcon} alt="check" width={24} height={24} />
+          <Image
+            src={UncheckedIcon}
+            alt="check"
+            width={24}
+            height={24}
+            className="opacity-100 scale-100 transition-all duration-200"
+          />
         )}
       </td>
       <td className="border-b border-t border-gray-300 px-5 py-5">
@@ -64,6 +78,7 @@ export default function MenuTableRow({
           color="gray"
           size="small"
           width="fit"
+          radius="xl"
           onClick={() => onEdit(item.id)}
         />
       </td>

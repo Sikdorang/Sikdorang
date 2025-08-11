@@ -49,7 +49,7 @@ export class AuthController {
   @Post('refresh')
   @RefreshAccessTokenSwagger()
   async refresh(@Req() req: Request) {
-    const refreshToken: string = req.cookies?.refreshToken;
+    const refreshToken: string = req.cookies?.['refresh-token'];
     if (!refreshToken) {
       throw new UnauthorizedException('Refresh token not found');
     }
@@ -67,7 +67,7 @@ export class AuthController {
   @Post('logout')
   @LogoutSwagger()
   async logout(@Req() req: Request, @Res() res: Response) {
-    const refreshToken: string = req.cookies?.refreshToken;
+    const refreshToken: string = req.cookies?.['refresh-token'];
 
     if (refreshToken) {
       await this.authService.logout({ refreshToken });

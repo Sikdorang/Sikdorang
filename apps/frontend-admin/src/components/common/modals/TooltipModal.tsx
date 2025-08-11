@@ -1,6 +1,6 @@
 import CreateCategoryButton from '@/components/common/buttons/CtaButton';
 import TextInput from '@/components/common/inputs/TextInput';
-import React from 'react';
+import React, { useState } from 'react';
 
 interface TooltipModalProps {
   contents: { title: string; description: string }[];
@@ -8,11 +8,24 @@ interface TooltipModalProps {
   position?: { top: number; left: number };
   onClose?: () => void;
   isTextInput?: boolean;
+  onButtonClick?: (inputText: string) => void;
 }
 
 export const TooltipModal = React.forwardRef<HTMLDivElement, TooltipModalProps>(
-  function TooltipModal({ visible, contents, position, isTextInput }, ref) {
+  function TooltipModal(
+    { visible, contents, position, isTextInput, onButtonClick },
+    ref,
+  ) {
+    const [inputValue, setInputValue] = useState<string>('');
+
     if (!visible) return null;
+
+    const handleClick = () => {
+      if (inputValue.trim()) {
+        onButtonClick?.(inputValue.trim());
+        setInputValue('');
+      }
+    };
 
     return (
       <div
@@ -30,12 +43,16 @@ export const TooltipModal = React.forwardRef<HTMLDivElement, TooltipModalProps>(
                 color="yellow"
                 size="small"
                 width="fit"
-                onClick={() => {}}
+                onClick={handleClick}
               />
             </div>
             <TextInput
               label="카테고리명"
               placeholder="카테고리명을 입력해주세요."
+              value={inputValue}
+              onChange={(e) => setInputValue(e.target.value)}
+              onClear={() => setInputValue('')}
+              maxLength={50}
             />
           </div>
         ) : (

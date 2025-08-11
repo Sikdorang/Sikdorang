@@ -7,6 +7,7 @@ import React, { useEffect, useRef } from 'react';
 interface TooltipModalPresenterProps {
   children: React.ReactNode;
   isTextInput?: boolean;
+  onButtonClick?: (inputText: string) => void;
 }
 
 const exampleGuide = [
@@ -25,6 +26,7 @@ const exampleGuide = [
 export function TooltipModalPresenter({
   children,
   isTextInput = false,
+  onButtonClick,
 }: TooltipModalPresenterProps) {
   const tooltip = useTooltipModal();
   const triggerRef = useRef<HTMLDivElement>(null);
@@ -74,6 +76,7 @@ export function TooltipModalPresenter({
         position={tooltip.position}
         onClose={tooltip.hide}
         isTextInput={isTextInput}
+        onButtonClick={onButtonClick}
       />
     </>
   );

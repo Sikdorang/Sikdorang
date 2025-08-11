@@ -1,5 +1,6 @@
-import '../styles/global.css';
 import MswProvider from '@/providers/MswProvider';
+import ToastProvider from '@/providers/toastProvider';
+import '@/styles/global.css';
 import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
@@ -15,7 +16,9 @@ export default function RootLayout({
   return (
     <html lang="en" className="custom-scrollbar">
       <body>
-        <MswProvider>{children}</MswProvider>
+        <ToastProvider>
+          <MswProvider>{children}</MswProvider>
+        </ToastProvider>
       </body>
     </html>
   );

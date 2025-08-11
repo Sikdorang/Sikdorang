@@ -95,7 +95,6 @@ function SortableCategoryItem({
       className={`flex items-center gap-3 border-b border-gray-200 bg-white p-4 transition-all duration-200 ${isDragging ? 'z-50 shadow-lg' : 'hover:border-gray-300 hover:shadow-md'} ${isChild ? 'ml-6 bg-gray-50' : ''} `}
       style={{ ...style, paddingLeft: `${paddingLeft}px` }}
     >
-      {/* 드래그 핸들 */}
       <div
         {...attributes}
         {...listeners}
@@ -105,7 +104,6 @@ function SortableCategoryItem({
         <Image src={DragIcon} alt="drag" />
       </div>
 
-      {/* 펼치기/접기 버튼 (자식이 있는 경우만) */}
       {hasChildren && (
         <button
           onClick={() => onToggle(category.id)}
@@ -134,9 +132,7 @@ function SortableCategoryItem({
         )}
       </div>
 
-      {/* 액션 버튼들 */}
       <div className="flex items-center gap-2">
-        {/* 편집 버튼 */}
         <button
           onClick={() => onEdit(category.id)}
           className="rounded-lg p-2 text-gray-500 transition-colors hover:bg-blue-50 hover:text-blue-600"
@@ -145,7 +141,6 @@ function SortableCategoryItem({
           <Image src={EditIcon} alt="edit" />
         </button>
 
-        {/* 삭제 버튼 */}
         <button
           onClick={() => onDelete(category.id)}
           className="rounded-lg p-2 text-gray-500 transition-colors hover:bg-red-50 hover:text-red-600"
