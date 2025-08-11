@@ -1,11 +1,25 @@
+export interface IMenuItem {
+  id: number;
+  name: string;
+  price: number;
+  isNew: boolean;
+  isPopular: boolean;
+  imgUrl?: string;
+}
+
+export interface IMenuCategory {
+  id: number;
+  category: string;
+  items: IMenuItem[];
+}
+
 export interface IMenuTableItem {
   id: number;
-  checked: boolean;
   name: string;
-  price: number | null;
-  category: string | null;
+  price: number;
+  category: string;
+  checked: boolean;
   status: string;
-  order: string;
 }
 
 export interface IMenuImageItem {
@@ -17,10 +31,30 @@ export interface IMenuImageItem {
   preview?: string;
 }
 
-export interface IMenuOption {
+export interface IMenuOptionItem {
+  optionId: string;
+  name: string;
+  price: number;
+}
+
+export interface IMenuOptionGroup {
+  groupId: string;
+  title: string;
+  required: boolean;
+  minSelectable: number;
+  maxSelectable: number;
+  items: IMenuOptionItem[];
+}
+
+export interface IMenuDetailResponse {
   id: string;
   name: string;
-  price?: number;
+  description: string;
+  price: number;
+  isNew: boolean;
+  isPopular: boolean;
+  images: string[];
+  optionGroups: IMenuOptionGroup[];
 }
 
 export interface IToggleSwitch {
