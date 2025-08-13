@@ -33,12 +33,12 @@ model Hours {
 
 model InformationOrder {
   id               Int    @id @default(autoincrement())
-  phoneNumberOrder String
-  hoursOrder       String
-  corkageOrder     String
-  naverPlaceOrder  String
-  wifiOrder        String
-  ToiletOrder      String
+  phoneNumberOrder String?
+  hoursOrder       String?
+  corkageOrder     String?
+  naverPlaceOrder  String?
+  wifiOrder        String?
+  ToiletOrder      String?
   storeId          Int
 
   @@index([storeId], map: "InformationOrder_storeId_fkey")
@@ -116,7 +116,6 @@ model Store {
   id              Int      @id @default(autoincrement())
   store           String
   pinNumber       String
-  description     String?
   wifiId          String?
   wifiPassword    String?
   phoneNumber     String?
