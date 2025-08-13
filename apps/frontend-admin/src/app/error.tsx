@@ -24,12 +24,12 @@ export default function Error({
         />
       </div>
       <div className="flex flex-col items-center justify-center color-gray-900 gap-2">
-        <div className="text-mobile-head-l-semibold text-center">
+        <div className="text-mt-1 text-center">
           앗 !
           <br />
           오류가 발생했어요
         </div>
-        <div className="text-mobile-body-s-regular color-gray-700 items-center justify-center text-center">
+        <div className="text-mb-4 color-gray-700 items-center justify-center text-center">
           다시 시작해주세요
           <br />
           ‘닫기’를 누르면 이전 페이지로 이동합니다

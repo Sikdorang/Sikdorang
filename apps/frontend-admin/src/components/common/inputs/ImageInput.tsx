@@ -16,25 +16,25 @@ import {
   verticalListSortingStrategy,
 } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
+import DeleteIcon from '@public/icons/ic_cancel.svg';
 import DraggableIcon from '@public/icons/ic_dots.svg';
 import EmptyImageIcon from '@public/icons/ic_picture.svg';
-import DeleteIcon from '@public/icons/ic_x.svg';
 import { LexoRank } from 'lexorank';
 import Image from 'next/image';
 import React, { useEffect, useRef, useState } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 
-interface MenuImageGalleryProps {
+interface ImageInputProps {
   images?: IMenuImageItem[];
   setImages: React.Dispatch<React.SetStateAction<IMenuImageItem[]>>;
   maxImages?: number;
 }
 
-export default function MenuImageGallery({
+export default function ImageInput({
   images = [],
   setImages,
   maxImages = 10,
-}: MenuImageGalleryProps) {
+}: ImageInputProps) {
   const sensors = useSensors(useSensor(PointerSensor));
   const CDN_URL = process.env.NEXT_PUBLIC_CDN_BASE_URL;
 
@@ -115,13 +115,13 @@ export default function MenuImageGallery({
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleClick = () => {
-    fileInputRef.current?.click(); // input을 강제로 클릭
+    fileInputRef.current?.click();
   };
 
   return (
     <div>
       <div className="flex items-center mb-4">
-        <div className="text-mobile-body-l-semibold grow-1">메뉴 사진</div>
+        <div className="text-mb-1 grow-1">메뉴 사진</div>
         <>
           <AddButton
             text="사진 추가하기"
@@ -155,7 +155,7 @@ export default function MenuImageGallery({
             className="h-full w-full rounded-md object-contain"
           />
         ) : (
-          <div className="text-mobile-body-m-semibold flex select-none flex-col items-center justify-center gap-4 text-center text-gray-700">
+          <div className="text-mb-5 flex select-none flex-col items-center justify-center gap-4 text-center text-gray-700">
             <Image src={EmptyImageIcon} alt="add" width={55} height={55} />
             <div>
               메뉴 사진이 아직 없어요.
@@ -200,6 +200,7 @@ export default function MenuImageGallery({
                     }
                     onSelect={() => setSelectedImage(image)}
                     onDelete={() => handleDeleteImage(index)}
+                    isFirst={index === 0}
                   />
                 );
               })}
@@ -216,6 +217,7 @@ interface SortableItemProps {
   selectedImage: string | null;
   onSelect: () => void;
   onDelete: () => void;
+  isFirst: boolean;
 }
 
 function SortableItem({
@@ -224,6 +226,7 @@ function SortableItem({
   selectedImage,
   onSelect,
   onDelete,
+  isFirst,
 }: SortableItemProps) {
   const {
     attributes,
@@ -234,28 +237,42 @@ function SortableItem({
     isDragging,
   } = useSortable({ id });
 
-  const style = {
+  const baseStyle = {
     transform: CSS.Transform.toString(transform),
-    border: selectedImage === image ? '2px solid #3b82f6' : '2px solid #e5e7eb',
-    zIndex: isDragging ? 10 : 'auto',
-    boxShadow: isDragging ? '0px 4px 10px rgba(0, 0, 0, 0.2)' : 'none',
     transition,
   };
 
+  const thumbStyle: React.CSSProperties = {
+    ...baseStyle,
+    borderRadius: 12,
+    overflow: 'hidden',
+    position: 'relative',
+    border:
+      selectedImage === image ? '1px solid #111223' : '1px solid transparent',
+    boxShadow: isDragging ? '0 4px 10px rgba(0, 0, 0, 0.2)' : undefined,
+    zIndex: isDragging ? 10 : undefined,
+  };
+
+  const itemStyle: React.CSSProperties = {
+    ...baseStyle,
+    borderRadius: 8,
+    border: selectedImage === image ? '1px solid #111223' : '1px solid #e5e7eb',
+    boxShadow: isDragging ? '0px 4px 10px rgba(0, 0, 0, 0.2)' : 'none',
+    zIndex: isDragging ? 10 : 'auto',
+    position: 'relative',
+  };
+
+  const style = isFirst ? thumbStyle : itemStyle;
+
   return (
-    <div
-      ref={setNodeRef}
-      style={style}
-      {...attributes}
-      className="relative shrink-0"
-    >
+    <div ref={setNodeRef} style={style} {...attributes} className={'shrink-0'}>
       <div {...listeners} className="absolute left-0 top-0 cursor-grab p-1">
-        <DraggableIcon />
+        <Image src={DraggableIcon} alt={''} width={6} height={6} />
       </div>
 
       <Image
         src={image}
-        className="drag-none h-16 w-16 cursor-pointer rounded-md object-cover"
+        className="drag-none h-30 w-30 rounded-md cursor-pointer object-cover"
         onClick={(e) => {
           e.stopPropagation();
           onSelect();
@@ -265,12 +282,31 @@ function SortableItem({
         height={12}
       />
 
+      {isFirst ? (
+        <div
+          className="text-ml-2"
+          style={{
+            position: 'absolute',
+            bottom: 0,
+            left: 0,
+            width: '100%',
+            backgroundColor: 'rgba(0, 0, 0)',
+            color: '#ffffff',
+            padding: '8px',
+            textAlign: 'center',
+            boxSizing: 'border-box',
+          }}
+        >
+          썸네일 사진
+        </div>
+      ) : undefined}
+
       <button
         onClick={(e) => {
           e.stopPropagation();
           onDelete();
         }}
-        className="absolute right-0 top-0 flex h-4 w-4 items-center justify-center rounded-full bg-white text-xs text-white"
+        className="absolute right-0 top-0 flex h-4 w-4 items-center justify-center"
       >
         <Image src={DeleteIcon} alt="delete" width={12} height={12} />
       </button>

@@ -1,8 +1,4 @@
 @layer utilities {
-  .wrapper {
-    @apply min-w-xs max-w-[1400px] px-5 xl:mx-auto;
-  }
-
   .text-mt-1 {
     @apply text-2xl font-semibold leading-[150%] tracking-[-4%];
   }

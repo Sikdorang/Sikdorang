@@ -37,7 +37,7 @@ export const TooltipModal = React.forwardRef<HTMLDivElement, TooltipModalProps>(
         {isTextInput ? (
           <div className="flex flex-col">
             <div className="flex">
-              <div className="grow-1 ">카테고리 추가</div>
+              <div className="grow-1 text-mb-1">카테고리 추가</div>
               <CreateCategoryButton
                 text="추가하기"
                 color="yellow"
@@ -49,6 +49,7 @@ export const TooltipModal = React.forwardRef<HTMLDivElement, TooltipModalProps>(
             <TextInput
               label="카테고리명"
               placeholder="카테고리명을 입력해주세요."
+              labelClassName="text-mb-5"
               value={inputValue}
               onChange={(e) => setInputValue(e.target.value)}
               onClear={() => setInputValue('')}

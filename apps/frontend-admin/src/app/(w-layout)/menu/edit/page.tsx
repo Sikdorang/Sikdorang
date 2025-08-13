@@ -6,6 +6,7 @@ import {
   default as TableControlButton,
 } from '@/components/common/buttons/CtaButton';
 import SearchInput from '@/components/common/inputs/TextInput';
+import EditMenuModal from '@/components/common/modals/EditMenuModal';
 import EditModal, {
   EditModalHeader,
   EditModalImageInput,
@@ -23,18 +24,22 @@ import {
 } from '@/components/common/modals/WarningModal';
 import MenuGalleryCardSkeleton from '@/components/pages/menuEdit/MenuCardSkeleton';
 import MenuGalleryCard from '@/components/pages/menuEdit/MenuGalleryCard';
+import MenuTableHeader from '@/components/pages/menuEdit/MenuTableHeader';
 import MenuTableRow from '@/components/pages/menuEdit/MenuTableRow';
+import MenuTableRowSkeleton from '@/components/pages/menuEdit/MenuTableRowSkeleton';
 import { ERROR_MESSAGES } from '@/constants/messages';
 import { useEditModal } from '@/contexts/EditModalContext';
 import { useWarningModal } from '@/contexts/WarningModalContext';
 import { useManageCategory } from '@/hooks/useManageCategory';
-import { IMenuTableItem } from '@/types/model/menu';
+import { useManageMenu } from '@/hooks/useManageMenu';
+import { IMenuDetailResponse, IMenuTableItem } from '@/types/model/menu';
+import { convertToMenuTableItems } from '@/utilities/reshape';
 import GalleryIcon from '@public/icons/ic_grid.svg';
 import TableIcon from '@public/icons/ic_list.svg';
 import AddIcon from '@public/icons/ic_plus.svg';
 import { LexoRank } from 'lexorank';
 import Image from 'next/image';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 
 const filterOptions = [
   { id: 1, text: '전체' },
@@ -45,82 +50,55 @@ const filterOptions = [
 ];
 
 export default function MenuEditPage() {
-  const {
-    categories,
-    isCategoriesLoading,
-    createCategory,
-    fetchCategories,
-    updateCategory,
-    removeCategory,
-  } = useManageCategory();
+  const { categories, isCategoriesLoading, createCategory, fetchCategories } =
+    useManageCategory();
 
-  const [menuItems, setMenuItems] = useState<IMenuTableItem[]>([
-    {
-      id: 1,
-      name: '참소라 무침',
-      price: 25000,
-      category: '안주',
-      status: '판매 중',
-      checked: false,
-      order: '1',
-    },
-    {
-      id: 2,
-      name: '아롱사태 수육',
-      price: 25000,
-      category: '안주',
-      status: '품절',
-      checked: true,
-      order: '1',
-    },
-    {
-      id: 3,
-      name: '앞다리살 수육',
-      price: 25000,
-      category: '안주',
-      status: '숨김',
-      checked: true,
-      order: '1',
-    },
-  ]);
+  const {
+    menus,
+    isMenusLoading,
+    menuError,
+    fetchMenus,
+    createMenus,
+    updateMenus,
+    removeMenu,
+    getMenuDetails,
+    updateMenuDetails,
+  } = useManageMenu();
 
   useEffect(() => {
     fetchCategories();
+    fetchMenus();
   }, []);
-  const [inputCategory, setInputCategory] = useState('');
+
   const [categoryError, setCategoryError] = useState('');
   const [searchValue, setSearchValue] = useState('');
-  const [selectedCategory, setSelectedCategory] = useState(1);
+  const [menuFilter, setMenuFilter] = useState(1);
+  const [selectedCategory, setSelectedCategory] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
-
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setIsLoading(false);
-    }, 3000);
-
-    return () => clearTimeout(timer);
-  }, []);
 
   const [viewType, setViewType] = useState<'table' | 'gallery'>('table');
 
   const { openModal, currentModal } = useEditModal();
   const [isTooltipModal, setIsTooltipModal] = useState(false);
-  const handleEdit = () => {
-    setIsTooltipModal(false);
-    openModal('modifyMenu');
-  };
 
   const handleCreate = () => {
     setIsTooltipModal(false);
     openModal('createMenu');
   };
 
+  const totalMenuCount = menus.reduce(
+    (acc, category) => acc + category.items.length,
+    0,
+  );
+
+  const [selectedMenuIds, setSelectedMenuIds] = useState<number[]>([]);
   const handleCheckbox = (menuId: number) => {
-    setMenuItems((prev) =>
-      prev.map((item) =>
-        item.id === menuId ? { ...item, checked: !item.checked } : item,
-      ),
-    );
+    setSelectedMenuIds((prev) => {
+      if (prev.includes(menuId)) {
+        return prev.filter((id) => id !== menuId);
+      }
+      return [...prev, menuId];
+    });
   };
 
   const handleCreateCategory = async (inputText: string) => {
@@ -151,6 +129,14 @@ export default function MenuEditPage() {
     setCategoryError('');
   };
 
+  const [menuTableItems, setMenuTableItems] = useState<IMenuTableItem[]>(() =>
+    convertToMenuTableItems(menus),
+  );
+
+  useEffect(() => {
+    setMenuTableItems(convertToMenuTableItems(menus));
+  }, [menus]);
+
   const { openModal: openDeleteMenuModal } = useWarningModal();
   // 삭제 버튼 클릭
   const handleDelete = (menuId: number) => {
@@ -167,6 +153,58 @@ export default function MenuEditPage() {
     //   });
     // });
   };
+
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedMenuId, setSelectedMenuId] = useState<number | null>(null);
+  const handleEdit = useCallback((menuId: number) => {
+    setSelectedMenuId(menuId);
+    setIsModalOpen(true);
+  }, []);
+  const handleCloseModal = useCallback(() => {
+    setIsModalOpen(false);
+    setSelectedMenuId(null);
+  }, []);
+  const handleSave = useCallback((data: Partial<IMenuDetailResponse>) => {
+    setIsModalOpen(false);
+  }, []);
+
+  const firstFilteredItems = useMemo(() => {
+    switch (menuFilter) {
+      case 2: // 판매중
+        return menuTableItems.filter((item) => item.status === 'SALE');
+      case 3: // 품절
+        return menuTableItems.filter((item) => item.status === 'SOLDOUT');
+      case 4: // 숨김
+        return menuTableItems.filter((item) => item.status === 'HIDDEN');
+      case 5: // 미입력
+        return menuTableItems.filter((item) => !item.status);
+      default: // 전체
+        return menuTableItems;
+    }
+  }, [menuTableItems, menuFilter]);
+
+  const secondFilteredItems = useMemo(() => {
+    if (selectedCategory === 0) {
+      return firstFilteredItems;
+    }
+
+    const categoryName = categories.find(
+      (c) => c.id === selectedCategory,
+    )?.category;
+    if (!categoryName) {
+      return firstFilteredItems;
+    }
+
+    return firstFilteredItems.filter((item) => item.category === categoryName);
+  }, [firstFilteredItems, selectedCategory, categories]);
+
+  const finalFilteredItems = useMemo(() => {
+    if (!searchValue.trim()) return secondFilteredItems;
+    const lower = searchValue.toLowerCase();
+    return secondFilteredItems.filter((item) =>
+      item.name.toLowerCase().includes(lower),
+    );
+  }, [secondFilteredItems, searchValue]);
 
   return (
     <div className="flex flex-col items-center justify-center">
@@ -195,28 +233,36 @@ export default function MenuEditPage() {
                 <CategoryButton
                   key="all"
                   text="전체"
-                  color={selectedCategory === 'all' ? 'black' : 'white'}
+                  color={selectedCategory === 0 ? 'black' : 'white'}
                   size="small"
                   width="fit"
-                  onClick={() => setSelectedCategory('all')}
+                  onClick={() => setSelectedCategory(0)}
                   radius="full"
                   right={
                     <div className="text-mb-5 text-gray-200">
-                      {categories.length}
+                      {totalMenuCount}
                     </div>
                   }
                 />
-                {categories.map((cat) => (
-                  <CategoryButton
-                    key={cat.id}
-                    text={cat.category}
-                    color={selectedCategory === cat.id ? 'black' : 'white'}
-                    size="small"
-                    radius="full"
-                    width="fit"
-                    onClick={() => setSelectedCategory(cat.id)}
-                  />
-                ))}
+                {categories.map((cat) => {
+                  const menuCategory = menus.find((m) => m.id === cat.id);
+                  const count = menuCategory ? menuCategory.items.length : 0;
+
+                  return (
+                    <CategoryButton
+                      key={cat.id}
+                      text={cat.category}
+                      color={selectedCategory === cat.id ? 'black' : 'white'}
+                      size="small"
+                      radius="full"
+                      width="fit"
+                      right={
+                        <span className="text-gray-500 text-xs">{count}</span>
+                      }
+                      onClick={() => setSelectedCategory(cat.id)}
+                    />
+                  );
+                })}
               </>
             )}
           </div>
@@ -249,7 +295,7 @@ export default function MenuEditPage() {
           <div className="grow-1 flex items-center gap-2 ">
             <div className="text-mh-1 flex gap-2">
               <div className="text-gray-800">전체</div>
-              <div className="text-gray-600">13</div>
+              <div className="text-gray-600">{totalMenuCount}</div>
             </div>
             <button
               className={`rounded-md px-2 py-2 ${
@@ -310,10 +356,11 @@ export default function MenuEditPage() {
             <FilterOptionButton
               key={option.id}
               text={option.text}
-              color="white"
+              color={menuFilter === option.id ? 'black' : 'white'}
               size="small"
               width="fit"
               radius="full"
+              onClick={() => setMenuFilter(option.id)}
             />
           ))}
         </div>
@@ -323,36 +370,22 @@ export default function MenuEditPage() {
         {viewType === 'table' ? (
           <>
             <table className="w-full table-auto border-separate border-spacing-0 overflow-hidden rounded-xl">
-              <thead className="text-mb-3 text-white rounded-lg border-b border-b-gray-400 bg-gray-800">
-                <tr>
-                  <th className="w-[3%] whitespace-nowrap rounded-tl-xl px-5 py-5"></th>
-                  <th className="w-[35%] whitespace-nowrap px-5 py-5 text-left">
-                    메뉴명
-                  </th>
-                  <th className="w-[10%] whitespace-nowrap px-5 py-5 text-left">
-                    가격
-                  </th>
-                  <th className="w-[12%] whitespace-nowrap px-5 py-5 text-left">
-                    카테고리
-                  </th>
-                  <th className="w-[10%] whitespace-nowrap px-5 py-5 text-left">
-                    상태
-                  </th>
-                  <th className="w-[8%] whitespace-nowrap rounded-tr-xl px-5 py-5">
-                    세부사항
-                  </th>
-                </tr>
-              </thead>
+              <MenuTableHeader />
               <tbody className="text-mb-4 rounded-t-none rounded-bl-xl rounded-br-xl border border-t-0 text-gray-600">
-                {menuItems.map((item, idx) => (
-                  <MenuTableRow
-                    key={item.id}
-                    item={item}
-                    onEdit={handleEdit}
-                    onCheck={handleCheckbox}
-                    isLastRow={idx === menuItems.length - 1}
-                  />
-                ))}
+                {isMenusLoading
+                  ? Array.from({ length: 10 }).map((_, idx) => (
+                      <MenuTableRowSkeleton key={idx} idx={idx} />
+                    ))
+                  : finalFilteredItems.map((item, idx) => (
+                      <MenuTableRow
+                        key={item.id}
+                        item={item}
+                        categories={categories}
+                        onEdit={handleEdit}
+                        onCheck={handleCheckbox}
+                        isLastRow={idx === menus.length}
+                      />
+                    ))}
               </tbody>
             </table>
           </>
@@ -360,10 +393,8 @@ export default function MenuEditPage() {
           <>
             <div className="grid grid-cols-3 gap-4">
               {isLoading
-                ? menuItems.map((_, idx) => (
-                    <MenuGalleryCardSkeleton key={idx} />
-                  ))
-                : menuItems.map((item) => (
+                ? menus.map((_, idx) => <MenuGalleryCardSkeleton key={idx} />)
+                : menus.map((item) => (
                     <MenuGalleryCard
                       key={item.id}
                       onDelete={handleDelete}
@@ -380,46 +411,22 @@ export default function MenuEditPage() {
         )}
       </div>
 
+      {selectedMenuId !== null && (
+        <EditMenuModal
+          menuId={selectedMenuId}
+          isOpen={isModalOpen}
+          onClose={handleCloseModal}
+          onSave={handleSave}
+        />
+      )}
+
       {currentModal !== null && (
         <EditModal>
-          {currentModal === 'modifyMenu' && (
-            <>
-              <EditModalHeader onSave={() => {}}>
-                세부사항 편집하기
-              </EditModalHeader>
-              <EditModalTextInput
-                label="메뉴 설명"
-                placeholder="메뉴설명을 입력해주세요."
-              />
-              <EditModalImageInput
-                label="메뉴 이미지"
-                placeholder="메뉴이미지를 추가해주세요."
-              />
-              <EditModalOptionInput
-                label="메뉴 옵션"
-                placeholder="옵션을 추가해주세요."
-              />
-              <EditToggleSwitch
-                label="메뉴 강조"
-                toggleSwitchItems={[
-                  { label: '인기 메뉴로 표시', value: true },
-                  { label: '신 메뉴로 표시', value: false },
-                ]}
-              />
-              <EditToggleSwitch
-                label="판매중"
-                toggleSwitchItems={[
-                  { label: '판매중', value: true },
-                  { label: '숨김', value: false },
-                  { label: '품절', value: false },
-                ]}
-              />
-            </>
-          )}
-
           {currentModal === 'createMenu' && (
             <>
-              <EditModalHeader onSave={() => {}}>메뉴 추가하기</EditModalHeader>
+              <EditModalHeader onSave={() => {}} buttonLabel="추가하기">
+                메뉴 추가하기
+              </EditModalHeader>
               <EditModalTextInput
                 label="메뉴명"
                 placeholder="메뉴명을 입력해주세요."

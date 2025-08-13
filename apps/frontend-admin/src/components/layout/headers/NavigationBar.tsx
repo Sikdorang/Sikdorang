@@ -18,16 +18,13 @@ const NAV_STRUCTURE = [
     key: 'recommend',
     label: '추천 관리',
     basePath: '/recommend',
-    tabs: [
-      { name: '추천목록', href: '/recommend/list' },
-      { name: '추천설정', href: '/recommend/settings' },
-    ],
+    tabs: [],
   },
   {
     key: 'preview',
     label: '내 메뉴판 보기',
     basePath: '/preview',
-    tabs: [{ name: '내 메뉴판 보기', href: '/preview' }],
+    tabs: [],
   },
   {
     key: 'shop',
@@ -52,6 +49,18 @@ const NAV_STRUCTURE = [
     label: '설정',
     basePath: '/settings',
     tabs: [{ name: '설정', href: '/settings' }],
+  },
+  {
+    key: 'order',
+    label: '주문 내역',
+    basePath: '/order',
+    tabs: [{ name: '주문 내역', href: '/order' }],
+  },
+  {
+    key: 'link',
+    label: '테이블 연동',
+    basePath: '/link',
+    tabs: [{ name: '테이블 연동', href: '/link' }],
   },
 ];
 

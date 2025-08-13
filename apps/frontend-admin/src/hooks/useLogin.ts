@@ -20,7 +20,7 @@ export const useLogin = () => {
       const data = await AuthAPI.kakaoLogin(authCode);
 
       document.cookie = `${KEYS.ACCESS_TOKEN}=${data.accessToken}; path=/; SameSite=Lax;`;
-      document.cookie = `${KEYS.ACCESS_TOKEN}=${data.refreshToken}; path=/; SameSite=Lax;`;
+      document.cookie = `${KEYS.REFRESH_TOKEN}=${data.refreshToken}; path=/; SameSite=Lax;`;
       localStorage.setItem(KEYS.ACCESS_TOKEN, data.accessToken);
       localStorage.setItem(KEYS.REFRESH_TOKEN, data.refreshToken);
 
