@@ -83,14 +83,22 @@ export class StoreService {
 
       //정보 가공
       const infoItems = [
-        { key: 'openHour', value: openHourValue },
-        { key: 'description', value: store?.description },
+        { key: 'openHour', value: openHourValue, order: infoOrder?.hoursOrder },
         {
           key: 'wifi',
           value: `ID ${store?.wifiId} / PW ${store?.wifiPassword}`,
+          order: infoOrder?.wifiOrder,
         },
-        { key: 'phoneNumber', value: store?.phoneNumber },
-        { key: 'naverPlace', value: store?.naverPlace },
+        {
+          key: 'phoneNumber',
+          value: store?.phoneNumber,
+          order: infoOrder?.phoneNumberOrder,
+        },
+        {
+          key: 'naverPlace',
+          value: store?.naverPlace,
+          order: infoOrder?.naverPlaceOrder,
+        },
         {
           key: 'corkage',
           value:
@@ -99,15 +107,21 @@ export class StoreService {
                 ? '가능 (무료)'
                 : '가능 (유료)'
               : '불가능',
+          order: infoOrder?.corkageOrder,
         },
-        { key: 'toilet', value: store?.toilet },
-      ];
+        {
+          key: 'toilet',
+          value: store?.toilet,
+          order: infoOrder?.ToiletOrder,
+        },
+      ].sort((a, b) =>
+        (a.order ?? 'zzzzzzzz').localeCompare(b.order ?? 'zzzzzzzzz'),
+      );
 
       return {
         id: storeId,
         name: store?.store,
         infoItems,
-        order: infoOrder,
       };
     } catch (error) {
       console.error('Store get 에러:', error);
