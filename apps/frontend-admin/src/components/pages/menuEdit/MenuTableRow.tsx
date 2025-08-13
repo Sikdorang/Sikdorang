@@ -1,8 +1,10 @@
+import { ICategoryItem } from '../../../types/model/category';
 import {
   default as CategorySelect,
   default as StatusSelect,
 } from './MenuCustomSelect';
 import { default as EditButton } from '@/components/common/buttons/CtaButton';
+import { MenuStatus, MenuStatusLabel } from '@/types/enum/status.enum';
 import { IMenuTableItem } from '@/types/model/menu';
 import CheckedIcon from '@public/icons/ic_checked_box.svg';
 import UncheckedIcon from '@public/icons/ic_empty_box.svg';
@@ -10,6 +12,7 @@ import Image from 'next/image';
 
 interface MenuTableRowProps {
   item: IMenuTableItem;
+  categories: ICategoryItem[];
   onEdit: (menuId: number) => void;
   onCheck: (menuId: number) => void;
   isLastRow: boolean;
@@ -17,6 +20,7 @@ interface MenuTableRowProps {
 
 export default function MenuTableRow({
   item,
+  categories,
   onEdit,
   onCheck,
   isLastRow,
@@ -55,15 +59,17 @@ export default function MenuTableRow({
       </td>
       <td className="border-b border-t border-gray-300 px-5 py-5">
         <CategorySelect
-          options={['안주', '카테고리 2', '카테고리 3']}
+          options={categories.map((c) => c.category)}
           selectedOption={item.category || '카테고리 1'}
           onChange={() => {}}
         />
       </td>
       <td className="border-b border-t border-gray-300 px-5 py-5">
         <StatusSelect
-          options={['판매 중', '품절', '숨김']}
-          selectedOption={item.status || '판매 중'}
+          options={Object.values(MenuStatusLabel)}
+          selectedOption={
+            MenuStatusLabel[item.status as MenuStatus] || '판매 중'
+          }
           isStatus={true}
           onChange={() => {}}
         />

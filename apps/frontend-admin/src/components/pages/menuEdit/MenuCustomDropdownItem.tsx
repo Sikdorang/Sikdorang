@@ -24,7 +24,9 @@ const MenuCustomDropdownItem = forwardRef<
     },
     ref,
   ) => {
-    const SelectedItem = isSelectedItem ? `border border-gray-200 bg-w` : '';
+    const SelectedItem = isSelectedItem
+      ? `border border-gray-200 bg-white`
+      : '';
 
     return (
       <div
@@ -32,7 +34,7 @@ const MenuCustomDropdownItem = forwardRef<
         onClick={onClick}
         className={`flex items-center justify-center px-4 py-2 ${SelectedItem} rounded-2xl min-w-[60px] cursor-pointer transition select-none ${className}`}
       >
-        <span className="text-gray-900 font-semibold text-base">
+        <span className="text-gray-700 text-mb-3">
           {text}
           {isNumbers ? '개' : ''}
         </span>

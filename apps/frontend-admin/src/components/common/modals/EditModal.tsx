@@ -14,7 +14,7 @@ import { EditModalFormData } from '@/types/request/modal';
 import AddIcon from '@public/icons/ic_plus.svg';
 import CloseIcon from '@public/icons/ic_x.svg';
 import Image from 'next/image';
-import React, { ReactNode, useState } from 'react';
+import React, { InputHTMLAttributes, ReactNode, useState } from 'react';
 
 interface EditModalProps {
   children: ReactNode;
@@ -43,9 +43,11 @@ export default function EditModal({ children }: EditModalProps) {
 export function EditModalHeader({
   children,
   onSave,
+  buttonLabel,
 }: {
   children: ReactNode;
   onSave: (data: EditModalFormData) => void;
+  buttonLabel: string;
 }) {
   const { closeModal, saveEdit } = useEditModal();
 
@@ -61,7 +63,7 @@ export function EditModalHeader({
       <div className="mb-6 flex items-center justify-between text-2xl font-bold">
         <span className="grow-1">{children}</span>
         <SaveButton
-          text="변경사항 저장하기"
+          text={buttonLabel}
           color="gray"
           width="fit"
           size="medium"
@@ -77,21 +79,38 @@ interface EditFieldProps {
   placeholder?: string;
 }
 
+interface EditModalTextInputProps
+  extends EditFieldProps,
+    Omit<InputHTMLAttributes<HTMLInputElement>, 'onChange'> {
+  field?: keyof EditModalFormData;
+}
+
 export function EditModalTextInput({
   label,
   placeholder,
   field = 'name',
-}: EditFieldProps & { field?: keyof EditModalFormData }) {
+  value,
+  ...rest
+}: EditModalTextInputProps) {
   const { formData, updateField } = useEditModal();
+
+  const inputValue =
+    value !== undefined ? value : ((formData[field] as string) ?? '');
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    updateField(field, e.target.value);
+    onChange?.(e);
+  };
 
   return (
     <div className="mb-4">
       <TextInput
         label={label}
         placeholder={placeholder}
-        value={(formData[field] as string) ?? ''}
-        onChange={(e) => updateField(field, e.target.value)}
+        value={inputValue}
+        onChange={handleChange}
         maxLength={30}
+        {...rest}
       />
     </div>
   );

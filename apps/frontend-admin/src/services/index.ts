@@ -73,7 +73,7 @@ axiosInstance.interceptors.response.use(
         console.error('Refresh Token 실패', refreshError);
         if (typeof window !== 'undefined') {
           // Cookies.remove(KEYS.ACCESS_TOKEN, { path: '/' });
-          // window.location.href = '/'; // 로그인 페이지로 redirect
+          window.location.href = '/';
         }
         return Promise.reject(refreshError);
       }

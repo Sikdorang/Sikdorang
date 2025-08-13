@@ -15,7 +15,7 @@ export default function ToggleSwitch({
 }: ToggleSwitchProps) {
   return (
     <div className={`flex items-center gap-4 ${className}`}>
-      {label && <span className="text-lg font-medium">{label}</span>}
+      {label && <span className="text-mb-2">{label}</span>}
       <button
         type="button"
         onClick={() => onToggle(!isOn)}
