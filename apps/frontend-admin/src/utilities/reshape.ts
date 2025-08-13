@@ -14,7 +14,7 @@ export const convertToMenuTableItems = (
         price: item.price,
         category: categoryName,
         checked: false,
-        status: '판매 중',
+        status: item.status,
       });
     });
   });

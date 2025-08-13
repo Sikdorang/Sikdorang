@@ -39,7 +39,7 @@ import TableIcon from '@public/icons/ic_list.svg';
 import AddIcon from '@public/icons/ic_plus.svg';
 import { LexoRank } from 'lexorank';
 import Image from 'next/image';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 
 const filterOptions = [
   { id: 1, text: '전체' },
@@ -50,14 +50,8 @@ const filterOptions = [
 ];
 
 export default function MenuEditPage() {
-  const {
-    categories,
-    isCategoriesLoading,
-    createCategory,
-    fetchCategories,
-    updateCategory,
-    removeCategory,
-  } = useManageCategory();
+  const { categories, isCategoriesLoading, createCategory, fetchCategories } =
+    useManageCategory();
 
   const {
     menus,
@@ -78,7 +72,8 @@ export default function MenuEditPage() {
 
   const [categoryError, setCategoryError] = useState('');
   const [searchValue, setSearchValue] = useState('');
-  const [selectedCategory, setSelectedCategory] = useState(1);
+  const [menuFilter, setMenuFilter] = useState(1);
+  const [selectedCategory, setSelectedCategory] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
 
   const [viewType, setViewType] = useState<'table' | 'gallery'>('table');
@@ -173,6 +168,44 @@ export default function MenuEditPage() {
     setIsModalOpen(false);
   }, []);
 
+  const firstFilteredItems = useMemo(() => {
+    switch (menuFilter) {
+      case 2: // 판매중
+        return menuTableItems.filter((item) => item.status === 'SALE');
+      case 3: // 품절
+        return menuTableItems.filter((item) => item.status === 'SOLDOUT');
+      case 4: // 숨김
+        return menuTableItems.filter((item) => item.status === 'HIDDEN');
+      case 5: // 미입력
+        return menuTableItems.filter((item) => !item.status);
+      default: // 전체
+        return menuTableItems;
+    }
+  }, [menuTableItems, menuFilter]);
+
+  const secondFilteredItems = useMemo(() => {
+    if (selectedCategory === 0) {
+      return firstFilteredItems;
+    }
+
+    const categoryName = categories.find(
+      (c) => c.id === selectedCategory,
+    )?.category;
+    if (!categoryName) {
+      return firstFilteredItems;
+    }
+
+    return firstFilteredItems.filter((item) => item.category === categoryName);
+  }, [firstFilteredItems, selectedCategory, categories]);
+
+  const finalFilteredItems = useMemo(() => {
+    if (!searchValue.trim()) return secondFilteredItems;
+    const lower = searchValue.toLowerCase();
+    return secondFilteredItems.filter((item) =>
+      item.name.toLowerCase().includes(lower),
+    );
+  }, [secondFilteredItems, searchValue]);
+
   return (
     <div className="flex flex-col items-center justify-center">
       <div className="wrapper flex w-full flex-col items-center justify-center py-4">
@@ -200,10 +233,10 @@ export default function MenuEditPage() {
                 <CategoryButton
                   key="all"
                   text="전체"
-                  color={selectedCategory === 'all' ? 'black' : 'white'}
+                  color={selectedCategory === 0 ? 'black' : 'white'}
                   size="small"
                   width="fit"
-                  onClick={() => setSelectedCategory('all')}
+                  onClick={() => setSelectedCategory(0)}
                   radius="full"
                   right={
                     <div className="text-mb-5 text-gray-200">
@@ -323,10 +356,11 @@ export default function MenuEditPage() {
             <FilterOptionButton
               key={option.id}
               text={option.text}
-              color="white"
+              color={menuFilter === option.id ? 'black' : 'white'}
               size="small"
               width="fit"
               radius="full"
+              onClick={() => setMenuFilter(option.id)}
             />
           ))}
         </div>
@@ -342,7 +376,7 @@ export default function MenuEditPage() {
                   ? Array.from({ length: 10 }).map((_, idx) => (
                       <MenuTableRowSkeleton key={idx} idx={idx} />
                     ))
-                  : menuTableItems.map((item, idx) => (
+                  : finalFilteredItems.map((item, idx) => (
                       <MenuTableRow
                         key={item.id}
                         item={item}

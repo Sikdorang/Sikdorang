@@ -4,7 +4,7 @@ import ImageInput from '@/components/common/inputs/ImageInput';
 import OptionInput from '@/components/common/inputs/OptionInput';
 import TextInput from '@/components/common/inputs/TextInput';
 import { useManageMenu } from '@/hooks/useManageMenu';
-import { IMenuDetailResponse } from '@/types/model/menu';
+import { IMenuDetailResponse, IMenuImageItem } from '@/types/model/menu';
 import CloseIcon from '@public/icons/ic_x.svg';
 import Image from 'next/image';
 import { ChangeEvent, useEffect, useState } from 'react';
@@ -48,7 +48,7 @@ export default function EditMenuModal({
       setDetail((d) => d && { ...d, [field]: e.target.value });
     };
 
-  const handleChangeImages = (images: string[]) => {
+  const handleChangeImages = (images: IMenuImageItem[]) => {
     setDetail((d) => d && { ...d, images });
   };
 
@@ -71,7 +71,6 @@ export default function EditMenuModal({
         className="relative max-h-[80vh] w-full max-w-4xl overflow-y-auto bg-white shadow-xl rounded-2xl p-8"
         onClick={(e) => e.stopPropagation()}
       >
-        {/* Header */}
         <div className="flex flex-col">
           <div className="mb-4 flex items-center justify-between">
             <div />
@@ -92,7 +91,6 @@ export default function EditMenuModal({
           </div>
         </div>
 
-        {/* Inputs */}
         <div className="mb-4">
           <TextInput
             label="메뉴 설명"
@@ -105,19 +103,38 @@ export default function EditMenuModal({
 
         <div className="mb-4">
           <ImageInput
-            label="메뉴 이미지"
-            placeholder="메뉴이미지를 추가해주세요."
             images={detail.images}
-            setImages={handleChangeImages}
+            setImages={(
+              updater:
+                | ((prev: IMenuImageItem[]) => IMenuImageItem[])
+                | IMenuImageItem[],
+            ) => {
+              setDetail((prev) => {
+                if (!prev) return prev;
+                return {
+                  ...prev,
+                  images:
+                    typeof updater === 'function'
+                      ? updater(prev.images || [])
+                      : Array.isArray(updater)
+                        ? updater
+                        : prev.images || [],
+                };
+              });
+            }}
           />
         </div>
 
         <div className="mb-4">
-          <div className="flex justify-between mb-2 text-mobile-body-l-semibold text-gray-900">
+          <div className="flex justify-between items-center mb-2 text-mb-1 text-gray-800">
             메뉴 옵션
             <CtaButton
-              text="옵션 추가하기"
-              color="gray"
+              text={
+                detail.optionGroups.length == 0
+                  ? '옵션 추가하기'
+                  : '새로운 옵션 추가하기'
+              }
+              color="black"
               width="fit"
               size="small"
               radius="lg"
@@ -140,13 +157,37 @@ export default function EditMenuModal({
           <OptionInput
             options={detail.optionGroups}
             onOptionsChange={handleChangeOptions}
+            onOptionTitleChange={(groupId: string, newTitle: string) => {
+              const updatedGroups = detail.optionGroups.map((group) =>
+                group.groupId === groupId
+                  ? { ...group, title: newTitle }
+                  : group,
+              );
+              handleChangeOptions(updatedGroups);
+            }}
+            onAddOption={(groupId) => {
+              const updated = detail.optionGroups.map((group) =>
+                group.groupId === groupId
+                  ? {
+                      ...group,
+                      items: [
+                        ...group.items,
+                        {
+                          optionId: Date.now().toString(),
+                          name: '',
+                          price: 0,
+                        },
+                      ],
+                    }
+                  : group,
+              );
+              handleChangeOptions(updated);
+            }}
           />
         </div>
 
         <div className="mb-4">
-          <div className="mb-2 text-mobile-body-l-semibold text-gray-900">
-            메뉴 강조
-          </div>
+          <div className="mb-2 text-mb-1 text-gray-900">메뉴 강조</div>
           <div className="grid grid-cols-2 gap-4">
             <ToggleSwitch
               label="인기 메뉴로 표시"
@@ -162,12 +203,10 @@ export default function EditMenuModal({
         </div>
 
         <div className="mb-4">
-          <div className="mb-2 text-mobile-body-l-semibold text-gray-900">
-            판매 상태
-          </div>
+          <div className="mb-2 text-mb-1 text-gray-900">판매 상태</div>
           <div className="flex gap-4">
             {[
-              { label: '판매중', value: 'SALE' },
+              { label: '판매 중', value: 'SALE' },
               { label: '숨김', value: 'HIDDEN' },
               { label: '품절', value: 'SOLDOUT' },
             ].map((opt) => (

@@ -4,6 +4,7 @@ export interface IMenuItem {
   price: number;
   isNew: boolean;
   isPopular: boolean;
+  status: string;
   imgUrl?: string;
 }
 
@@ -53,7 +54,8 @@ export interface IMenuDetailResponse {
   price: number;
   isNew: boolean;
   isPopular: boolean;
-  images: string[];
+  images: IMenuImageItem[];
+  status: string;
   optionGroups: IMenuOptionGroup[];
 }
 
