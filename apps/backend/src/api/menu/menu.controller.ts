@@ -27,11 +27,7 @@ import { GetMenusByCategorySwagger } from './swagger/get-menus-by-category.swagg
 import { UpdateImageSwagger } from './swagger/update-image.swagger';
 import { UpdateMenuDetailsSwagger } from './swagger/update-menu-details.swagger';
 import { UpdateMenusSwagger } from './swagger/update-menus.swagger';
-const allAuthorization = [
-  'pin-authorization',
-  'mobile-authorization',
-  'admin-authorization',
-];
+
 const adminAuthorization = ['admin-authorization'];
 @Controller('menu')
 export class MenuController {
@@ -40,7 +36,7 @@ export class MenuController {
   //메뉴 생성하기
   @Post()
   @CreateMenusSwagger()
-  @UseGuards(JwtAuthGuard(adminAuthorization))
+  @UseGuards(JwtAuthGuard(['admin-authorization']))
   async createMenus(
     @Body() createMenusDtos: CreateMenuDto[],
     @StoreId() storeId: number,
@@ -49,7 +45,7 @@ export class MenuController {
   }
 
   //메뉴 삭제하기
-  @UseGuards(JwtAuthGuard(adminAuthorization))
+  @UseGuards(JwtAuthGuard(['admin-authorization']))
   @Delete(':menuId')
   @DeleteMenuSwagger()
   async deleteMenu(
@@ -60,7 +56,13 @@ export class MenuController {
   }
 
   //메뉴 카테고리로 불러오기
-  @UseGuards(JwtAuthGuard(allAuthorization))
+  @UseGuards(
+    JwtAuthGuard([
+      'pin-authorization',
+      'mobile-authorization',
+      'admin-authorization',
+    ]),
+  )
   @Get('/categoryId/:categoryId')
   @GetMenusByCategorySwagger()
   async getMenus(
@@ -72,7 +74,7 @@ export class MenuController {
 
   //메뉴 상세 정보 수정하기
   @UpdateMenuDetailsSwagger()
-  @UseGuards(JwtAuthGuard(adminAuthorization))
+  @UseGuards(JwtAuthGuard(['admin-authorization']))
   @Patch('/:menuId')
   async updateMenuDetails(
     @Param('menuId') menuId: number,
@@ -88,7 +90,7 @@ export class MenuController {
 
   //메뉴 기본정보 여러개 수정하기
   @UpdateMenusSwagger()
-  @UseGuards(JwtAuthGuard(adminAuthorization))
+  @UseGuards(JwtAuthGuard(['admin-authorization']))
   @Patch()
   async updateMenus(
     @Body() updateMenusDtos: UpdateMenuDto[],
@@ -100,7 +102,13 @@ export class MenuController {
 
   //가게 메뉴 다 가져오기
   @Get('/menus')
-  @UseGuards(JwtAuthGuard(allAuthorization))
+  @UseGuards(
+    JwtAuthGuard([
+      'pin-authorization',
+      'mobile-authorization',
+      'admin-authorization',
+    ]),
+  )
   @GetAllMenusSwagger()
   async getAllMenus(@StoreId() storeId: number) {
     const result = this.menuService.getAllMenus({ storeId });
@@ -109,7 +117,13 @@ export class MenuController {
 
   //메뉴 상세장보 가져오기
   @Get('/:menuId')
-  @UseGuards(JwtAuthGuard(allAuthorization))
+  @UseGuards(
+    JwtAuthGuard([
+      'pin-authorization',
+      'mobile-authorization',
+      'admin-authorization',
+    ]),
+  )
   @GetMenuDetailSwagger()
   async getMenuDetail(
     @StoreId() storeId: number,
@@ -121,7 +135,7 @@ export class MenuController {
 
   //옵션 등록하기
   @Post('/option')
-  @UseGuards(JwtAuthGuard(adminAuthorization))
+  @UseGuards(JwtAuthGuard(['admin-authorization']))
   @CreateOptionSwagger()
   async createOption(@Body() createOptionDto: CreateOptionsDto) {
     return await this.menuService.createOption({ createOptionDto });
@@ -129,7 +143,7 @@ export class MenuController {
 
   //사진
   @Post('/:menuId/image')
-  @UseGuards(JwtAuthGuard(adminAuthorization))
+  @UseGuards(JwtAuthGuard(['admin-authorization']))
   @UpdateImageSwagger()
   async updateImages(
     @Body() updateImageDtos: UpdateImageDto[],
