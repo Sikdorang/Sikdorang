@@ -9,17 +9,24 @@ import { CreateStoreSwagger } from './swagger/create-store.swagger';
 import { GetStoreSwagger } from './swagger/get-store.swagger';
 
 @Controller('store')
-@UseGuards(JwtAuthGuard(['pin-authorization', 'mobile-authorization']))
 export class StoreController {
   constructor(private readonly storeService: StoreService) {}
 
   @Patch()
   @CreateStoreSwagger()
+  @UseGuards(JwtAuthGuard(['admin-authorization']))
   async createStore(@Body() dto: CreateStoreDto, @StoreId() storeId: number) {
     return this.storeService.create(dto, storeId);
   }
   @Get()
   @GetStoreSwagger()
+  @UseGuards(
+    JwtAuthGuard([
+      'pin-authorization',
+      'mobile-authorization',
+      'admin-authorization',
+    ]),
+  )
   async getStore(@StoreId() storeId: number) {
     return this.storeService.getStore(storeId);
   }

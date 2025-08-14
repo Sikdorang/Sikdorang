@@ -8,7 +8,6 @@ export const GetOrderSwagger = () =>
       description:
         'storeId는 JWT 가드에서 추출, token은 헤더에서 읽어 해당 고객의 주문 내역을 반환합니다. 최근 주문이 먼저 옵니다.',
     }),
-    // 필요 없는 헤더면 제거하세요
     ApiHeader({
       name: 'pin-authorization',
       description: '예: Bearer <토큰>. (태블릿/모바일 주문 토큰)',
