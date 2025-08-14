@@ -1,8 +1,9 @@
 import { Module } from '@nestjs/common';
 
-import { OrderGateway } from './order.gateway';
+import { OrderGatewayModule } from './order/order-gateway.module';
 
 @Module({
-  providers: [OrderGateway],
+  imports: [OrderGatewayModule],
+  exports: [OrderGatewayModule],
 })
 export class WsModule {}

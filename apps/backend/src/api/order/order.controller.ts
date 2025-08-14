@@ -7,18 +7,18 @@ import { CreateOrderDto } from './dto/create-order.dto';
 import { OrderService } from './order.service';
 import { CreateOrderSwagger } from './swagger/create-order.swagger';
 import { GetOrderSwagger } from './swagger/get-order.swagger';
-const allAuthorization = [
-  'pin-authorization',
-  'mobile-authorization',
-  'admin-authorization',
-];
 
-const orderAuthorization = ['pin-authorization', 'mobile-authorization'];
 @Controller('order')
 export class OrderController {
   constructor(private readonly orderService: OrderService) {}
 
-  @UseGuards(JwtAuthGuard(orderAuthorization))
+  @UseGuards(
+    JwtAuthGuard([
+      'pin-authorization',
+      'mobile-authorization',
+      'admin-authorization',
+    ]),
+  )
   @Post()
   @CreateOrderSwagger()
   async create(
@@ -42,16 +42,36 @@ export class OrderController {
       token,
     });
   }
-
-  @UseGuards(JwtAuthGuard(orderAuthorization))
-  @Get()
+  @UseGuards(
+    JwtAuthGuard([
+      'pin-authorization',
+      'mobile-authorization',
+      'admin-authorization',
+    ]),
+  )
+  @Get('/store')
   @GetOrderSwagger()
-  async get(@StoreId() storeId: number, @Req() req: any) {
+  async getOrderByStoreId(@StoreId() storeId: number) {
+    return await this.orderService.getOrders({
+      storeId,
+    });
+  }
+
+  @UseGuards(
+    JwtAuthGuard([
+      'pin-authorization',
+      'mobile-authorization',
+      'admin-authorization',
+    ]),
+  )
+  @Get('/user')
+  @GetOrderSwagger()
+  async getOrderByUserId(@StoreId() storeId: number, @Req() req: any) {
     const token: string = req.headers[req.user.tokenType]
       .split(' ')[1]
       .split('.')[2];
 
-    return await this.orderService.getOrder({
+    return await this.orderService.getOrders({
       storeId,
       token,
     });

@@ -21,14 +21,13 @@ import { deleteCategorySwagger } from './swagger/delete-category.swagger';
 import { GetCategorySwagger } from './swagger/get-category.swagger';
 import { UpdateCategorySwagger } from './swagger/update-category.swagger';
 
-const jwtAuthGuard = JwtAuthGuard(['admin-authorization']);
 @Controller('category')
-@UseGuards(jwtAuthGuard)
 export class CategoryController {
   constructor(private readonly categoryService: CategoryService) {}
 
   @Post()
   @CreateCategorySwagger()
+  @UseGuards(JwtAuthGuard(['admin-authorization']))
   async create(
     @Body() createCategoryDto: CreateCategoryDto,
     @StoreId() storeId: number,
@@ -41,12 +40,20 @@ export class CategoryController {
 
   @Get()
   @GetCategorySwagger()
+  @UseGuards(
+    JwtAuthGuard([
+      'admmin-authorization',
+      'pin-authorization',
+      'mobile-authorization',
+    ]),
+  )
   async findAll(@StoreId() storeId: number) {
     return await this.categoryService.getCategories({ storeId });
   }
 
   @Patch()
   @UpdateCategorySwagger()
+  @UseGuards(JwtAuthGuard(['admin-authorization']))
   async update(
     @Body() updateCategoryDtos: UpdateCategoryDto[],
     @StoreId() storeId: number,
@@ -58,6 +65,7 @@ export class CategoryController {
   }
 
   @Delete(':categoryId')
+  @UseGuards(JwtAuthGuard(['admin-authorization']))
   @deleteCategorySwagger()
   async delete(
     @StoreId() storeId: number,
