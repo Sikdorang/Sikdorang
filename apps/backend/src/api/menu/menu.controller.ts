@@ -137,8 +137,11 @@ export class MenuController {
   @Post('/option')
   @UseGuards(JwtAuthGuard(['admin-authorization']))
   @CreateOptionSwagger()
-  async createOption(@Body() createOptionDto: CreateOptionsDto) {
-    return await this.menuService.createOption({ createOptionDto });
+  async createOption(
+    @Body() createOptionDto: CreateOptionsDto,
+    @StoreId() storeId: number,
+  ) {
+    return await this.menuService.createOption({ createOptionDto, storeId });
   }
 
   //사진

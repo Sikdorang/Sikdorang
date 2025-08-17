@@ -136,6 +136,11 @@ export class MenuService {
         data: updateMenuDetailsDto,
       });
 
+      await this.invalidateCacheGateway.emitInvalidateCache(
+        `store-${storeId}-menu`,
+        'invalidate-cache',
+      );
+
       return updated;
     } catch (error) {
       console.error(error);
@@ -144,8 +149,10 @@ export class MenuService {
   }
 
   async createOption({
+    storeId,
     createOptionDto,
   }: {
+    storeId: number;
     createOptionDto: CreateOptionsDto;
   }) {
     try {
@@ -201,6 +208,11 @@ export class MenuService {
           }
         }
       }
+
+      await this.invalidateCacheGateway.emitInvalidateCache(
+        `store-${storeId}-menu`,
+        'invalidate-cache',
+      );
       return { message: '옵션과 상세가 성공적으로 저장되었습니다.' };
     } catch (error) {
       console.error(error);
@@ -281,6 +293,11 @@ export class MenuService {
         data: { deleted: true },
       });
     }
+
+    await this.invalidateCacheGateway.emitInvalidateCache(
+      `store-${storeId}-menu`,
+      'invalidate-cache',
+    );
 
     return presignedUrls;
   }
