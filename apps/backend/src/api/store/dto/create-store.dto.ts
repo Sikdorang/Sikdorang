@@ -9,15 +9,7 @@ import {
   ValidateNested,
 } from 'class-validator';
 
-class StoreHourDto {
-  day: string;
-  startHour: number;
-  startMin: number;
-  endHour: number;
-  endMin: number;
-  open: boolean;
-}
-
+import { StoreHourDto } from './store-hour.dto';
 export class CreateStoreDto {
   @ApiProperty({ description: '가게 이름', example: '매장-12345' })
   @IsOptional()
