@@ -9,17 +9,19 @@ import {
 } from '@nestjs/common';
 import { Menu, PrismaClient } from '@prisma/client';
 
+import { InvalidateCacheGateway } from '../../websocket/invalidate-cache/invalidate-cache.gateway';
+
 import { CreateMenuDto } from './dto/create-menu.dto';
 import { CreateOptionsDto } from './dto/create-option.dto';
 import { UpdateImageDto } from './dto/update-image.dto';
 import { UpdateMenuDetailsDto } from './dto/update-menu-details.dto';
 import { UpdateMenuDto } from './dto/update-menu.dto';
+
 @Injectable()
 export class MenuService {
   private s3: S3Client;
   private readonly prisma = new PrismaClient();
-
-  constructor() {
+  constructor(private readonly invalidateCacheGateway: InvalidateCacheGateway) {
     this.s3 = new S3Client({
       region: process.env.AWS_REGION!,
       credentials: {
@@ -37,7 +39,6 @@ export class MenuService {
       if (!menu) {
         throw new NotFoundException('해당 메뉴를 찾을 수 없습니다.');
       }
-
       return await this.prisma.menu.delete({
         where: { id: menuId, storeId: storeId },
       });
@@ -106,7 +107,10 @@ export class MenuService {
 
         results.push(updated);
       }
-
+      await this.invalidateCacheGateway.emitInvalidateCache(
+        `store-${storeId}-menu`,
+        'invalidate-cache',
+      );
       return results;
     } catch (error) {
       console.error(error);
@@ -132,6 +136,11 @@ export class MenuService {
         data: updateMenuDetailsDto,
       });
 
+      await this.invalidateCacheGateway.emitInvalidateCache(
+        `store-${storeId}-menu`,
+        'invalidate-cache',
+      );
+
       return updated;
     } catch (error) {
       console.error(error);
@@ -140,8 +149,10 @@ export class MenuService {
   }
 
   async createOption({
+    storeId,
     createOptionDto,
   }: {
+    storeId: number;
     createOptionDto: CreateOptionsDto;
   }) {
     try {
@@ -197,6 +208,11 @@ export class MenuService {
           }
         }
       }
+
+      await this.invalidateCacheGateway.emitInvalidateCache(
+        `store-${storeId}-menu`,
+        'invalidate-cache',
+      );
       return { message: '옵션과 상세가 성공적으로 저장되었습니다.' };
     } catch (error) {
       console.error(error);
@@ -277,6 +293,11 @@ export class MenuService {
         data: { deleted: true },
       });
     }
+
+    await this.invalidateCacheGateway.emitInvalidateCache(
+      `store-${storeId}-menu`,
+      'invalidate-cache',
+    );
 
     return presignedUrls;
   }
