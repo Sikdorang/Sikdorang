@@ -32,7 +32,7 @@ export default function ToggleSwitch({
         />
       </button>
       <span
-        className={`text-sm font-medium ${isOn ? 'text-yellow-600' : 'text-gray-500'}`}
+        className={`text-mb-1 ${isOn ? 'text-yellow-600' : 'text-gray-500'}`}
       ></span>
     </div>
   );

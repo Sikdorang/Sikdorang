@@ -18,9 +18,7 @@ export default function Corkage({
     <div className="w-full">
       <div className="flex items-center gap-2 mb-2">
         <div className="flex gap-2 grow-1">
-          <div
-            className={`text-mobile-body-l-semibold block text-gray-800 ${labelClassName}`}
-          >
+          <div className={`text-mb-1 block text-gray-800 ${labelClassName}`}>
             {label}
           </div>
         </div>
@@ -42,7 +40,9 @@ export default function Corkage({
         >
           <TextInput
             label="콜키지 가격"
+            labelClassName="text-mb-1"
             placeholder="유료일때만  입력해주세요"
+            limitHide={true}
           />
         </div>
       </div>

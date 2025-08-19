@@ -72,6 +72,10 @@
     @apply text-2xl font-normal leading-[150%] tracking-[-4%];
   }
 
+  .text-dt-3 {
+    @apply text-3xl font-semibold leading-[150%] tracking-[-4%];
+  }
+
   .text-dh-1 {
     @apply text-[1.375rem] font-semibold leading-[150%] tracking-[-4%];
   }

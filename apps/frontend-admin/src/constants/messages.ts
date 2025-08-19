@@ -29,4 +29,5 @@ export const SUCCESS_MESSAGES = {
   syncMenusSuccess: '변경사항 저장에 성공했습니다.',
   OrderSaveSuccess: '순서 변경 저장에 성공했습니다.',
   deleteMenuSuccess: '메뉴 삭제에 성공했습니다.',
+  updateStoreInfoSuccess: '매장 정보가 성공적으로 업데이트되었습니다.',
 };

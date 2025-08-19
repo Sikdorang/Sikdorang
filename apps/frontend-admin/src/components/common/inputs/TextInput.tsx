@@ -1,4 +1,5 @@
 import MenuCustomLabel from '../../pages/menuEdit/MenuCustomLabel';
+import Spinner from '../loading/Spinner';
 import CancelIcon from '@public/icons/ic_cancel.svg';
 import Image from 'next/image';
 import React from 'react';
@@ -8,6 +9,8 @@ interface TextInputProps extends React.InputHTMLAttributes<HTMLInputElement> {
   labelClassName?: string;
   isRequired?: boolean;
   maxLength?: number;
+  limitHide?: boolean;
+  isLoading?: boolean;
   error?: boolean;
   onClear?: () => void;
 }
@@ -23,6 +26,8 @@ export default function TextInput({
   disabled = false,
   error = false,
   isRequired = false,
+  limitHide = false,
+  isLoading = false,
   ...rest
 }: TextInputProps) {
   return (
@@ -49,31 +54,42 @@ export default function TextInput({
                 : 'focus-within:border-main-500 border-gray-200'
         }`}
       >
-        <input
-          value={value}
-          onChange={onChange}
-          maxLength={maxLength}
-          disabled={disabled}
-          placeholder={placeholder}
-          className={`text-mb-2 w-full border-none bg-transparent text-gray-800 outline-none placeholder:text-gray-300 ${disabled ? 'text-gray-300' : ''} `}
-          {...rest}
-        />
-        {!disabled && value && (
-          <button
-            type="button"
-            onClick={onClear}
-            className="absolute right-4 top-1/2 -translate-y-1/2 rounded-full p-1 transition hover:bg-gray-100"
-            aria-label="입력값 삭제"
-          >
-            <Image src={CancelIcon} alt="검색" width={24} height={24} />
-          </button>
+        {!isLoading ? (
+          <>
+            <input
+              value={value}
+              onChange={onChange}
+              maxLength={maxLength}
+              disabled={disabled}
+              placeholder={placeholder}
+              className={`text-mb-2 w-full border-none bg-transparent text-gray-800 outline-none placeholder:text-gray-300 ${disabled ? 'text-gray-300' : ''} `}
+              {...rest}
+            />
+            {!disabled && value && (
+              <button
+                type="button"
+                onClick={onClear}
+                className="absolute right-4 top-1/2 -translate-y-1/2 rounded-full p-1 transition hover:bg-gray-100"
+                aria-label="입력값 삭제"
+              >
+                <Image src={CancelIcon} alt="검색" width={24} height={24} />
+              </button>
+            )}
+          </>
+        ) : (
+          <div className="flex w-full justify-center items-center">
+            <Spinner />
+          </div>
         )}
       </div>
-      <div className="mt-2 flex justify-end">
-        <span className="text-mobile-caption-s-regular select-none text-gray-400">
-          {(value as string).length}/{maxLength}
-        </span>
-      </div>
+
+      {!limitHide ? (
+        <div className="mt-2 flex justify-end">
+          <span className="text-mc-1 select-none text-gray-400 bg-gray-100 px-2 py-1 rounded-xl">
+            {(value as string).length}/{maxLength}
+          </span>
+        </div>
+      ) : undefined}
     </div>
   );
 }

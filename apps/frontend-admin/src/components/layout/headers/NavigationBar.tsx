@@ -3,7 +3,6 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 
-// 상위 카테고리와 하위 탭 정의
 const NAV_STRUCTURE = [
   {
     key: 'menu',

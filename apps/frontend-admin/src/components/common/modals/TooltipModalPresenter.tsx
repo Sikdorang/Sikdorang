@@ -7,6 +7,7 @@ import React, { useEffect, useRef } from 'react';
 interface TooltipModalPresenterProps {
   children: React.ReactNode;
   isTextInput?: boolean;
+  className?: string;
   onButtonClick?: (inputText: string) => void;
 }
 
@@ -26,6 +27,7 @@ const exampleGuide = [
 export function TooltipModalPresenter({
   children,
   isTextInput = false,
+  className,
   onButtonClick,
 }: TooltipModalPresenterProps) {
   const tooltip = useTooltipModal();
@@ -66,7 +68,7 @@ export function TooltipModalPresenter({
 
   return (
     <>
-      <div ref={triggerRef} onClick={handleClick}>
+      <div ref={triggerRef} onClick={handleClick} className={className}>
         {children}
       </div>
       <TooltipModal
