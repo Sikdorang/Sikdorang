@@ -59,10 +59,8 @@ export const TooltipModal = React.forwardRef<HTMLDivElement, TooltipModalProps>(
         ) : (
           contents.map((item, idx) => (
             <div key={idx} className="mb-4 max-w-[22vw]">
-              <div className="text-mobile-body-m-semibold text-xl mb-2">
-                {item.title}
-              </div>
-              <div className="text-mobile-body-m-regular text-gray-500 whitespace-pre-line">
+              <div className="text-mb-1 text-xl mb-2">{item.title}</div>
+              <div className="text-mb-3 text-gray-500 whitespace-pre-line">
                 {item.description}
               </div>
             </div>

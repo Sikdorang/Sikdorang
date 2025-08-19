@@ -8,10 +8,15 @@ interface DayTimeRange {
   endMinute: string;
 }
 
+interface WeekTimeRangeProps {
+  isUniform: boolean;
+}
+
 const days = ['일', '월', '화', '수', '목', '금', '토'];
 
-export default function WeekTimeRange() {
-  // 7일분 각각 시간을 배열로 관리, 초기값은 빈 문자열로 세팅
+export default function WeekTimeRange({ isUniform }: WeekTimeRangeProps) {
+  const [uniformTimeRange, setUniformTimeRange] = useState<DayTimeRange>();
+
   const [timeRanges, setTimeRanges] = useState<DayTimeRange[]>(
     Array(7).fill({
       startHour: '',
@@ -21,7 +26,6 @@ export default function WeekTimeRange() {
     }),
   );
 
-  // 특정 요일의 startHour 변경
   const handleStartHourChange = (index: number, value: string) => {
     setTimeRanges((prev) => {
       const copy = [...prev];
@@ -71,20 +75,37 @@ export default function WeekTimeRange() {
 
   return (
     <div className="space-y-4">
-      {days.map((day, i) => (
+      {isUniform ? (
         <TimeRangeInput
-          key={day}
-          label={day}
-          startHour={timeRanges[i]?.startHour || ''}
-          startMinute={timeRanges[i]?.startMinute || ''}
-          onStartHourChange={(val) => handleStartHourChange(i, val)}
-          onStartMinuteChange={(val) => handleStartMinuteChange(i, val)}
-          endHour={timeRanges[i]?.endHour || ''}
-          endMinute={timeRanges[i]?.endMinute || ''}
-          onEndHourChange={(val) => handleEndHourChange(i, val)}
-          onEndMinuteChange={(val) => handleEndMinuteChange(i, val)}
+          key="영업 시간 입력"
+          label="영업 시간 입력"
+          startHour={uniformTimeRange?.startHour || ''}
+          startMinute={uniformTimeRange?.startMinute || ''}
+          onStartHourChange={(val) => handleStartHourChange(0, val)}
+          onStartMinuteChange={(val) => handleStartMinuteChange(0, val)}
+          endHour={uniformTimeRange?.endHour || ''}
+          endMinute={uniformTimeRange?.endMinute || ''}
+          onEndHourChange={(val) => handleEndHourChange(0, val)}
+          onEndMinuteChange={(val) => handleEndMinuteChange(0, val)}
         />
-      ))}
+      ) : (
+        <>
+          {days.map((day, i) => (
+            <TimeRangeInput
+              key={day}
+              label={day}
+              startHour={timeRanges[i]?.startHour || ''}
+              startMinute={timeRanges[i]?.startMinute || ''}
+              onStartHourChange={(val) => handleStartHourChange(i, val)}
+              onStartMinuteChange={(val) => handleStartMinuteChange(i, val)}
+              endHour={timeRanges[i]?.endHour || ''}
+              endMinute={timeRanges[i]?.endMinute || ''}
+              onEndHourChange={(val) => handleEndHourChange(i, val)}
+              onEndMinuteChange={(val) => handleEndMinuteChange(i, val)}
+            />
+          ))}
+        </>
+      )}
     </div>
   );
 }

@@ -1,15 +1,39 @@
-import { default as DrinkCustomSelect } from './DrinkCustomSelect';
-import { IMenuTableItem } from '@/types/model/menu';
+'use client';
+
+import CtaButton from '../../common/buttons/CtaButton';
+import MenuCustomFinderDropdown, {
+  MenuCustomFinderDropdownHandle,
+} from '../menuEdit/MenuCustomFinderDropdown';
+import { IRecommendTableItem } from '@/types/model/menu';
+import { useRef } from 'react';
 
 interface RecommendTableRowProps {
-  item: IMenuTableItem;
+  item: IRecommendTableItem;
   isLastRow: boolean;
+  onDetailClick: () => void;
+  onSetClick: (value: string) => void;
+  categories: string[];
+  selectedOptions: string[];
 }
 
 export default function RecommendTableRow({
   item,
   isLastRow,
+  onDetailClick,
+  onSetClick,
+  categories,
+  selectedOptions,
 }: RecommendTableRowProps) {
+  const dropdownRef = useRef<MenuCustomFinderDropdownHandle>(null);
+
+  const handleSetClick = () => {
+    dropdownRef.current?.open();
+  };
+
+  const handleChange = (opts: string[]) => {
+    onSetClick(opts[opts.length - 1]);
+  };
+
   return (
     <tr key={item.id}>
       <td
@@ -19,19 +43,37 @@ export default function RecommendTableRow({
       >
         {item.name}
       </td>
-      <td className="border-b border-t border-gray-300 px-5 py-5">
-        {item.price}
+      <td className="border-b border-t border-gray-300 px-5 py-5 justify-center">
+        <CtaButton
+          width="fit"
+          size="small"
+          text="설명보기"
+          color="gray"
+          onClick={onDetailClick}
+        />
       </td>
       <td
-        className={`border-b border-r border-t border-gray-300 px-5 py-5 ${
+        className={`relative flex border-b border-r border-t border-gray-300 px-5 py-5 items-center justify-center ${
           isLastRow ? 'rounded-br-xl' : ''
         }`}
       >
-        <DrinkCustomSelect
-          options={['안주', '카테고리 2', '카테고리 3']}
-          selectedOption={item.category || '카테고리 1'}
-          onChange={() => {}}
+        <CtaButton
+          width="fit"
+          size="small"
+          text="지정하기"
+          color="white"
+          onClick={handleSetClick}
         />
+
+        <div className="absolute z-50 w-60" style={{ top: '80%', right: 80 }}>
+          <MenuCustomFinderDropdown
+            ref={dropdownRef}
+            options={categories}
+            selectedOptions={selectedOptions}
+            onChange={(valueList) => handleChange(valueList)}
+            hideTrigger
+          />
+        </div>
       </td>
     </tr>
   );

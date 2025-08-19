@@ -23,6 +23,14 @@ export interface IMenuTableItem {
   status: string;
 }
 
+export interface IRecommendTableItem {
+  id: number;
+  name: string;
+  description: string;
+  result: string;
+  img: string;
+}
+
 export interface IMenuImageItem {
   id: number;
   image_url: string;

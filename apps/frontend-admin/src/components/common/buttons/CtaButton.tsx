@@ -1,5 +1,6 @@
 'use client';
 
+import Spinner from '../loading/Spinner';
 import React from 'react';
 
 interface CtaButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
@@ -8,7 +9,7 @@ interface CtaButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   size?: 'small' | 'medium' | 'large';
   color?: 'yellow' | 'gray' | 'red' | 'white' | 'black';
   width?: 'full' | 'fit';
-  radius?: 'none' | 'sm' | 'md' | 'lg' | 'xl' | 'full';
+  radius?: 'none' | 'sm' | 'md' | 'lg' | 'xl' | '_3xl' | 'full';
   className?: string;
   left?: React.ReactNode;
   right?: React.ReactNode;
@@ -78,6 +79,7 @@ export default function CtaButton({
     md: 'rounded-md',
     lg: 'rounded-lg',
     xl: 'rounded-xl',
+    _3xl: 'rounded-3xl',
     full: 'rounded-full',
   };
 
@@ -99,24 +101,23 @@ export default function CtaButton({
 
   return (
     <button
-      className={`${backgroundColorStyles[color]} ${borderColorStyles[color]} ${hoverColorStyles[color]} ${radiusStyles[radius]} ${flexStyle} border transition-colors duration-200 disabled:cursor-not-allowed disabled:opacity-50 ${sizeStyles[size]} ${className}`}
+      className={`${backgroundColorStyles[color]} ${borderColorStyles[color]} ${hoverColorStyles[color]} ${radiusStyles[radius]} ${flexStyle} border transition-colors duration-200 disabled:cursor-not-allowed ${sizeStyles[size]} ${className}`}
       disabled={disabled || isLoading}
       onClick={handleClick}
       {...props}
     >
-      {left && <span className="mr-2 flex items-center">{left}</span>}
+      {isLoading ? (
+        <Spinner className="border-white" />
+      ) : (
+        <>
+          {left && <span className="mr-2 flex items-center">{left}</span>}
+          <span className={`${textSizeStyles[size]} ${textColorStyles[color]}`}>
+            {text}
+          </span>
 
-      {isLoading && (
-        <div
-          className={`border-chip-yellowText animate-spin rounded-full border-2 border-t-transparent ${iconSizeStyles[size]} mr-2`}
-        />
+          {right && <span className="ml-2 flex items-center">{right}</span>}
+        </>
       )}
-
-      <span className={`${textSizeStyles[size]} ${textColorStyles[color]}`}>
-        {text}
-      </span>
-
-      {right && <span className="ml-2 flex items-center">{right}</span>}
     </button>
   );
 }

@@ -17,7 +17,6 @@ export const useManageMenu = () => {
     try {
       const response = await MenuAPI.getAllMenus();
       setMenus(response);
-      console.log(response);
     } catch (error) {
       if (axios.isAxiosError(error) && error.response?.status === 401) {
         setMenuError(ERROR_MESSAGES.authenticationError);
