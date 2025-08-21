@@ -13,13 +13,14 @@ model Category {
   order    String
   storeId  Int
 
-  menus    Menu[] @relation("CategoryMenus")
+  menus                    Menu[]                   @relation("CategoryMenus")
+  recommendationCategories RecommendationCategory[]
 
   @@index([storeId], map: "Category_storeId_fkey")
 }
 
 model Hours {
-  id        Int       @id @default(autoincrement())
+  id        Int     @id @default(autoincrement())
   storeId   Int
   day       Day
   startHour Int
@@ -32,7 +33,7 @@ model Hours {
 }
 
 model InformationOrder {
-  id               Int    @id @default(autoincrement())
+  id               Int     @id @default(autoincrement())
   phoneNumberOrder String?
   hoursOrder       String?
   corkageOrder     String?
@@ -45,33 +46,38 @@ model InformationOrder {
 }
 
 model Menu {
-  id          Int         @id @default(autoincrement())
+  id          Int     @id @default(autoincrement())
   menu        String
-  price       Int         @default(0)
-  status      Status      @default(SALE)
+  price       Int     @default(0)
+  status      Status  @default(SALE)
   description String?
-  new         Boolean     @default(false)
-  recommended Boolean     @default(false)
-  popular     Boolean     @default(false)
+  new         Boolean @default(false)
+  recommended Boolean @default(false)
+  popular     Boolean @default(false)
   order       String
   categoryId  Int?
   storeId     Int
 
+  goodCriteria        RecommendationMenuCriteria[] @relation("GoodMenu")
+  normalCriteria      RecommendationMenuCriteria[] @relation("NormalMenu")
+  badCriteria         RecommendationMenuCriteria[] @relation("BadMenu")
+  recommendationMenus RecommendationMenu[]
+  menuOptions         MenuOption[]
+  images              Image[]
+  orderItems          OrderItem[]
+  category            Category?                    @relation("CategoryMenus", fields: [categoryId], references: [id], onDelete: Cascade)
+
   @@index([categoryId], map: "Menu_categoryId_fkey")
   @@index([storeId], map: "Menu_storeId_fkey")
-  menuOptions MenuOption[]
-  images      Image[]   
-  orderItems  OrderItem[]
-  category    Category?   @relation("CategoryMenus", fields: [categoryId], references: [id], onDelete: Cascade)
 }
 
 model Image {
-  id       Int     @id @default(autoincrement())
-  image    String  // 이미지 이름
-  menuId   Int     // 메뉴 아이디(FK)
-  deleted  Boolean @default(false) // 소프트 삭제
-  order    String  
-  menu     Menu    @relation(fields: [menuId], references: [id], onDelete: Cascade)
+  id      Int     @id @default(autoincrement())
+  image   String // 이미지 이름
+  menuId  Int // 메뉴 아이디(FK)
+  deleted Boolean @default(false) // 소프트 삭제
+  order   String
+  menu    Menu    @relation(fields: [menuId], references: [id], onDelete: Cascade)
 
   @@index([menuId], map: "Image_menuId_idx")
 }
@@ -84,21 +90,22 @@ model MenuOption {
   optionRequired Boolean @default(false)
   menuId         Int
 
-  menu           Menu            @relation(fields: [menuId], references: [id], onDelete: Cascade)
-  optionDetails  OptionDetail[]
+  menu             Menu              @relation(fields: [menuId], references: [id], onDelete: Cascade)
+  optionDetails    OptionDetail[]
   orderItemOptions OrderItemOption[]
+
   @@index([menuId], map: "menuOption_menuId_fkey")
 }
 
 model OptionDetail {
-  id             Int     @id @default(autoincrement())
-  optionDetail   String
-  menuOptionId   Int
-  price          Int
+  id           Int    @id @default(autoincrement())
+  optionDetail String
+  menuOptionId Int
+  price        Int
 
-  menuOption     MenuOption     @relation(fields: [menuOptionId], references: [id], onDelete: Cascade)
+  menuOption             MenuOption              @relation(fields: [menuOptionId], references: [id], onDelete: Cascade)
   orderItemOptionDetails OrderItemOptionDetail[]
-  
+
   @@index([menuOptionId], map: "optionDetail_menuOptionId_fkey")
 }
 
@@ -126,7 +133,10 @@ model Store {
   userId          Int
   createdAt       DateTime @default(now())
 
-  orders          Order[] 
+  orders                   Order[]
+  recommendationMenus      RecommendationMenu[]
+  recommendationCriteria   RecommendationMenuCriteria[]
+  recommendationCategories RecommendationCategory[]
 
   @@index([userId], map: "Store_userId_fkey")
 }
@@ -164,53 +174,120 @@ enum Status {
 }
 
 model Order {
-  id          Int       @id @default(autoincrement())
-  token       String    // 주문자 토큰
-  createdAt   DateTime  @default(now())
+  id          Int      @id @default(autoincrement())
+  token       String // 주문자 토큰
+  createdAt   DateTime @default(now())
   tableNumber Int?
   storeId     Int
 
-  store       Store     @relation(fields: [storeId], references: [id], onDelete: Cascade)
-  orderItems  OrderItem[]
+  store      Store       @relation(fields: [storeId], references: [id], onDelete: Cascade)
+  orderItems OrderItem[]
 
   @@index([storeId], map: "Order_storeId_fkey")
 }
 
 model OrderItem {
-  id        Int      @id @default(autoincrement())
-  orderId   Int
-  menuId    Int
-  quantity  Int
+  id       Int @id @default(autoincrement())
+  orderId  Int
+  menuId   Int
+  quantity Int
 
-  order     Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
-  menu      Menu     @relation(fields: [menuId], references: [id], onDelete: Cascade)
-  options   OrderItemOption[]
+  order   Order             @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  menu    Menu              @relation(fields: [menuId], references: [id], onDelete: Cascade)
+  options OrderItemOption[]
 
   @@index([orderId], map: "OrderItem_orderId_fkey")
   @@index([menuId], map: "OrderItem_menuId_fkey")
 }
 
 model OrderItemOption {
-  id             Int      @id @default(autoincrement())
-  orderItemId    Int
-  menuOptionId   Int
+  id           Int @id @default(autoincrement())
+  orderItemId  Int
+  menuOptionId Int
 
-  orderItem      OrderItem     @relation(fields: [orderItemId], references: [id], onDelete: Cascade)
-  menuOption     MenuOption    @relation(fields: [menuOptionId], references: [id], onDelete: Cascade)
-  optionDetails  OrderItemOptionDetail[]
+  orderItem     OrderItem               @relation(fields: [orderItemId], references: [id], onDelete: Cascade)
+  menuOption    MenuOption              @relation(fields: [menuOptionId], references: [id], onDelete: Cascade)
+  optionDetails OrderItemOptionDetail[]
 
   @@index([orderItemId], map: "OrderItemOption_orderItemId_fkey")
   @@index([menuOptionId], map: "OrderItemOption_menuOptionId_fkey")
 }
 
 model OrderItemOptionDetail {
-  id                   Int     @id @default(autoincrement())
-  orderItemOptionId    Int
-  optionDetailId       Int
+  id                Int @id @default(autoincrement())
+  orderItemOptionId Int
+  optionDetailId    Int
 
-  orderItemOption      OrderItemOption @relation(fields: [orderItemOptionId], references: [id], onDelete: Cascade)
-  optionDetail         OptionDetail    @relation(fields: [optionDetailId], references: [id], onDelete: Cascade)
+  orderItemOption OrderItemOption @relation(fields: [orderItemOptionId], references: [id], onDelete: Cascade)
+  optionDetail    OptionDetail    @relation(fields: [optionDetailId], references: [id], onDelete: Cascade)
 
   @@index([orderItemOptionId], map: "OrderItemOptionDetail_orderItemOptionId_fkey")
   @@index([optionDetailId], map: "OrderItemOptionDetail_optionDetailId_fkey")
+}
+
+enum TasteType {
+  SWEET
+  SOUR
+  BODY
+  ALCOHOL_PERCENTAGE
+}
+
+enum RecommendationType {
+  SIMPLE
+  PRECISE
+}
+
+model RecommendationTypeData {
+  id          Int                @id @default(autoincrement())
+  type        RecommendationType @unique
+  description String?
+
+  menus RecommendationMenu[]
+}
+
+model RecommendationMenuCriteria {
+  id      Int       @id @default(autoincrement())
+  storeId Int
+  taste   TasteType
+
+  goodId   Int // 가장 좋은 메뉴
+  normalId Int // 보통인 메뉴
+  badId    Int // 낮은 점수의 메뉴
+
+  store  Store @relation(fields: [storeId], references: [id], onDelete: Cascade)
+  good   Menu  @relation("GoodMenu", fields: [goodId], references: [id], onDelete: Cascade)
+  normal Menu  @relation("NormalMenu", fields: [normalId], references: [id], onDelete: Cascade)
+  bad    Menu  @relation("BadMenu", fields: [badId], references: [id], onDelete: Cascade)
+
+  @@index([storeId])
+  @@index([goodId])
+  @@index([normalId])
+  @@index([badId])
+}
+
+model RecommendationMenu {
+  id                   Int @id @default(autoincrement())
+  menuId               Int
+  recommendationTypeId Int
+  storeId              Int
+
+  menu  Menu                   @relation(fields: [menuId], references: [id], onDelete: Cascade)
+  store Store                  @relation(fields: [storeId], references: [id], onDelete: Cascade)
+  type  RecommendationTypeData @relation(fields: [recommendationTypeId], references: [id], onDelete: Cascade)
+
+  @@index([menuId])
+  @@index([recommendationTypeId])
+  @@index([storeId])
+}
+
+model RecommendationCategory {
+  id         Int @id @default(autoincrement())
+  storeId    Int
+  categoryId Int
+
+  store    Store    @relation(fields: [storeId], references: [id], onDelete: Cascade)
+  category Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+
+  @@index([storeId])
+  @@index([categoryId])
 }

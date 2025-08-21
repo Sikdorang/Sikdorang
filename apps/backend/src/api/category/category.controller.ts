@@ -42,7 +42,7 @@ export class CategoryController {
   @GetCategorySwagger()
   @UseGuards(
     JwtAuthGuard([
-      'admmin-authorization',
+      'admin-authorization',
       'pin-authorization',
       'mobile-authorization',
     ]),

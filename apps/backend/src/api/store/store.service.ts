@@ -86,7 +86,10 @@ export class StoreService {
         { key: 'openHour', value: openHourValue, order: infoOrder?.hoursOrder },
         {
           key: 'wifi',
-          value: `ID ${store?.wifiId} / PW ${store?.wifiPassword}`,
+          value:
+            store?.wifiId && store?.wifiPassword
+              ? `ID ${store.wifiId} / PW ${store.wifiPassword}`
+              : '',
           order: infoOrder?.wifiOrder,
         },
         {
@@ -115,7 +118,7 @@ export class StoreService {
           order: infoOrder?.ToiletOrder,
         },
       ].sort((a, b) =>
-        (a.order ?? 'zzzzzzzz').localeCompare(b.order ?? 'zzzzzzzzz'),
+        (a.order ?? 'zzzzzzzz').localeCompare(b.order ?? 'zzzzzzzz'),
       );
 
       return {
