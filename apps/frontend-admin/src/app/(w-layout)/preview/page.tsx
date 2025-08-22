@@ -1,9 +1,6 @@
 'use client';
 
 import MenuCustomDropdown from '@/components/pages/menuEdit/MenuCustomDropdown';
-import PhoneImage from '@public/images/img_menu_viewer_phone.png';
-import TabletImage from '@public/images/img_menu_viewer_tablet.png';
-import Image from 'next/image';
 import { useState } from 'react';
 
 export default function PreviewPage() {
@@ -31,22 +28,19 @@ export default function PreviewPage() {
         </div>
 
         <div
-          className="flex w-full px-12 py-4 justify-center"
-          style={{ maxHeight: '80vh' }}
+          className="flex w-full px-12 justify-center"
+          style={{ maxHeight: '80vh', width: '100%' }}
         >
-          {viewMode === 'tablet' ? (
-            <Image
-              src={PhoneImage}
-              alt="모바일 미리보기"
-              style={{ maxHeight: '80vh', height: 'auto', width: 'auto' }}
-            />
-          ) : (
-            <Image
-              src={TabletImage}
-              alt="태블릿 미리보기"
-              style={{ maxHeight: '80vh', height: 'auto', width: 'auto' }}
-            />
-          )}
+          <iframe
+            src="http://localhost:3001"
+            title="웹뷰 프리뷰"
+            style={{
+              border: '10px solid #111223',
+              borderRadius: '3rem',
+              width: viewMode === 'mobile' ? '350px' : '1024px',
+              height: viewMode === 'mobile' ? '720px' : '700px',
+            }}
+          />
         </div>
       </div>
     </div>

@@ -7,34 +7,29 @@ import MenuCustomFinderDropdown, {
   MenuCustomFinderDropdownHandle,
 } from '@/components/pages/menuEdit/MenuCustomFinderDropdown';
 import FeatureCard from '@/components/pages/recommend/FeatureCard';
+import { useManageCategory } from '@/hooks/useManageCategory';
 import DeleteIcon from '@public/icons/ic_x.svg';
 import LightRecommendImage from '@public/images/img_2_drinks.png';
 import FullRecommendImage from '@public/images/img_4_drinks.png';
 import RecommendScreen from '@public/images/img_recommend_screen.png';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 export default function RecommendPage() {
   const router = useRouter();
   const dropdownRef = useRef<MenuCustomFinderDropdownHandle>(null);
 
+  const { categories, isCategoriesLoading, createCategory, fetchCategories } =
+    useManageCategory();
+
+  useEffect(() => {
+    fetchCategories();
+  }, []);
+
   const [showRecommendOptions, setShowRecommendOptions] = useState(false);
   const [showCategorySelection, setShowCategorySelection] = useState(false);
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
-
-  const handleCategoryToggle = (category: string) => {
-    setSelectedCategories((prev) =>
-      prev.includes(category)
-        ? prev.filter((c) => c !== category)
-        : [...prev, category],
-    );
-  };
-
-  const handleAddClick = () => {
-    // 외부에서 드롭다운 열기
-    dropdownRef.current?.open();
-  };
 
   const handleDropdownChange = (values: string[]) => {
     setSelectedCategories(values);
@@ -42,7 +37,7 @@ export default function RecommendPage() {
 
   if (!showCategorySelection && !showRecommendOptions) {
     return (
-      <div className="flex flex-col items-center justify-center border-t border-gray-100">
+      <div className="flex flex-col items-center justify-center border-t border-gray-100 h-[90vh]">
         <div className="wrapper flex w-full flex-col items-center justify-center py-4 gap-8">
           <div className="flex w-full px-12 py-4 gap-16">
             <div className="w-1/4">
@@ -75,20 +70,6 @@ export default function RecommendPage() {
   }
 
   if (showCategorySelection && !showRecommendOptions) {
-    const categories = [
-      '사이드 맥주',
-      '주류 맥주',
-      '막걸리 맥주',
-      '한옥식 맥주',
-      '이상한 맥주',
-      '이천의 맥주',
-      '라떼쥬',
-      '샤케',
-      '막걸리',
-      '이상현',
-      '이유진',
-    ];
-
     const handleCategoryToggle = (category: string) => {
       setSelectedCategories((prev) =>
         prev.includes(category)

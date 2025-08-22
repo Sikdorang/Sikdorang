@@ -13,6 +13,11 @@ import {
   useState,
 } from 'react';
 
+export interface MenuOption {
+  id: number;
+  name: string;
+}
+
 export interface MenuCustomFinderDropdownHandle {
   open: () => void;
   close: () => void;
@@ -20,11 +25,11 @@ export interface MenuCustomFinderDropdownHandle {
 }
 
 interface MenuCustomFinderDropdownProps {
-  options: string[];
-  selectedOptions: string[];
+  options: MenuOption[];
+  selectedOptions: number[];
   isStatus?: boolean;
   isNumbers?: boolean;
-  onChange: (values: string[]) => void;
+  onChange: (ids: number[]) => void;
   hideTrigger?: boolean;
 }
 
@@ -58,10 +63,10 @@ const MenuCustomFinderDropdown = forwardRef<
     );
 
     useEffect(() => {
-      const handleClickOutside = (event: MouseEvent) => {
+      const handleClickOutside = (e: MouseEvent) => {
         if (
           selectRef.current &&
-          !selectRef.current.contains(event.target as Node)
+          !selectRef.current.contains(e.target as Node)
         ) {
           setIsOpen(false);
         }
@@ -73,21 +78,31 @@ const MenuCustomFinderDropdown = forwardRef<
     }, []);
 
     const filtered = options.filter((opt) =>
-      opt.toLowerCase().includes(searchText.toLowerCase()),
+      (opt.name?.toLowerCase() ?? '').includes(searchText.toLowerCase()),
     );
 
-    const toggleOption = (option: string) => {
-      const next = selectedOptions.includes(option)
-        ? selectedOptions.filter((o) => o !== option)
-        : [...selectedOptions, option];
+    // 토글: id 기준
+    const toggleOption = (opt: MenuOption) => {
+      const next = selectedOptions.includes(opt.id)
+        ? selectedOptions.filter((id) => id !== opt.id)
+        : [...selectedOptions, opt.id];
       onChange(next);
     };
+
+    // 트리거에 표시할 텍스트: 선택된 name 목록
+    const triggerText =
+      (selectedOptions || []).length > 0
+        ? options
+            .filter((opt) => selectedOptions.includes(opt.id))
+            .map((opt) => opt.name)
+            .join(', ')
+        : '0';
 
     return (
       <div className="relative" ref={selectRef}>
         {!hideTrigger && (
           <MenuCustomFinderDropdownItem
-            text={selectedOptions.length > 0 ? selectedOptions.join(', ') : '0'}
+            text={triggerText}
             isSelectedItem={true}
             isNumbers={isNumbers}
             onClick={() => setIsOpen((prev) => !prev)}
@@ -121,13 +136,11 @@ const MenuCustomFinderDropdown = forwardRef<
               }
             >
               {filtered.map((option) => {
-                const isSel = selectedOptions.includes(option);
+                const isSel = selectedOptions.includes(option.id);
                 return (
                   <div
-                    key={option}
-                    onClick={() => {
-                      toggleOption(option);
-                    }}
+                    key={option.id}
+                    onClick={() => toggleOption(option)}
                     className="flex w-full shrink-0 cursor-pointer items-center py-2 px-3 hover:bg-gray-100 first:rounded-t-xl last:rounded-b-xl"
                   >
                     {isSel ? (
@@ -140,7 +153,7 @@ const MenuCustomFinderDropdown = forwardRef<
                       <div className="mr-2 h-6 w-6 shrink-0" />
                     )}
                     <MenuCustomFinderDropdownItem
-                      text={option}
+                      text={option.name}
                       isSelectedItem={isSel}
                       isNumbers={isNumbers}
                     />

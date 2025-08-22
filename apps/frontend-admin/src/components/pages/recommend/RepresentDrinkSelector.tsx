@@ -2,18 +2,23 @@
 
 import CtaButton from '@/components/common/buttons/CtaButton';
 import ThreeStepSlider from '@/components/pages/recommend/ThreeStepSlider';
+import { IMenuCategory } from '@/types/model/menu';
 import { useState } from 'react';
 
 type SliderValue = 'left' | 'center' | 'right';
 
-export default function RepresentDrinkSelector() {
+interface RepresentDrinkSelectorProps {
+  menus: IMenuCategory[];
+}
+
+export default function RepresentDrinkSelector({
+  menus,
+}: RepresentDrinkSelectorProps) {
   const [category, setCategory] = useState('단맛');
   const [sliderValue, setSliderValue] = useState<SliderValue>('center');
-  const [dislikeOption, setDislikeOption] = useState('술 지정하기');
   const [showCategoryDropdown, setShowCategoryDropdown] = useState(false);
 
   const categoryOptions = ['단맛', '신맛', '바디감', '도수'];
-  const dislikeOptions = ['술 지정하기', '소주', '맥주', '와인', '막걸리'];
 
   const currentIndex = categoryOptions.indexOf(category);
   const canGoPrev = currentIndex > 0;
@@ -32,12 +37,6 @@ export default function RepresentDrinkSelector() {
       setSliderValue('center');
     }
   };
-
-  const headerText = {
-    left: '완전 싫어요',
-    center: '보통이에요',
-    right: '완전 좋아요',
-  }[sliderValue];
 
   return (
     <div className="w-full max-w-lg mx-auto">
@@ -60,7 +59,15 @@ export default function RepresentDrinkSelector() {
           </div>
 
           <div>
-            <ThreeStepSlider value={sliderValue} onChange={setSliderValue} />
+            <ThreeStepSlider
+              value={sliderValue}
+              onChange={setSliderValue}
+              menus={[]}
+              selectedMenus={[]}
+              onSetClick={function (value: string): void {
+                throw new Error('Function not implemented.');
+              }}
+            />
           </div>
 
           <div className="flex justify-between pt-4">

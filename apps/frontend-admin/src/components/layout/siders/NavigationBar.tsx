@@ -212,7 +212,7 @@ export default function NavigationBar({
             <Link
               href="/order"
               className={`text-mb-3 flex items-center gap-3 rounded-lg px-4 py-2 transition-colors ${
-                pathname === '/dashboard'
+                pathname === '/order'
                   ? 'text-main-500'
                   : 'hover:bg-main-500/10 text-gray-100'
               } ${collapsed ? 'justify-center' : ''}`}
@@ -223,24 +223,19 @@ export default function NavigationBar({
                 height={20}
                 alt="Order Request"
               />
-              {!collapsed && <span>주문 내역</span>}
+              {!collapsed && <span>주문 현황</span>}
             </Link>
 
             <Link
-              href="/order"
+              href="/history"
               className={`text-mb-3 flex items-center gap-3 rounded-lg px-4 py-2 transition-colors ${
-                pathname === '/dashboard'
+                pathname === '/history'
                   ? 'text-main-500'
                   : 'hover:bg-main-500/10 text-gray-100'
               } ${collapsed ? 'justify-center' : ''}`}
             >
-              <Image
-                src={DashboardIcon}
-                width={20}
-                height={20}
-                alt="Order Request"
-              />
-              {!collapsed && <span>주문 접수</span>}
+              <Image src={DashboardIcon} width={20} height={20} alt="history" />
+              {!collapsed && <span>주문 내역</span>}
             </Link>
           </nav>
         )}

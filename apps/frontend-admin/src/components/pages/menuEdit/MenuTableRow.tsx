@@ -9,12 +9,17 @@ import { IMenuTableItem } from '@/types/model/menu';
 import CheckedIcon from '@public/icons/ic_checked_box.svg';
 import UncheckedIcon from '@public/icons/ic_empty_box.svg';
 import Image from 'next/image';
+import { useEffect, useState } from 'react';
 
 interface MenuTableRowProps {
   item: IMenuTableItem;
   categories: ICategoryItem[];
   onEdit: (menuId: number) => void;
   onCheck: (menuId: number) => void;
+  onUpdate: (
+    menuId: number,
+    updatedData: { name?: string; price?: string },
+  ) => void;
   isLastRow: boolean;
 }
 
@@ -23,8 +28,52 @@ export default function MenuTableRow({
   categories,
   onEdit,
   onCheck,
+  onUpdate,
   isLastRow,
 }: MenuTableRowProps) {
+  const [name, setName] = useState(item.name);
+  const [price, setPrice] = useState(item.price);
+
+  // item이 변경될 때 로컬 상태 업데이트
+  useEffect(() => {
+    setName(item.name);
+    setPrice(item.price);
+  }, [item.name, item.price]);
+
+  const handleNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const newName = e.target.value;
+    setName(newName);
+  };
+
+  const handlePriceChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const newPrice = e.target.value;
+    setPrice(newPrice);
+  };
+
+  const handleNameBlur = () => {
+    if (name !== item.name) {
+      onUpdate(item.id, { name });
+    }
+  };
+
+  const handlePriceBlur = () => {
+    if (price !== item.price) {
+      onUpdate(item.id, { price });
+    }
+  };
+
+  const handleNameKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter') {
+      e.currentTarget.blur();
+    }
+  };
+
+  const handlePriceKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter') {
+      e.currentTarget.blur();
+    }
+  };
+
   return (
     <tr key={item.id}>
       <td
@@ -52,15 +101,31 @@ export default function MenuTableRow({
         )}
       </td>
       <td className="border-b border-t border-gray-300 px-5 py-5">
-        {item.name}
+        <input
+          type="text"
+          value={name}
+          onChange={handleNameChange}
+          onBlur={handleNameBlur}
+          onKeyDown={handleNameKeyDown}
+          className="w-full border-none bg-transparent px-2 py-1 text-sm focus:outline-none focus:ring-1 focus:ring-blue-500 focus:rounded"
+          placeholder="메뉴명을 입력하세요"
+        />
       </td>
       <td className="border-b border-t border-gray-300 px-5 py-5">
-        {item.price}
+        <input
+          type="text"
+          value={price}
+          onChange={handlePriceChange}
+          onBlur={handlePriceBlur}
+          onKeyDown={handlePriceKeyDown}
+          className="w-full border-none bg-transparent px-2 py-1 text-sm focus:outline-none focus:ring-1 focus:ring-blue-500 focus:rounded"
+          placeholder="가격을 입력하세요"
+        />
       </td>
       <td className="border-b border-t border-gray-300 px-5 py-5">
         <CategorySelect
           options={categories.map((c) => c.category)}
-          selectedOption={item.category || '카테고리 1'}
+          selectedOption={item.category || '카테고리 없음'}
           onChange={() => {}}
         />
       </td>

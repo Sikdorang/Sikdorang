@@ -9,3 +9,9 @@ export interface IStoreInfo {
   name: string;
   infoItems: InfoItem[];
 }
+
+export interface ISettingAction {
+  label: string;
+  onClick: () => void;
+  type: 'depth' | 'toggle' | 'none';
+}

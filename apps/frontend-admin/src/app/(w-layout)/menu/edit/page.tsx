@@ -384,6 +384,12 @@ export default function MenuEditPage() {
                         onEdit={handleEdit}
                         onCheck={handleCheckbox}
                         isLastRow={idx === menus.length}
+                        onUpdate={function (
+                          menuId: number,
+                          updatedData: { name?: string; price?: string },
+                        ): void {
+                          throw new Error('Function not implemented.');
+                        }}
                       />
                     ))}
               </tbody>
