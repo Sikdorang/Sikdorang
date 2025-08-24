@@ -4,11 +4,13 @@ import { ISettingAction } from '@/types/model/store';
 interface SettingTableProps {
   settingTitle: string;
   actions: ISettingAction[];
+  toggleStates?: Record<string, boolean>;
 }
 
 export default function SettingTable({
   settingTitle,
   actions,
+  toggleStates = {},
 }: SettingTableProps) {
   return (
     <div className="w-full mx-auto">
@@ -24,6 +26,8 @@ export default function SettingTable({
               isLastRow={index === actions.length - 1}
               onClick={action.onClick}
               type={action.type}
+              isOn={toggleStates[action.label] ?? false}
+              onToggle={action.onClick}
             />
           ))}
         </tbody>

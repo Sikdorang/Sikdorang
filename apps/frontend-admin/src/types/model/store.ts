@@ -15,3 +15,9 @@ export interface ISettingAction {
   onClick: () => void;
   type: 'depth' | 'toggle' | 'none';
 }
+
+export interface ISettingStates {
+  businessOpen: boolean;
+  realtimeOrderAlert: boolean;
+  recommendEnabled: boolean;
+}

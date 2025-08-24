@@ -76,7 +76,7 @@ export default function LightRecommendPage() {
   return (
     <div className="flex flex-col items-center justify-center">
       <div className="wrapper flex w-full flex-col items-center justify-center py-4 gap-8">
-        <div className="flex w-full color-gray-700 text-desktop-title-xl-semibold px-12">
+        <div className="flex w-full color-gray-700 text-mh-1 px-12">
           간단 추천 모드
         </div>
         <div className="flex w-full px-12 py-4 gap-16">

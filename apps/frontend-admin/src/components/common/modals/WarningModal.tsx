@@ -1,4 +1,5 @@
 'use client';
+
 import { useWarningModal } from '@/contexts/WarningModalContext';
 import CloseIcon from '@public/icons/ic_x.svg';
 import Image from 'next/image';
@@ -59,7 +60,8 @@ export function WarningModalActions({
   cancelText?: string;
   confirmText?: string;
 }) {
-  const { closeModal, confirmWarning } = useWarningModal();
+  const { closeModal } = useWarningModal();
+
   return (
     <div className="flex justify-center gap-2">
       <button
@@ -71,7 +73,10 @@ export function WarningModalActions({
       </button>
       <button
         className="rounded bg-red-500 px-6 py-2 text-white transition hover:bg-red-400"
-        onClick={() => confirmWarning(onConfirm)}
+        onClick={() => {
+          onConfirm();
+          closeModal();
+        }}
         type="button"
       >
         {confirmText}

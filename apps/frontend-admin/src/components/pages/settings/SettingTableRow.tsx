@@ -10,6 +10,8 @@ interface SettingTableRowProps {
   isLastRow?: boolean;
   onClick?: () => void;
   type: 'depth' | 'toggle' | 'none';
+  isOn?: boolean;
+  onToggle?: (next: boolean) => void;
 }
 
 export default function SettingTableRow({
@@ -18,6 +20,8 @@ export default function SettingTableRow({
   isLastRow = false,
   onClick,
   type,
+  isOn = false,
+  onToggle,
 }: SettingTableRowProps) {
   const renderRightContent = () => {
     switch (type) {
@@ -29,12 +33,14 @@ export default function SettingTableRow({
         );
       case 'toggle':
         return (
-          <ToggleSwitch
-            isOn={false}
-            onToggle={(next: boolean) => {
-              console.log(`${label} toggled: `, next);
-            }}
-          />
+          <div onClick={(e) => e.stopPropagation()}>
+            <ToggleSwitch
+              isOn={isOn}
+              onToggle={(next) => {
+                onToggle?.(next);
+              }}
+            />
+          </div>
         );
       case 'none':
       default:
@@ -44,7 +50,7 @@ export default function SettingTableRow({
 
   return (
     <tr
-      onClick={onClick}
+      onClick={type !== 'toggle' ? onClick : undefined}
       className="cursor-pointer hover:bg-gray-200 bg-gray-100"
     >
       <td

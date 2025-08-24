@@ -1,3 +1,4 @@
+import CtaButton from './CtaButton';
 import { useRef } from 'react';
 
 function SoundButton() {
@@ -11,8 +12,12 @@ function SoundButton() {
 
   return (
     <div>
-      <button onClick={playSound}>소리 재생하기</button>
-      <audio ref={audioRef} src="/sounds/notification.mp3" preload="auto" />
+      <CtaButton
+        width="fit"
+        text="식도랑 주제가 들어보기"
+        onClick={playSound}
+      />
+      <audio ref={audioRef} src="/sounds/bgm_sikdorang.mp3" preload="auto" />
     </div>
   );
 }
