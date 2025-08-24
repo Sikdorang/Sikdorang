@@ -41,25 +41,31 @@ const NAV_STRUCTURE = [
     key: 'dashboard',
     label: '대시보드',
     basePath: '/dashboard',
-    tabs: [{ name: '대시보드', href: '/dashboard' }],
+    tabs: [],
   },
   {
     key: 'settings',
     label: '설정',
     basePath: '/settings',
-    tabs: [{ name: '설정', href: '/settings' }],
+    tabs: [],
   },
   {
     key: 'order',
-    label: '주문 내역',
+    label: '주문 현황',
     basePath: '/order',
-    tabs: [{ name: '주문 내역', href: '/order' }],
+    tabs: [],
   },
   {
     key: 'link',
     label: '테이블 연동',
     basePath: '/link',
-    tabs: [{ name: '테이블 연동', href: '/link' }],
+    tabs: [],
+  },
+  {
+    key: 'history',
+    label: '주문 내역',
+    basePath: '/history',
+    tabs: [],
   },
 ];
 
