@@ -106,9 +106,9 @@ export class StoreService {
           key: 'corkage',
           value:
             store?.corkagePossible === true
-              ? store?.corkageFree === true
+              ? store?.corkagePrice === 0
                 ? '가능 (무료)'
-                : '가능 (유료)'
+                : `가능 %{store?.corkageFree}`
               : '불가능',
           order: infoOrder?.corkageOrder,
         },

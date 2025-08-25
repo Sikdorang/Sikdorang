@@ -4,6 +4,7 @@ import {
   IsArray,
   IsBoolean,
   IsNotEmpty,
+  IsNumber,
   IsOptional,
   IsString,
   ValidateNested,
@@ -61,13 +62,13 @@ export class CreateStoreDto {
   corkagePossible?: boolean;
 
   @ApiPropertyOptional({
-    description: '콜키지 무료 여부',
-    type: Boolean,
-    example: false,
+    description: '콜키지 가격',
+    type: Number,
+    example: 1000,
   })
   @IsOptional()
-  @IsBoolean()
-  corkageFree?: boolean;
+  @IsNumber()
+  corkagePrice?: number;
 
   @ApiPropertyOptional({ description: '화장실 정보', example: '남/여 구분' })
   @IsOptional()

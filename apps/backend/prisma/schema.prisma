@@ -120,18 +120,19 @@ model RefreshToken {
 }
 
 model Store {
-  id              Int      @id @default(autoincrement())
-  store           String
-  pinNumber       String
-  wifiId          String?
-  wifiPassword    String?
-  phoneNumber     String?
-  naverPlace      String?
-  corkagePossible Boolean?
-  corkageFree     Boolean?
-  toilet          String?
-  userId          Int
-  createdAt       DateTime @default(now())
+  id                 Int                @id @default(autoincrement())
+  store              String
+  pinNumber          String
+  wifiId             String?
+  wifiPassword       String?
+  phoneNumber        String?
+  naverPlace         String?
+  corkagePossible    Boolean?
+  corkagePrice       Int?
+  toilet             String?
+  userId             Int
+  createdAt          DateTime           @default(now())
+  recommendationMode RecommendationMode? @unique
 
   orders                   Order[]
   recommendationMenus      RecommendationMenu[]
@@ -232,15 +233,17 @@ enum TasteType {
   ALCOHOL_PERCENTAGE
 }
 
-enum RecommendationType {
+enum RecommendationMode {
   SIMPLE
   PRECISE
 }
 
 model RecommendationTypeData {
-  id          Int                @id @default(autoincrement())
-  type        RecommendationType @unique
-  description String?
+  id                  Int                @id @default(autoincrement())
+  type                String
+  adminDescription    String?
+  custimerDescription String?
+  recommendationMode  RecommendationMode @unique
 
   menus RecommendationMenu[]
 }

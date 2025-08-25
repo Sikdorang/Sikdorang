@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaClient } from '@prisma/client';
 
+import { PostRecommendationModeDto } from './dto/post-recommendation-mode.dto';
 import { PutRecommendationCategoryDto } from './dto/put-recommendation-category.dto';
 
 @Injectable()
@@ -63,5 +64,22 @@ export class RecommendationService {
       added: toAdd,
       removed: toDelete,
     };
+  }
+
+  async setRecommendationMode({
+    storeId,
+    postRecommendationModeDto,
+  }: {
+    storeId: number;
+    postRecommendationModeDto: PostRecommendationModeDto;
+  }) {
+    return await this.prisma.store.update({
+      where: { id: storeId },
+      data: {
+        recommendationMode: {
+          set: postRecommendationModeDto.recommendationMode,
+        },
+      },
+    });
   }
 }
