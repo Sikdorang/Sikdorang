@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { PrismaClient } from '@prisma/client';
+import { PrismaClient, TasteType } from '@prisma/client';
 
 import { PostRecommendationModeDto } from './dto/post-recommendation-mode.dto';
 import { PutRecommendationCategoryDto } from './dto/put-recommendation-category.dto';
@@ -79,6 +79,26 @@ export class RecommendationService {
         recommendationMode: {
           set: postRecommendationModeDto.recommendationMode,
         },
+      },
+    });
+  }
+
+  async getRecommendationCriteriaMenu({
+    storeId,
+    taste,
+  }: {
+    storeId: number;
+    taste?: TasteType;
+  }) {
+    return await this.prisma.recommendationMenuCriteria.findMany({
+      where: {
+        storeId,
+        ...(taste ? { taste } : {}),
+      },
+      include: {
+        good: true,
+        normal: true,
+        bad: true,
       },
     });
   }
