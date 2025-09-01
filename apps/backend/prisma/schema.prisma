@@ -253,14 +253,14 @@ model RecommendationMenuCriteria {
   storeId Int
   taste   TasteType
 
-  goodId   Int // 가장 좋은 메뉴
-  normalId Int // 보통인 메뉴
-  badId    Int // 낮은 점수의 메뉴
+  goodId   Int? // 가장 좋은 메뉴
+  normalId Int? // 보통인 메뉴
+  badId    Int? // 낮은 점수의 메뉴
 
   store  Store @relation(fields: [storeId], references: [id], onDelete: Cascade)
-  good   Menu  @relation("GoodMenu", fields: [goodId], references: [id], onDelete: Cascade)
-  normal Menu  @relation("NormalMenu", fields: [normalId], references: [id], onDelete: Cascade)
-  bad    Menu  @relation("BadMenu", fields: [badId], references: [id], onDelete: Cascade)
+  good   Menu? @relation("GoodMenu", fields: [goodId], references: [id], onDelete: Cascade)
+  normal Menu? @relation("NormalMenu", fields: [normalId], references: [id], onDelete: Cascade)
+  bad    Menu? @relation("BadMenu", fields: [badId], references: [id], onDelete: Cascade)
 
   @@index([storeId])
   @@index([goodId])

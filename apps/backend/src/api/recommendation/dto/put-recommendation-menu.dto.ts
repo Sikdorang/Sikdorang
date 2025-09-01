@@ -1,8 +1,8 @@
 import { IsArray, IsNumber, IsOptional } from 'class-validator';
 
-export class PutRecommendationCategoryDto {
-  @IsOptional()
+export class PutRecommendationMenuDto {
   @IsArray()
   @IsNumber({}, { each: true })
-  categoryId?: number[];
+  @IsOptional()
+  menuId: number[];
 }
