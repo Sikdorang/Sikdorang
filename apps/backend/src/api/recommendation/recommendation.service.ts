@@ -224,4 +224,23 @@ export class RecommendationService {
 
     return { message: '추천 메뉴가 저장되었습니다.' };
   }
+
+  async getRecommendationTypeData({ storeId }: { storeId: number }) {
+    return this.prisma.store.findUnique({
+      where: { id: storeId },
+      select: {
+        recommendationMode: true,
+      },
+    });
+  }
+
+  async getRecommendationTypeDataById({
+    recommendationTypeId,
+  }: {
+    recommendationTypeId: number;
+  }) {
+    return await this.prisma.recommendationTypeData.findUnique({
+      where: { id: recommendationTypeId },
+    });
+  }
 }

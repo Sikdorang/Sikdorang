@@ -22,6 +22,8 @@ import { RecommendationService } from './recommendation.service';
 import { GetRecommendationCategorySwagger } from './swagger/get-recommendation-category.swagger';
 import { GetRecommendationCriteriaSwagger } from './swagger/get-recommendation-criteria.swagger';
 import { GetRecommendationMenuSwagger } from './swagger/get-recommendation-menu.swagger';
+import { GetRecommendationTypeDataByIdSwagger } from './swagger/get-recommendation-type-data-by-id.swagger';
+import { GetRecommendationTypeDataSwagger } from './swagger/get-recommendation-type-data.swagger';
 import { PostRecommendationModeSwagger } from './swagger/post-recommendation-mode.swagger';
 import { PutRecommendationCategorySwagger } from './swagger/put-recommendation-category.swagger';
 import { PutRecommendationCriteriaSwagger } from './swagger/put-recommendation-criteria.swagger';
@@ -138,5 +140,27 @@ export class RecommendationController {
       putRecommendationMenuDto,
     });
   }
-  //설명보기 get 요청
+
+  //술 추천 유형 반환하기
+  @Get('/recommendationTypeData')
+  @GetRecommendationTypeDataSwagger()
+  @UseGuards(JwtAuthGuard(['admin-authorization']))
+  async getRecommendationTypeData(@StoreId() storeId: number) {
+    return await this.recommendationService.getRecommendationTypeData({
+      storeId,
+    });
+  }
+
+  //관리자 설명 반환하기
+  @Get('/recommendationTypeData/:recommendationTypeId')
+  @GetRecommendationTypeDataByIdSwagger()
+  @UseGuards(JwtAuthGuard(['admin-authorization']))
+  async getRecommendationTypeDataById(
+    @StoreId() storeId: number,
+    @Param('recommendationTypeId') recommendationTypeId: number,
+  ) {
+    return await this.recommendationService.getRecommendationTypeDataById({
+      recommendationTypeId,
+    });
+  }
 }
