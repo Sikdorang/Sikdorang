@@ -52,7 +52,7 @@ export default function CtaButton({
   const backgroundColorStyles = {
     yellow: 'bg-main-500',
     gray: 'bg-gray-100',
-    red: 'bg-system-error',
+    red: 'bg-red-500',
     white: 'bg-white',
     black: 'bg-gray-800',
   };
@@ -60,7 +60,7 @@ export default function CtaButton({
   const hoverColorStyles = {
     yellow: 'hover:bg-main-600',
     gray: 'hover:bg-gray-200',
-    red: 'hover:bg-system-error',
+    red: 'hover:bg-red-400',
     white: 'hover:bg-gray-100',
     black: 'hover:bg-gray-600',
   };
@@ -68,7 +68,7 @@ export default function CtaButton({
   const borderColorStyles = {
     yellow: 'border-main-500',
     gray: 'border-gray-100',
-    red: 'border-system-error',
+    red: 'border-none',
     white: 'border-gray-200',
     black: 'border-gray-800',
   };

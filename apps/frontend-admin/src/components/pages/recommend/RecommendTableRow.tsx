@@ -21,8 +21,8 @@ export default function RecommendTableRow({
   isLastRow,
   onDetailClick,
   onSetClick,
-  categories,
-  selectedOptions,
+  menus,
+  selectedMenus,
 }: RecommendTableRowProps) {
   const dropdownRef = useRef<MenuCustomFinderDropdownHandle>(null);
 
@@ -68,9 +68,9 @@ export default function RecommendTableRow({
         <div className="absolute z-50 w-60" style={{ top: '80%', right: 80 }}>
           <MenuCustomFinderDropdown
             ref={dropdownRef}
-            options={categories}
-            selectedOptions={selectedOptions}
-            onChange={(valueList) => handleChange(valueList)}
+            options={menus || []}
+            selectedOptions={selectedMenus}
+            onChange={handleChange}
             hideTrigger
           />
         </div>

@@ -3,6 +3,8 @@
 import RecommendResultCard from '@/components/pages/recommend/RecommendResultCard';
 import RecommendTableRow from '@/components/pages/recommend/RecommendTableRow';
 import RepresentDrinkSelector from '@/components/pages/recommend/RepresentDrinkSelector';
+import { useManageCategory } from '@/hooks/useManageCategory';
+import { useManageMenu } from '@/hooks/useManageMenu';
 import { IRecommendTableItem } from '@/types/model/menu';
 import DorangImage1 from '@public/images/img_dorang_1.png';
 import DorangImage2 from '@public/images/img_dorang_2.png';
@@ -110,6 +112,21 @@ const recommedTypeList: IRecommendTableItem[] = [
 ];
 
 export default function FullRecommendPage() {
+  const { categories, isCategoriesLoading, createCategory, fetchCategories } =
+    useManageCategory();
+
+  const {
+    menus,
+    isMenusLoading,
+    menuError,
+    fetchMenus,
+    createMenus,
+    updateMenus,
+    removeMenu,
+    getMenuDetails,
+    updateMenuDetails,
+  } = useManageMenu();
+
   const [modalOpen, setModalOpen] = useState(false);
   const [modalData, setModalData] = useState<IRecommendTableItem | null>(null);
 
@@ -165,6 +182,7 @@ export default function FullRecommendPage() {
           </div>
         </div>
       </div>
+
       {modalOpen && modalData && (
         <RecommendResultCard
           title={'이런 타입이에요 !'}

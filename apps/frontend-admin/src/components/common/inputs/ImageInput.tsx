@@ -25,12 +25,14 @@ import React, { useEffect, useRef, useState } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 
 interface ImageInputProps {
+  label?: string;
   images?: IMenuImageItem[];
   setImages: React.Dispatch<React.SetStateAction<IMenuImageItem[]>>;
   maxImages?: number;
 }
 
 export default function ImageInput({
+  label = '메뉴 사진',
   images = [],
   setImages,
   maxImages = 10,
@@ -121,7 +123,7 @@ export default function ImageInput({
   return (
     <div>
       <div className="flex items-center mb-4">
-        <div className="text-mb-1 grow-1">메뉴 사진</div>
+        <div className="text-mb-1 grow-1">{label}</div>
         <>
           <AddButton
             text="사진 추가하기"
@@ -158,7 +160,7 @@ export default function ImageInput({
           <div className="text-mb-5 flex select-none flex-col items-center justify-center gap-4 text-center text-gray-700">
             <Image src={EmptyImageIcon} alt="add" width={55} height={55} />
             <div>
-              메뉴 사진이 아직 없어요.
+              사진이 아직 없어요.
               <br />
               사진을 추가 해주세요 !
             </div>

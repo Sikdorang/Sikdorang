@@ -1,26 +1,45 @@
 'use client';
 
-import Image from 'next/image';
-import React, { useState } from 'react';
+import { IMenuCategory } from '../../../types/model/menu';
+import CtaButton from '../../common/buttons/CtaButton';
+import MenuCustomFinderDropdown, {
+  MenuCustomFinderDropdownHandle,
+} from '../menuEdit/MenuCustomFinderDropdown';
+import React, { useRef, useState } from 'react';
 
 interface ThreeStepSliderProps {
   value: 'left' | 'center' | 'right';
   onChange: (value: 'left' | 'center' | 'right') => void;
+  menus: IMenuCategory[];
+  selectedMenus: IMenuCategory[];
   leftLabel?: string;
   centerLabel?: string;
   rightLabel?: string;
   dislikeOptions?: string[];
+  onSetClick: (value: string) => void;
 }
 
 export default function ThreeStepSlider({
   value,
+  menus,
+  selectedMenus,
   onChange,
+  onSetClick,
   leftLabel = '완전 싫어요',
   centerLabel = '보통이에요',
   rightLabel = '완전 좋아요',
   dislikeOptions = ['술 지정하기', '소주', '맥주', '와인', '막걸리'],
 }: ThreeStepSliderProps) {
+  const dropdownRef = useRef<MenuCustomFinderDropdownHandle>(null);
   const [dislikeOption, setDislikeOption] = useState(dislikeOptions[0]);
+
+  const handleSetClick = () => {
+    dropdownRef.current?.open();
+  };
+
+  const handleChange = (opts: string[]) => {
+    onSetClick(opts[opts.length - 1]);
+  };
 
   const getThumbPosition = () => {
     switch (value) {
@@ -69,7 +88,6 @@ export default function ThreeStepSlider({
             지정되지
             <br /> 않았어요
           </div>
-          <Image src={''} alt={''} />
         </span>
         <span
           className="cursor-pointer hover:text-gray-800 text-mb-3"
@@ -80,7 +98,6 @@ export default function ThreeStepSlider({
             지정되지
             <br /> 않았어요
           </div>
-          <Image src={''} alt={''} />
         </span>
         <span
           className="cursor-pointer hover:text-gray-800 text-mb-3"
@@ -91,25 +108,30 @@ export default function ThreeStepSlider({
             지정되지
             <br /> 않았어요
           </div>
-          <Image src={''} alt={''} />
         </span>
       </div>
 
       <div className="space-y-2">
-        <div className="text-gray-800 font-medium">{headerText}</div>
+        <div className="text-gray-800 text-mb-1">{headerText}</div>
 
         <div className="relative">
-          <select
-            className="w-full border border-gray-300 rounded-full py-3 px-4 pr-10 bg-white"
-            value={dislikeOption}
-            onChange={(e) => setDislikeOption(e.target.value)}
-          >
-            {dislikeOptions.map((opt) => (
-              <option key={opt} value={opt}>
-                {opt}
-              </option>
-            ))}
-          </select>
+          <CtaButton
+            width="fit"
+            size="small"
+            text="지정하기"
+            color="white"
+            onClick={handleSetClick}
+          />
+
+          <div className="absolute z-50 w-60" style={{ top: '80%', right: 80 }}>
+            <MenuCustomFinderDropdown
+              ref={dropdownRef}
+              options={menus || []}
+              selectedOptions={selectedMenus || []}
+              onChange={(valueList) => handleChange(valueList)}
+              hideTrigger
+            />
+          </div>
         </div>
       </div>
     </div>

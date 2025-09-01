@@ -18,7 +18,6 @@ import {
   YAxis,
 } from 'recharts';
 
-// 샘플 데이터
 const salesData = [
   { time: '1월', 소주: 85, 맥주: 120, 칵테일: 45, 막걸리: 30 },
   { time: '2월', 소주: 90, 맥주: 110, 칵테일: 50, 막걸리: 35 },
@@ -147,10 +146,10 @@ const TimeFilter = ({
 
 export default function DashboardPage() {
   const [selectedPeriod, setSelectedPeriod] = useState('오늘');
+  const [loading, setLoading] = useState(true);
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      {/* Header */}
+    <div className="relative min-h-screen bg-gray-50">
       <div className="bg-white border-b border-gray-200">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center py-6">
