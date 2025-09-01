@@ -120,7 +120,7 @@ model RefreshToken {
 }
 
 model Store {
-  id                 Int                @id @default(autoincrement())
+  id                 Int                 @id @default(autoincrement())
   store              String
   pinNumber          String
   wifiId             String?
@@ -131,7 +131,7 @@ model Store {
   corkagePrice       Int?
   toilet             String?
   userId             Int
-  createdAt          DateTime           @default(now())
+  createdAt          DateTime            @default(now())
   recommendationMode RecommendationMode? @unique
 
   orders                   Order[]
@@ -242,8 +242,8 @@ model RecommendationTypeData {
   id                  Int                @id @default(autoincrement())
   type                String
   adminDescription    String?
-  custimerDescription String?
-  recommendationMode  RecommendationMode @unique
+  customerDescription String?
+  recommendationMode  RecommendationMode
 
   menus RecommendationMenu[]
 }

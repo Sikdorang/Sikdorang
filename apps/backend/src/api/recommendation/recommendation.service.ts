@@ -102,4 +102,19 @@ export class RecommendationService {
       },
     });
   }
+
+  async getRecommendationMenu({
+    storeId,
+    recommendationTypeId,
+  }: {
+    storeId: number;
+    recommendationTypeId: number;
+  }) {
+    return await this.prisma.recommendationMenu.findMany({
+      where: { storeId, recommendationTypeId },
+      include: {
+        menu: true,
+      },
+    });
+  }
 }

@@ -3,6 +3,7 @@ import {
   Body,
   Controller,
   Get,
+  Param,
   Post,
   Put,
   Query,
@@ -69,6 +70,18 @@ export class RecommendationController {
     return this.recommendationService.getRecommendationCriteriaMenu({
       storeId,
       taste: normalizedTaste as TasteType,
+    });
+  }
+
+  @Get('/recommendation-menu/:recommendationTypeId')
+  @UseGuards(JwtAuthGuard(['admin-authorization']))
+  async getRecommendationMenu(
+    @StoreId() storeId: number,
+    @Param('recommendationTypeId') recommendationTypeId: number,
+  ) {
+    return await this.recommendationService.getRecommendationMenu({
+      storeId,
+      recommendationTypeId,
     });
   }
 
