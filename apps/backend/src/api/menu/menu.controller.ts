@@ -21,6 +21,8 @@ import { MenuService } from './menu.service';
 import { CreateMenusSwagger } from './swagger/create-menus.swagger';
 import { CreateOptionSwagger } from './swagger/create-option.swagger';
 import { DeleteMenuSwagger } from './swagger/delete-menu.swagger';
+import { DeleteOptionDetailSwagger } from './swagger/delete-option-detail.swagger';
+import { DeleteOptionSwagger } from './swagger/delete-option.swagger';
 import { GetAllMenusSwagger } from './swagger/get-AllMenus.swagger';
 import { GetMenuDetailSwagger } from './swagger/get-menu-detail.swagger';
 import { GetMenusByCategorySwagger } from './swagger/get-menus-by-category.swagger';
@@ -141,6 +143,25 @@ export class MenuController {
     @StoreId() storeId: number,
   ) {
     return await this.menuService.createOption({ createOptionDto, storeId });
+  }
+
+  //옵션 삭제하기
+  @Delete('/option/:optionId')
+  @UseGuards(JwtAuthGuard(['admin-authorization']))
+  @DeleteOptionSwagger()
+  async deleteOption(@Param('optionId') optionId: number) {
+    return await this.menuService.deleteOption({ optionId });
+  }
+
+  //옵션 상세 삭제하기
+  @Delete('/option/:optionId/detail/:detailId')
+  @UseGuards(JwtAuthGuard(['admin-authorization']))
+  @DeleteOptionDetailSwagger()
+  async deleteOptionDetail(
+    @Param('optionId') optionId: number,
+    @Param('detailId') detailId: number,
+  ) {
+    return await this.menuService.deleteOptionDetail({ optionId, detailId });
   }
 
   //사진
