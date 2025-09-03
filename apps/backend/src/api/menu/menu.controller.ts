@@ -28,7 +28,6 @@ import { UpdateImageSwagger } from './swagger/update-image.swagger';
 import { UpdateMenuDetailsSwagger } from './swagger/update-menu-details.swagger';
 import { UpdateMenusSwagger } from './swagger/update-menus.swagger';
 
-const adminAuthorization = ['admin-authorization'];
 @Controller('menu')
 export class MenuController {
   constructor(private readonly menuService: MenuService) {}
