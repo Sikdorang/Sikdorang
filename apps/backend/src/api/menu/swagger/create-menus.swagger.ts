@@ -20,6 +20,8 @@ export function CreateMenusSwagger() {
               categoryId: 1,
               status: 'SALE',
               order: '1',
+              new: true,
+              popular: false,
             },
             {
               menu: '제육볶음',
@@ -27,6 +29,8 @@ export function CreateMenusSwagger() {
               categoryId: 2,
               status: 'SALE',
               order: '2',
+              new: false,
+              popular: true,
             },
           ],
         },
