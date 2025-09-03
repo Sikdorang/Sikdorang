@@ -5,11 +5,21 @@ export const UpdateCategorySwagger = () =>
   applyDecorators(
     ApiOperation({ summary: '카테고리 수정' }),
     ApiBody({
-      description: '수정할 카테고리 정보',
+      description: '수정할 카테고리 정보 배열',
+      isArray: true,
       schema: {
-        example: {
-          name: '디저트',
-        },
+        example: [
+          {
+            categoryId: 1,
+            category: '추천 메뉴',
+            order: '1',
+          },
+          {
+            categoryId: 2,
+            category: '식사류',
+            order: '2',
+          },
+        ],
       },
     }),
     ApiResponse({
