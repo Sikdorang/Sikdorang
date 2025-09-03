@@ -2,16 +2,36 @@ import type { NextConfig } from 'next';
 import path from 'path';
 
 const nextConfig: NextConfig = {
+  experimental: {
+    turbo: {
+      rules: {
+        '*.svg': {
+          loaders: ['@svgr/webpack'],
+          as: '*.js',
+        },
+      },
+    },
+  },
+
   webpack(config) {
     const fileLoaderRule = config.module.rules.find((rule: any) =>
       rule.test?.test?.('.svg'),
     );
-    fileLoaderRule.exclude = /\.svg$/i;
 
-    config.module.rules.push({
+    if (fileLoaderRule) {
+      fileLoaderRule.exclude = /\.svg$/i;
+    }
+
+    config.module.rules.unshift({
       test: /\.svg$/i,
       issuer: /\.[jt]sx?$/,
       use: ['@svgr/webpack'],
+    });
+
+    config.module.rules.push({
+      test: /\.svg$/i,
+      resourceQuery: /url/,
+      type: 'asset/resource',
     });
 
     config.resolve.alias = {

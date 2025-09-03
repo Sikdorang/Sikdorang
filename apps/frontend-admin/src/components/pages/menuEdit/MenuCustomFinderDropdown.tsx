@@ -144,11 +144,7 @@ const MenuCustomFinderDropdown = forwardRef<
                     className="flex w-full shrink-0 cursor-pointer items-center py-2 px-3 hover:bg-gray-100 first:rounded-t-xl last:rounded-b-xl"
                   >
                     {isSel ? (
-                      <Image
-                        src={CheckedIcon}
-                        alt="checked"
-                        className="mr-2 shrink-0"
-                      />
+                      <CheckedIcon className="mr-2 shrink-0" />
                     ) : (
                       <div className="mr-2 h-6 w-6 shrink-0" />
                     )}

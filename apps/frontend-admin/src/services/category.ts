@@ -13,7 +13,8 @@ export const CategoryAPI = {
     return res.data;
   },
   updateCategory: async (categoryId: number, updatedCategory: string) => {
-    const res = await axiosInstance.patch(`/category/${categoryId}`, {
+    const res = await axiosInstance.patch(`/category`, {
+      categoryId,
       category: updatedCategory,
     });
     return res.data;

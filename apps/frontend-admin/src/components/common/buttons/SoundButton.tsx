@@ -2,14 +2,16 @@ import CtaButton from './CtaButton';
 import { useRef } from 'react';
 
 function SoundButton() {
-  const audioRef = useRef(null);
+  const audioRef = useRef<HTMLAudioElement>(null);
 
   const playSound = () => {
-    if (audioRef.current) {
-      audioRef.current.play();
+    const audio = audioRef.current;
+    if (audio) {
+      audio.play();
+
     }
   };
-
+  
   return (
     <div>
       <CtaButton

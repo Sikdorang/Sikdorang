@@ -9,9 +9,13 @@ export default function MswProvider({
 }) {
   useEffect(() => {
     if (typeof window === 'undefined') return;
+
+    if (process.env.NEXT_PUBLIC_API_MOCKING !== 'enable') {
+      return;
+    }
+
     import('../mocks/browser').then(({ worker }) => {
       worker.start();
-      console.log('start msw');
     });
   }, []);
 

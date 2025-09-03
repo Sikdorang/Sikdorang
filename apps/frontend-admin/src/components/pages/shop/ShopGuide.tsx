@@ -9,7 +9,6 @@ import EditIcon from '@public/icons/ic_pencil.svg';
 import PhoneNumberIcon from '@public/icons/ic_phone.svg';
 import ToiletIcon from '@public/icons/ic_toilet.svg';
 import WifiIcon from '@public/icons/ic_wifi.svg';
-import Image from 'next/image';
 
 const iconMapping = {
   openHour: BusinessHoursIcon,
@@ -51,14 +50,14 @@ export default function ShopGuide({
             {label}
           </div>
           <TooltipModalPresenter className="items-center justify-center">
-            <Image src={InfoIcon} width={20} height={20} alt={''} />
+            <InfoIcon width={20} height={20} />
           </TooltipModalPresenter>
         </div>
         <button
           className={`rounded-xl px-2 py-2 bg-gray-100 transition-all hover:bg-gray-200`}
           onClick={onEditClick}
         >
-          <Image src={EditIcon} width={18} height={18} alt="gallery" />
+          <EditIcon width={18} height={18} />
         </button>
       </div>
 

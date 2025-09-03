@@ -1,19 +1,13 @@
 'use client';
 
-import { default as SaveButton } from '@/components/common/buttons/CtaButton';
-import {
-  EditModalHeader,
-  EditModalTextInput,
-  default as MenuEditModal,
-} from '@/components/common/modals/EditModal';
-import {
-  default as DeleteMenuModal,
-  WarningModalActions,
-  WarningModalBody,
-  WarningModalHeader,
-} from '@/components/common/modals/WarningModal';
-import { useEditModal } from '@/contexts/EditModalContext';
-import { useWarningModal } from '@/contexts/WarningModalContext';
+import SaveButton from '@/components/common/buttons/CtaButton';
+import ConfirmModal from '@/components/common/modals/ConfirmModal';
+import TextInputModal from '@/components/common/modals/TextInputModal';
+import DragOverlayItem from '@/components/pages/menuCategory/DragOverlayItem';
+import OrderTableRowSkeleton from '@/components/pages/menuCategory/OrderTableRowSkeleton';
+import SortableCategoryItem from '@/components/pages/menuCategory/SortableCategoryItem';
+import { useManageCategory } from '@/hooks/useManageCategory';
+import { useManageMenu } from '@/hooks/useManageMenu';
 import {
   closestCenter,
   DndContext,
@@ -29,413 +23,309 @@ import {
   arrayMove,
   SortableContext,
   sortableKeyboardCoordinates,
-  useSortable,
   verticalListSortingStrategy,
 } from '@dnd-kit/sortable';
-import { CSS } from '@dnd-kit/utilities';
-import ChevronDownIcon from '@public/icons/ic_chevron_down.svg';
-import ChevronRightIcon from '@public/icons/ic_chevron_right.svg';
-import DragIcon from '@public/icons/ic_dots.svg';
-import EditIcon from '@public/icons/ic_pencil.svg';
-import DeleteIcon from '@public/icons/ic_trashcan.svg';
-import Image from 'next/image';
-import { useState } from 'react';
+import { useEffect, useId, useState } from 'react';
 
 interface CategoryItem {
-  id: string;
+  id: number;
   name: string;
-  order: number;
-  parentId?: string | null;
-  children?: CategoryItem[];
+  parentId?: number;
   isExpanded?: boolean;
+  children: CategoryItem[];
 }
 
-interface SortableCategoryItemProps {
-  category: CategoryItem;
-  depth: number;
-  onEdit: (categoryId: string) => void;
-  onDelete: (categoryId: string) => void;
-  onToggle: (categoryId: string) => void;
-  isChild?: boolean;
-}
-
-// 개별 카테고리 아이템 컴포넌트
-function SortableCategoryItem({
-  category,
+function flattenAll(
+  items: CategoryItem[],
   depth = 0,
-  onEdit,
-  onDelete,
-  onToggle,
-  isChild = false,
-}: SortableCategoryItemProps) {
-  const {
-    attributes,
-    listeners,
-    setNodeRef,
-    transform,
-    transition,
-    isDragging,
-  } = useSortable({
-    id: category.id,
+): (CategoryItem & { depth: number })[] {
+  return items.flatMap((item) => [
+    { ...item, depth },
+    ...flattenAll(item.children, depth + 1),
+  ]);
+}
+
+function flattenRender(
+  items: CategoryItem[],
+  depth = 0,
+): (CategoryItem & { depth: number })[] {
+  return items.flatMap((item) => {
+    const row = { ...item, depth };
+    if (item.isExpanded) {
+      return [row, ...flattenRender(item.children, depth + 1)];
+    }
+    return [row];
   });
-
-  const style = {
-    transform: CSS.Transform.toString(transform),
-    transition,
-    opacity: isDragging ? 0.5 : 1,
-  };
-
-  const hasChildren = category.children && category.children.length > 0;
-  const paddingLeft = depth * 20 + (isChild ? 20 : 0);
-
-  return (
-    <div
-      ref={setNodeRef}
-      style={style}
-      className={`flex items-center gap-3 border-b border-gray-200 bg-white p-4 transition-all duration-200 ${isDragging ? 'z-50 shadow-lg' : 'hover:border-gray-300 hover:shadow-md'} ${isChild ? 'ml-6 bg-gray-50' : ''} `}
-      style={{ ...style, paddingLeft: `${paddingLeft}px` }}
-    >
-      <div
-        {...attributes}
-        {...listeners}
-        className="flex cursor-grab touch-none flex-col gap-1 px-4 text-gray-400 active:cursor-grabbing"
-        aria-label="드래그 핸들"
-      >
-        <Image src={DragIcon} alt="drag" />
-      </div>
-
-      {hasChildren && (
-        <button
-          onClick={() => onToggle(category.id)}
-          className="flex h-6 w-6 items-center justify-center rounded text-gray-500 transition-colors hover:bg-gray-100 hover:text-gray-700"
-          aria-label={category.isExpanded ? '접기' : '펼치기'}
-        >
-          {category.isExpanded ? (
-            <Image src={ChevronDownIcon} alt="chevron-down" />
-          ) : (
-            <Image src={ChevronRightIcon} alt="chevron-right" />
-          )}
-        </button>
-      )}
-
-      {/* 카테고리 이름 */}
-      <div className="flex-1">
-        <span
-          className={`text-mobile-body-l-semibold ${isChild ? 'text-gray-700' : 'text-gray-900'}`}
-        >
-          {category.name}
-        </span>
-        {hasChildren && (
-          <span className="ml-2 text-sm text-gray-500">
-            {category.children?.length}
-          </span>
-        )}
-      </div>
-
-      <div className="flex items-center gap-2">
-        <button
-          onClick={() => onEdit(category.id)}
-          className="rounded-lg p-2 text-gray-500 transition-colors hover:bg-blue-50 hover:text-blue-600"
-          title="편집"
-        >
-          <Image src={EditIcon} alt="edit" />
-        </button>
-
-        <button
-          onClick={() => onDelete(category.id)}
-          className="rounded-lg p-2 text-gray-500 transition-colors hover:bg-red-50 hover:text-red-600"
-          title="삭제"
-        >
-          <Image src={DeleteIcon} alt="delete" />
-        </button>
-      </div>
-    </div>
-  );
 }
 
-// 드래그 오버레이 컴포넌트
-function DragOverlayItem({ category }: { category: CategoryItem }) {
-  return (
-    <div className="flex items-center gap-3 rounded-lg border border-gray-200 bg-white p-4 shadow-lg">
-      <div className="h-6 w-6" />
-
-      <div className="flex flex-col gap-1 text-gray-400">
-        <Image src={DragIcon} alt="drag" />
-      </div>
-
-      <div className="flex-1">
-        <span className="font-medium text-gray-900">{category.name}</span>
-      </div>
-
-      <div className="flex items-center gap-2 opacity-50">
-        <button className="rounded-lg p-2 text-gray-500" disabled>
-          <Image src={EditIcon} alt="edit" />
-        </button>
-        <button className="rounded-lg p-2 text-gray-500" disabled>
-          <Image src={DeleteIcon} alt="delete" />
-        </button>
-      </div>
-    </div>
-  );
+function rebuildHierarchy(
+  flat: (CategoryItem & { depth: number })[],
+): CategoryItem[] {
+  const map = new Map<string, CategoryItem & { depth: number }>();
+  flat.forEach((item) => {
+    map.set(itemKey(item), { ...item, children: [] });
+  });
+  const roots: CategoryItem[] = [];
+  flat.forEach((item) => {
+    const key = itemKey(item);
+    const node = map.get(key)!;
+    if (item.parentId != null) {
+      map.get(`cat-${item.parentId}`)!.children.push(node);
+    } else {
+      roots.push(node);
+    }
+  });
+  return roots;
 }
 
-function flattenCategories(categories: CategoryItem[]): CategoryItem[] {
-  const result: CategoryItem[] = [];
-
-  function traverse(items: CategoryItem[], depth: number = 0) {
-    items.forEach((item) => {
-      result.push({ ...item, depth });
-      if (item.isExpanded && item.children && item.children.length > 0) {
-        traverse(item.children, depth + 1);
-      }
-    });
-  }
-
-  traverse(categories);
-  return result;
-}
+const itemKey = (item: CategoryItem) =>
+  item.parentId != null
+    ? `cat-${item.parentId}-item-${item.id}`
+    : `cat-${item.id}`;
 
 export default function MenuCategoryPage() {
-  const [categories, setCategories] = useState<CategoryItem[]>([
-    {
-      id: '1',
-      name: '시그니처 안주',
-      order: 1,
-      isExpanded: false,
-      children: [
-        { id: '2', name: '참소라 무침', order: 2, parentId: '1' },
-        { id: '3', name: '감자전', order: 3, parentId: '1' },
-        { id: '4', name: '감자전', order: 4, parentId: '1' },
-        { id: '5', name: '감자전', order: 5, parentId: '1' },
-        { id: '6', name: '감자전', order: 6, parentId: '1' },
-      ],
-    },
-    {
-      id: '7',
-      name: '상현 메이드 안주',
-      order: 7,
-      isExpanded: false,
-      children: [
-        { id: '2', name: '참소라 무침', order: 2, parentId: '1' },
-        { id: '3', name: '감자전', order: 3, parentId: '1' },
-      ],
-    },
-  ]);
+  const dndId = useId();
+  const { menus, fetchMenus, removeMenu, isMenusLoading, updateMenus } =
+    useManageMenu();
+  const { removeCategory, updateCategory } = useManageCategory();
 
-  const { openModal: openCategoryEditModal } = useEditModal();
-  const { openModal: openMenuEditModal } = useEditModal();
-  const { openModal: openDeleteCategoryModal } = useWarningModal();
-  const { openModal: openDeleteMenuModal } = useWarningModal();
+  const [textModal, setTextModal] = useState<{
+    open: boolean;
+    id: number;
+    name: string;
+    subtitle: string;
+    placeholder: string;
+    isCat: boolean;
+  }>({
+    open: false,
+    id: 0,
+    name: '',
+    subtitle: '',
+    placeholder: '',
+    isCat: false,
+  });
+  const [inputValue, setInputValue] = useState('');
+
+  const [categories, setCategories] = useState<CategoryItem[]>([]);
   const [activeId, setActiveId] = useState<string | null>(null);
+  const [confirm, setConfirm] = useState<{
+    open: boolean;
+    id: number;
+    name: string;
+    isCat: boolean;
+  }>({
+    open: false,
+    id: 0,
+    name: '',
+    isCat: false,
+  });
 
-  // 센서 설정
+  useEffect(() => {
+    fetchMenus();
+  }, [fetchMenus]);
+  useEffect(() => {
+    if (!menus) return;
+    const mapped: CategoryItem[] = menus.map((cat, idx) => ({
+      id: cat.id,
+      name: cat.category,
+      order: idx + 1,
+      isExpanded: false,
+      children: (cat.items ?? []).map((item, i) => ({
+        id: item.id,
+        name: item.name,
+        order: i + 1,
+        parentId: cat.id,
+        children: [],
+      })),
+    }));
+    setCategories(mapped);
+  }, [menus]);
+
   const sensors = useSensors(
-    useSensor(PointerSensor, {
-      activationConstraint: {
-        distance: 8,
-      },
-    }),
+    useSensor(PointerSensor, { activationConstraint: { distance: 8 } }),
     useSensor(KeyboardSensor, {
       coordinateGetter: sortableKeyboardCoordinates,
     }),
   );
 
-  // 카테고리 펼치기/접기 토글
-  const toggleCategory = (categoryId: string) => {
-    setCategories((prevCategories) => {
-      return prevCategories.map((category) => {
-        if (category.id === categoryId) {
-          return {
-            ...category,
-            isExpanded: !category.isExpanded,
-          };
-        }
-        return category;
-      });
-    });
-  };
-
-  // 드래그 시작 핸들러
-  const handleDragStart = (event: DragStartEvent) => {
-    setActiveId(event.active.id as string);
-  };
-
-  // 드래그 종료 핸들러
-  const handleDragEnd = (event: DragEndEvent) => {
-    const { active, over } = event;
-
-    if (over && active.id !== over.id) {
-      const flatItems = flattenCategories(categories);
-      const oldIndex = flatItems.findIndex((item) => item.id === active.id);
-      const newIndex = flatItems.findIndex((item) => item.id === over.id);
-
-      if (oldIndex !== -1 && newIndex !== -1) {
-        const newFlatItems = arrayMove(flatItems, oldIndex, newIndex);
-
-        // 플랫 리스트를 다시 계층 구조로 변환
-        const newCategories = rebuildHierarchy(newFlatItems);
-        setCategories(newCategories);
-      }
+  const handleDragStart = (e: DragStartEvent) =>
+    setActiveId(e.active.id as string);
+  const handleDragEnd = (e: DragEndEvent) => {
+    if (!e.over || e.active.id === e.over.id) {
+      setActiveId(null);
+      return;
     }
-
+    const flat = flattenAll(categories);
+    const oldIdx = flat.findIndex((i) => itemKey(i) === e.active.id);
+    const newIdx = flat.findIndex((i) => itemKey(i) === e.over.id);
+    if (oldIdx < 0 || newIdx < 0 || e.over == null) {
+      setActiveId(null);
+      return;
+    }
+    const moved = arrayMove(flat, oldIdx, newIdx);
+    setCategories(rebuildHierarchy(moved));
     setActiveId(null);
   };
 
-  // 플랫 리스트를 계층 구조로 재구성하는 함수
-  const rebuildHierarchy = (flatItems: CategoryItem[]): CategoryItem[] => {
-    const topLevel: CategoryItem[] = [];
-    const itemMap = new Map<string, CategoryItem>();
+  const toggle = (id: number) =>
+    setCategories((prev) =>
+      prev.map((c) => (c.id === id ? { ...c, isExpanded: !c.isExpanded } : c)),
+    );
 
-    // 모든 아이템을 맵에 저장하고 children 배열 초기화
-    flatItems.forEach((item) => {
-      itemMap.set(item.id, { ...item, children: [] });
+  const requestDelete = (id: number) => {
+    const flat = flattenAll(categories);
+    const item = flat.find((i) => i.id === id)!;
+    setConfirm({
+      open: true,
+      id,
+      name: item.name,
+      isCat: item.parentId == null,
     });
+  };
 
-    // 계층 구조 재구성
-    flatItems.forEach((item) => {
-      const categoryItem = itemMap.get(item.id)!;
-      if (item.parentId) {
-        const parent = itemMap.get(item.parentId);
-        if (parent) {
-          parent.children!.push(categoryItem);
-        }
-      } else {
-        topLevel.push(categoryItem);
-      }
+  const confirmDelete = async () => {
+    if (confirm.isCat) {
+      await removeCategory(confirm.id);
+      setCategories((prev) => prev.filter((c) => c.id !== confirm.id));
+    } else {
+      await removeMenu(confirm.id);
+      setCategories((prev) =>
+        prev.map((c) => ({
+          ...c,
+          children: c.children.filter((ch) => ch.id !== confirm.id),
+        })),
+      );
+    }
+    setConfirm({ open: false, id: 0, name: '', isCat: false });
+  };
+
+  const flatRender = flattenRender(categories);
+
+  const overlayCategory = activeId
+    ? flatRender.find((f) => itemKey(f) === activeId)
+    : undefined;
+
+  const openTextModal = (id: number, name: string, isCat: boolean) => {
+    setTextModal({
+      open: true,
+      id,
+      name,
+      subtitle: isCat ? '카테고리명' : '메뉴명',
+      placeholder: isCat
+        ? '카테고리명을 입력해주세요.'
+        : '메뉴명을 입력해주세요.',
+      isCat,
     });
-
-    return topLevel;
   };
 
-  // 편집 버튼 클릭
-  const handleEdit = (categoryId: string) => {
-    openCategoryEditModal(categoryId);
+  const handleConfirmText = async (text: string) => {
+    if (!text.trim()) return;
+    if (textModal.isCat) {
+      await updateCategory(textModal.id, text);
+      console.log('updateCategory', textModal.id, text);
+      setCategories((prev) =>
+        prev.map((c) => (c.id === textModal.id ? { ...c, name: text } : c)),
+      );
+    } else {
+      await updateMenus([{ menuId: textModal.id, menu: text }]);
+      setCategories((prev) =>
+        prev.map((c) => ({
+          ...c,
+          children: c.children.map((ch) =>
+            ch.id === textModal.id ? { ...ch, name: text } : ch,
+          ),
+        })),
+      );
+    }
+    setTextModal({
+      open: false,
+      id: 0,
+      name: '',
+      subtitle: '',
+      placeholder: '',
+      isCat: false,
+    });
   };
-
-  // 삭제 버튼 클릭
-  const handleDelete = (categoryId: string) => {
-    openDeleteMenuModal(categoryId);
-    // setCategories((prevCategories) => {
-    //   return prevCategories.filter((category) => {
-    //     if (category.id === categoryId) return false;
-    //     if (category.children) {
-    //       category.children = category.children.filter(
-    //         (child) => child.id !== categoryId,
-    //       );
-    //     }
-    //     return true;
-    //   });
-    // });
-  };
-
-  // 저장 버튼 클릭
-  const handleSave = () => {
-    console.log('Save order:', categories);
-    // 저장 로직 구현
-  };
-
-  // 취소 버튼 클릭
-  const handleCancel = () => {
-    console.log('Cancel');
-    // 취소 로직 구현
-  };
-
-  // 현재 드래그 중인 아이템 찾기
-  const activeCategory = activeId
-    ? flattenCategories(categories).find((category) => category.id === activeId)
-    : null;
-
-  // 렌더링할 플랫 리스트 생성
-  const flatCategoriesForRender = flattenCategories(categories);
 
   return (
-    <div className="flex flex-col items-center justify-center">
-      <div className="wrapper flex w-full items-center justify-center py-4">
-        <div className="grow-1 text-mobile-head-l-semibold flex">
-          순서·카테고리 편집
-        </div>
-        <SaveButton
-          text="변경사항 저장하기"
-          color="gray"
-          width="fit"
-          size="medium"
-        />
+    <div className="p-4 space-y-4">
+      <div className="flex items-center px-8">
+        <div className="flex-1 text-mb-1 text-gray-900">순서·카테고리 편집</div>
+        <SaveButton text="변경사항 저장하기" width="fit" color="gray" />
       </div>
 
-      <div className="w-full border-b border-gray-100" />
+      <div className="w-full border-b border-gray-200" />
 
-      <DndContext
-        sensors={sensors}
-        collisionDetection={closestCenter}
-        onDragStart={handleDragStart}
-        onDragEnd={handleDragEnd}
-      >
-        <div className="wrapper w-full p-4">
+      {isMenusLoading ? (
+        <div className="space-y-2">
+          {[...Array(3)].map((_, i) => (
+            <OrderTableRowSkeleton key={i} idx={i} />
+          ))}
+        </div>
+      ) : (
+        <DndContext
+          id={dndId}
+          sensors={sensors}
+          collisionDetection={closestCenter}
+          onDragStart={handleDragStart}
+          onDragEnd={handleDragEnd}
+        >
           <SortableContext
-            items={flatCategoriesForRender.map((category) => category.id)}
+            items={flatRender.map(itemKey)}
             strategy={verticalListSortingStrategy}
           >
-            <div className="space-y-2">
-              {flatCategoriesForRender.map((category) => (
+            <div className="space-y-2 px-16">
+              {flatRender.map((cat) => (
                 <SortableCategoryItem
-                  key={category.id}
-                  category={category}
-                  depth={(category as any).depth || 0}
-                  isChild={!!category.parentId}
-                  onEdit={handleEdit}
-                  onDelete={handleDelete}
-                  onToggle={toggleCategory}
+                  key={itemKey(cat)}
+                  category={cat}
+                  depth={cat.depth!}
+                  isChild={cat.parentId != null}
+                  onToggle={() => toggle(cat.id)}
+                  onDelete={() => requestDelete(cat.id)}
+                  onEdit={() =>
+                    openTextModal(cat.id, cat.name, cat.parentId == null)
+                  }
                 />
               ))}
             </div>
           </SortableContext>
-        </div>
+          <DragOverlay>
+            {overlayCategory && <DragOverlayItem category={overlayCategory} />}
+          </DragOverlay>
+        </DndContext>
+      )}
 
-        {/* 드래그 오버레이 */}
-        <DragOverlay>
-          {activeCategory && <DragOverlayItem category={activeCategory} />}
-        </DragOverlay>
-      </DndContext>
+      <ConfirmModal
+        isOpen={confirm.open}
+        title={`${confirm.isCat ? '카테고리' : '메뉴'} 삭제`}
+        message={`"${confirm.name}"을(를) 정말 삭제할까요?${confirm.isCat ? ' 카테고리 안의 메뉴들도 모두 삭제됩니다.' : ''}`}
+        confirmText="삭제"
+        cancelText="취소"
+        onConfirm={confirmDelete}
+        onCancel={() =>
+          setConfirm({ open: false, id: 0, name: '', isCat: false })
+        }
+      />
 
-      {/* <CategoryEditModal>
-        <EditModalHeader onSave={handleSave}>
-          카테고리명 수정하기
-        </EditModalHeader>
-        <EditModalTextInput
-          label="카테고리명"
-          placeholder="카테고리명을 입력해주세요."
-        />
-      </CategoryEditModal> */}
-
-      {/* 
-      <DeleteCategoryModal>
-        <WarningModalHeader>카테고리 삭제</WarningModalHeader>
-        <WarningModalBody>
-          카테고리를 정말 삭제할까요?
-          <br />
-          카테고리와 안에 있는 메뉴들이 모두 사라져요.
-          <br />
-          한 번 삭제하면 복구할 수 없어요 !
-        </WarningModalBody>
-        <WarningModalActions onConfirm={() => {}} />
-      </DeleteCategoryModal> */}
-
-      <MenuEditModal>
-        <EditModalHeader onSave={handleSave}>메뉴명 수정하기</EditModalHeader>
-        <EditModalTextInput
-          label="메뉴명"
-          placeholder="메뉴명을 입력해주세요."
-        />
-      </MenuEditModal>
-
-      <DeleteMenuModal>
-        <WarningModalHeader>메뉴 삭제</WarningModalHeader>
-        <WarningModalBody>
-          메뉴를 정말 삭제할까요 ?
-          <br />한 번 삭제하면 복구할 수 없어요 !
-        </WarningModalBody>
-        <WarningModalActions onConfirm={() => {}} />
-      </DeleteMenuModal>
+      <TextInputModal
+        isOpen={textModal.open}
+        title={textModal.isCat ? '카테고리명 수정하기' : '메뉴명 수정하기'}
+        subtitle={textModal.isCat ? textModal.subtitle : textModal.subtitle}
+        placeholder={textModal.placeholder}
+        initialValue={textModal.name}
+        onConfirm={handleConfirmText}
+        onCancel={() =>
+          setTextModal({
+            open: false,
+            id: 0,
+            name: '',
+            subtitle: '',
+            placeholder: '',
+            isCat: false,
+          })
+        }
+      />
     </div>
   );
 }

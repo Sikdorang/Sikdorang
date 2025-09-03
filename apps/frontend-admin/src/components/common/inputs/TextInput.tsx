@@ -1,7 +1,6 @@
 import MenuCustomLabel from '../../pages/menuEdit/MenuCustomLabel';
 import Spinner from '../loading/Spinner';
 import CancelIcon from '@public/icons/ic_cancel.svg';
-import Image from 'next/image';
 import React from 'react';
 
 interface TextInputProps extends React.InputHTMLAttributes<HTMLInputElement> {
@@ -72,7 +71,7 @@ export default function TextInput({
                 className="absolute right-4 top-1/2 -translate-y-1/2 rounded-full p-1 transition hover:bg-gray-100"
                 aria-label="입력값 삭제"
               >
-                <Image src={CancelIcon} alt="검색" width={24} height={24} />
+                <CancelIcon width={24} height={24} />
               </button>
             )}
           </>

@@ -1,69 +1,102 @@
-import { UpdateMenuDetailsDto } from '../../../types/request/menu';
+import TextInput from '../inputs/TextInput';
 import Spinner from '../loading/Spinner';
+import { TooltipModalPresenter } from './TooltipModalPresenter';
 import CtaButton from '@/components/common/buttons/CtaButton';
 import ToggleSwitch from '@/components/common/buttons/ToggleSwitch';
 import ImageInput from '@/components/common/inputs/ImageInput';
 import OptionInput from '@/components/common/inputs/OptionInput';
-import TextInput from '@/components/common/inputs/TextInput';
+import { ERROR_MESSAGES } from '@/constants/messages';
+import { useManageCategory } from '@/hooks/useManageCategory';
 import { useManageMenu } from '@/hooks/useManageMenu';
 import { IMenuDetailItem, IMenuImageItem } from '@/types/model/menu';
+import AddIcon from '@public/icons/ic_plus.svg';
 import CloseIcon from '@public/icons/ic_x.svg';
-import { isEqual } from 'lodash';
-import { ChangeEvent, useEffect, useMemo, useState } from 'react';
+import { LexoRank } from 'lexorank';
+import Image from 'next/image';
+import { ChangeEvent, useEffect, useState } from 'react';
 
-export interface EditMenuModalProps {
-  menuId: number;
+export interface CreateMenuModalProps {
   isOpen: boolean;
   onClose: () => void;
 }
 
-export default function EditMenuModal({
-  menuId,
+export default function CreateMenuModal({
   isOpen,
   onClose,
-}: EditMenuModalProps) {
-  const {
-    getMenuDetails,
-    updateMenuDetails,
-    updateMenuOptions,
-    isDetailLoading,
-  } = useManageMenu();
+}: CreateMenuModalProps) {
+  const { categories, isCategoriesLoading, createCategory, fetchCategories } =
+    useManageCategory();
+  const { menus, createMenus } = useManageMenu();
 
-  const [detail, setDetail] = useState<IMenuDetailItem | null>(null);
-  const [original, setOriginal] = useState<IMenuDetailItem | null>(null);
+  const [selectedCategoryId, setSelectedCategoryId] = useState<number | null>(
+    null,
+  );
+  const [detail, setDetail] = useState<IMenuDetailItem | null>({
+    id: 0,
+    name: '',
+    description: '',
+    price: 0,
+    isNew: false,
+    isPopular: false,
+    images: [],
+    status: 'SALE',
+    optionGroups: [],
+  });
+  const [categoryError, setCategoryError] = useState<string>('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const isFormValid = detail?.name.trim() && selectedCategoryId !== null;
+  const handleCreateMenu = async () => {
+    if (!detail || !selectedCategoryId || !isFormValid) return;
+
+    setIsSubmitting(true);
+    try {
+      let newOrder: string;
+      if (menus.length === 0) {
+        newOrder = LexoRank.middle().toString();
+      } else {
+        const lastOrder = menus[menus.length - 1].order;
+        newOrder = LexoRank.parse(lastOrder).genNext().toString();
+      }
+
+      const requestData = [
+        {
+          menu: detail.name,
+          price: detail.price,
+          categoryId: selectedCategoryId,
+          status: detail.status,
+          order: newOrder,
+        },
+      ];
+
+      await createMenus(requestData);
+      onClose();
+
+      setDetail({
+        id: 0,
+        name: '',
+        description: '',
+        price: 0,
+        isNew: false,
+        isPopular: false,
+        images: [],
+        status: 'SALE',
+        optionGroups: [],
+      });
+      setSelectedCategoryId(null);
+    } catch (error) {
+      console.error('메뉴 생성 실패:', error);
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
 
   useEffect(() => {
-    if (!isOpen) return;
-    (async () => {
-      const data = await getMenuDetails(menuId);
-      if (data) {
-        setDetail(data);
-        setOriginal(data);
-      }
-    })();
-  }, [isOpen, menuId]);
-
-  const hasChanges = useMemo(() => {
-    if (!original || !detail) return false;
-    const o = {
-      new: original.isNew,
-      popular: original.isPopular,
-      description: original.description,
-      status: original.status as 'SALE' | 'HIDDEN' | 'SOLDOUT',
-      optionGroups: original.optionGroups,
-    };
-    const d = {
-      new: detail.isNew,
-      popular: detail.isPopular,
-      description: detail.description,
-      status: detail.status as 'SALE' | 'HIDDEN' | 'SOLDOUT',
-      optionGroups: detail.optionGroups,
-    };
-    return !isEqual(o, d);
-  }, [detail, original]);
+    fetchCategories();
+  }, []);
 
   if (!isOpen) return null;
-  if (isDetailLoading || !detail) {
+  if (!detail) {
     return (
       <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30">
         <div className="bg-white p-8 rounded-xl">
@@ -77,6 +110,39 @@ export default function EditMenuModal({
     (field: keyof IMenuDetailItem) => (e: ChangeEvent<HTMLInputElement>) => {
       setDetail((d) => d && { ...d, [field]: e.target.value });
     };
+
+  const handleSelectCategory = (categoryId: number) => {
+    setSelectedCategoryId(categoryId);
+    setDetail((d) => d && { ...d, categoryId });
+  };
+
+  const handleCreateCategory = async (inputText: string) => {
+    if (categories.length >= 999) {
+      setCategoryError(ERROR_MESSAGES.maximumCategoryError);
+      return;
+    }
+    if (inputText === '') {
+      setCategoryError(ERROR_MESSAGES.emptyCategoryError);
+      return;
+    }
+    if (categories.some((cat) => cat.category === inputText)) {
+      setCategoryError(ERROR_MESSAGES.duplicatedCategoryError);
+      return;
+    }
+
+    let newOrder: string;
+    if (categories.length === 0) {
+      newOrder = LexoRank.middle().toString();
+    } else {
+      const lastOrder = categories[categories.length - 1].order;
+      newOrder = LexoRank.parse(lastOrder).genNext().toString();
+    }
+
+    await createCategory(inputText, newOrder);
+
+    fetchCategories();
+    setCategoryError('');
+  };
 
   const handleChangeImages = (images: IMenuImageItem[]) => {
     setDetail((d) => d && { ...d, images });
@@ -92,38 +158,6 @@ export default function EditMenuModal({
     setDetail((d) => d && { ...d, [field]: value });
   };
 
-  const handleSave = async () => {
-    if (!detail) return;
-
-    const detailPayload: UpdateMenuDetailsDto = {
-      new: detail.isNew,
-      popular: detail.isPopular,
-      description: detail.description,
-      status: detail.status as 'SALE' | 'HIDDEN' | 'SOLDOUT',
-    };
-
-    const optionsPayload = {
-      menuId,
-      options: detail.optionGroups.map((group) => ({
-        menuId,
-        option: group.title,
-        minOption: group.minSelectable,
-        maxOption: group.maxSelectable,
-        optionRequired: group.required,
-        optionDetails: group.items.map((item) => ({
-          menuOptionId: item.optionId,
-          optionDetailId: item.optionDetailId,
-          optionDetail: item.name,
-          price: item.price,
-        })),
-      })),
-    };
-
-    await updateMenuDetails(menuId, detailPayload);
-    await updateMenuOptions(optionsPayload);
-    onClose();
-  };
-
   return (
     <div
       className="fixed inset-0 z-50 flex items-center justify-center bg-black/30"
@@ -137,29 +171,93 @@ export default function EditMenuModal({
           <div className="mb-4 flex items-center justify-between">
             <div />
             <button onClick={onClose}>
-              <CloseIcon width={12} height={12} />
+              <Image src={CloseIcon} alt="close" width={12} height={12} />
             </button>
           </div>
           <div className="mb-6 flex items-center justify-between text-2xl font-bold">
-            <span>세부사항 편집하기</span>
+            <span>메뉴 추가</span>
             <CtaButton
-              text="변경사항 저장하기"
-              color={hasChanges ? 'yellow' : 'gray'}
+              text="추가하기"
+              color={isFormValid ? 'yellow' : 'gray'}
               width="fit"
               size="medium"
               radius="lg"
-              onClick={() => detail && handleSave()}
-              disabled={!hasChanges}
+              disabled={!isFormValid}
+              onClick={handleCreateMenu}
             />
           </div>
         </div>
 
         <div className="mb-4">
           <TextInput
+            label="메뉴명"
+            placeholder="메뉴명을 입력해주세요."
+            labelClassName="text-mb-1"
+            value={detail.name}
+            onChange={handleChangeText('name')}
+            maxLength={20}
+          />
+        </div>
+
+        <div className="mb-4">
+          <TextInput
+            label="가격"
+            placeholder="가격을 입력해주세요."
+            labelClassName="text-mb-1"
+            value={detail.price}
+            onChange={handleChangeText('price')}
+            limitHide
+          />
+        </div>
+
+        <div className="mb-4">
+          <div className="mb-4 text-mb-1 text-gray-900">카테고리</div>
+          <div className="flex gap-2">
+            <div className="flex gap-2 flex-1">
+              {isCategoriesLoading ? (
+                <Spinner />
+              ) : (
+                categories.map((cat) => (
+                  <CtaButton
+                    key={cat.id}
+                    text={cat.category}
+                    color={selectedCategoryId === cat.id ? 'black' : 'white'}
+                    size="small"
+                    width="fit"
+                    onClick={() => handleSelectCategory(cat.id)}
+                  />
+                ))
+              )}
+            </div>
+            <TooltipModalPresenter
+              isTextInput={true}
+              onButtonClick={(inputText) => {
+                handleCreateCategory(inputText);
+              }}
+            >
+              <CtaButton
+                text="카테고리 추가"
+                color="gray"
+                size="small"
+                width="fit"
+                right={
+                  <span className="text-mobile-body-s-semibold text-gray-200">
+                    <Image src={AddIcon} alt="plus" />
+                  </span>
+                }
+                onClick={() => {}}
+              />
+            </TooltipModalPresenter>
+          </div>
+        </div>
+
+        <div className="mb-4">
+          <TextInput
             label="메뉴 설명"
-            placeholder="메뉴설명을 입력해주세요."
-            value={detail.description}
-            onChange={handleChangeText('description')}
+            placeholder="메뉴 설명을 입력해주세요."
+            labelClassName="text-mb-1"
+            value={detail.price}
+            onChange={handleChangeText('price')}
             maxLength={200}
           />
         </div>

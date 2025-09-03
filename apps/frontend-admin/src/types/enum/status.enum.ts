@@ -1,7 +1,7 @@
 export enum MenuStatus {
-  SALE = 'SALE',
-  HIDDEN = 'HIDDEN',
-  SOLDOUT = 'SOLDOUT',
+  SALE = 1,
+  HIDDEN = 2,
+  SOLDOUT = 3,
 }
 
 export const MenuStatusLabel: Record<MenuStatus, string> = {

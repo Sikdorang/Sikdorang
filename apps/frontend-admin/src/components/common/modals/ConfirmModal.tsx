@@ -1,7 +1,6 @@
 'use client';
 
 import CloseIcon from '@public/icons/ic_x.svg';
-import Image from 'next/image';
 import { ReactNode } from 'react';
 
 interface ConfirmModalProps {
@@ -37,7 +36,7 @@ export default function ConfirmModal({
         <div className="flex items-center justify-center mb-4">
           <div className="text-center text-dh-1 flex-1">{title}</div>
           <button onClick={onCancel}>
-            <Image src={CloseIcon} alt="close" width={16} height={16} />
+            <CloseIcon />
           </button>
         </div>
 

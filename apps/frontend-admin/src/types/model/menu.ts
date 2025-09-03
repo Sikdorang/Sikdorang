@@ -13,12 +13,17 @@ export interface IMenuCategory {
   category: string;
   items: IMenuItem[];
 }
+export interface IMenuCategory {
+  id: number;
+  category: string;
+  items: IMenuItem[];
+}
 
 export interface IMenuTableItem {
   id: number;
   name: string;
   price: number;
-  category: string;
+  categoryId: number;
   checked: boolean;
   status: string;
 }
@@ -41,7 +46,8 @@ export interface IMenuImageItem {
 }
 
 export interface IMenuOptionItem {
-  optionId: string;
+  optionId: number;
+  optionDetailId: number;
   name: string;
   price: number;
 }
@@ -55,8 +61,8 @@ export interface IMenuOptionGroup {
   items: IMenuOptionItem[];
 }
 
-export interface IMenuDetailResponse {
-  id: string;
+export interface IMenuDetailItem {
+  id: number;
   name: string;
   description: string;
   price: number;
@@ -70,4 +76,12 @@ export interface IMenuDetailResponse {
 export interface IToggleSwitch {
   label: string;
   value?: boolean;
+}
+
+export interface ICreateMenuRequest {
+  menu: string;
+  price?: number;
+  categoryId: number;
+  status: string;
+  order: string;
 }

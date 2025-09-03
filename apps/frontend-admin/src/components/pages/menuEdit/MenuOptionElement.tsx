@@ -1,7 +1,6 @@
 import TextInput from '@/components/common/inputs/TextInput';
 import GrapIcon from '@public/icons/ic_dots.svg';
 import DeleteIcon from '@public/icons/ic_trashcan.svg';
-import Image from 'next/image';
 import { HTMLAttributes, PropsWithChildren } from 'react';
 
 interface MenuOptionElementProps
@@ -33,7 +32,7 @@ export default function MenuOptionElement({
 
   return (
     <div className="flex w-full items-center justify-center gap-2" {...props}>
-      <Image src={GrapIcon} alt="option" width={24} height={24} />
+      <GrapIcon width={24} height={24} />
 
       <TextInput
         label=""
@@ -55,7 +54,7 @@ export default function MenuOptionElement({
         className="bg-red-200 hover:bg-red-200/80 flex aspect-square h-12 w-12 items-center justify-center rounded-2xl transition"
         onClick={onDelete}
       >
-        <Image src={DeleteIcon} alt="옵션 삭제" width={24} height={24} />
+        <DeleteIcon width={24} height={24} />
       </button>
     </div>
   );

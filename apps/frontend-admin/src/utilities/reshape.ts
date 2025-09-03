@@ -3,19 +3,29 @@ import { IMenuCategory, IMenuTableItem } from '@/types/model/menu';
 export const convertToMenuTableItems = (
   data: IMenuCategory[],
 ): IMenuTableItem[] => {
+  if (!data || !Array.isArray(data)) {
+    return [];
+  }
+
   const menuTableItems: IMenuTableItem[] = [];
 
   data.forEach((categoryData) => {
-    const categoryName = categoryData.category;
+    if (!categoryData?.items || !Array.isArray(categoryData.items)) {
+      return;
+    }
+    const categoryId = Number(categoryData.id);
     categoryData.items.forEach((item) => {
-      menuTableItems.push({
-        id: item.id,
-        name: item.name,
-        price: item.price,
-        category: categoryName,
-        checked: false,
-        status: item.status,
-      });
+      if (item) {
+        menuTableItems.push({
+          id: Number(item.id),
+          name: item.name,
+          price: item.price,
+
+          categoryId,
+          checked: false,
+          status: item.status ?? 'SALE',
+        });
+      }
     });
   });
 

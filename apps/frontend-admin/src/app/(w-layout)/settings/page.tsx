@@ -44,8 +44,6 @@ export default function SettingsPage() {
   };
 
   const handleSave = () => {
-    // 저장 로직 호출 (API 요청 등)
-    // 저장 완료 후 initialSettings 업데이트
     initialSettings.current = { ...settings };
     setShouldShowSaveButton(false);
   };
@@ -135,7 +133,7 @@ export default function SettingsPage() {
       <ConfirmModal
         isOpen={showLogoutModal}
         title="로그아웃 하시겠습니까?"
-        onConfirm={() => {}}
+        onConfirm={() => router.push('/')}
         onCancel={() => setShowLogoutModal(false)}
       />
 
@@ -147,7 +145,7 @@ export default function SettingsPage() {
             탈퇴하시면 등록하신 가게 정보 및 관련 데이터를 복구할 수 없습니다.
           </div>
         }
-        onConfirm={() => {}}
+        onConfirm={() => router.push('/')}
         onCancel={() => setShowWithdrawModal(false)}
       />
 

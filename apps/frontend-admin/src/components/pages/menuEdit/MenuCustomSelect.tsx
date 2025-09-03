@@ -1,21 +1,23 @@
+import MenuCustomLabel from './MenuCustomLabel';
+import CheckedIcon from '@public/icons/ic_checked_circle.svg';
 import { useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 
-import MenuCustomLabel from './MenuCustomLabel';
-
-import CheckedIcon from '@public/icons/ic_checked_circle.svg';
-import Image from 'next/image';
+interface Option {
+  id: number;
+  label: string;
+}
 
 interface MenuCustomSelectProps {
-  options: string[];
-  selectedOption: string;
+  options: Option[];
+  selectedId: number;
   isStatus?: boolean;
-  onChange: (value: string) => void;
+  onChange: (id: number) => void;
 }
 
 export default function MenuCustomSelect({
   options,
-  selectedOption,
+  selectedId,
   isStatus = false,
   onChange,
 }: MenuCustomSelectProps) {
@@ -30,9 +32,11 @@ export default function MenuCustomSelect({
         setIsOpen(false);
       }
     };
-    document.addEventListener('mousedown', handleClickOutside);
+    //document.addEventListener('mousedown', handleClickOutside);
+    document.addEventListener('click', handleClickOutside);
     return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
+      //document.removeEventListener('mousedown', handleClickOutside);
+      document.removeEventListener('click', handleClickOutside);
     };
   }, []);
 
@@ -56,52 +60,55 @@ export default function MenuCustomSelect({
   }, []);
   useEffect(() => {
     calculatePosition();
-  }, [selectedOption]);
+  }, [selectedId]);
 
   return (
     <div className="cursor-pointer" ref={selectRef}>
-      <MenuCustomLabel
-        ref={labelRef}
-        text={selectedOption || '카테고리 선택'}
-        variant={isStatus ? undefined : 'default'}
-        hover={true}
-        isStatus={isStatus}
-        onClick={() => {
+      <div
+        onClick={(e) => {
+          e.stopPropagation();
           setIsOpen((prev) => !prev);
           calculatePosition();
         }}
-        className="relative"
-      />
+      >
+        <MenuCustomLabel
+          ref={labelRef}
+          text={
+            selectedId
+              ? options.find((opt) => opt.id === selectedId)?.label ||
+                '선택하세요'
+              : '선택하세요'
+          }
+          variant={isStatus ? undefined : 'default'}
+          hover={true}
+          isStatus={isStatus}
+          className="relative"
+        />
+      </div>
 
       {isOpen &&
         createPortal(
           <div
-            className={`absolute z-10 flex flex-col rounded-xl border border-gray-200 bg-white shadow-lg`}
-            style={{
-              top: `${position.top}px`,
-              left: `${position.left}px`,
-            }}
+            className="absolute z-10 flex flex-col rounded-xl border border-gray-200 bg-white shadow-lg"
+            style={{ top: `${position.top}px`, left: `${position.left}px` }}
+            onClick={(e) => e.stopPropagation()}
           >
-            {options.map((option) => (
+            {options.map((opt) => (
               <div
-                key={option}
+                key={opt.id}
                 onClick={() => {
-                  onChange(option);
+                  onChange(opt.id);
                   setIsOpen(false);
                 }}
-                className={`flex w-full shrink-0 cursor-pointer items-center px-4 py-2 hover:bg-gray-100`}
+                className="flex w-full cursor-pointer items-center px-4 py-2 hover:bg-gray-100"
               >
-                {option === selectedOption ? (
-                  <Image
-                    src={CheckedIcon}
-                    alt="checked"
-                    className="mr-2 shrink-0"
-                  />
+                {opt.id === selectedId ? (
+                  <CheckedIcon className="mr-2" />
                 ) : (
-                  <div className="mr-2 h-6 w-6 shrink-0"></div>
+                  <div className="mr-2 h-6 w-6" />
                 )}
                 <MenuCustomLabel
-                  text={option}
+                  text={opt.label}
                   hover={false}
                   isStatus={isStatus}
                 />
