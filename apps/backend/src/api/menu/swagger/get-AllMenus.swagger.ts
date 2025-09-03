@@ -24,6 +24,7 @@ export const GetAllMenusSwagger = () =>
                 isNew: true,
                 isPopular: true,
                 imgUrl: 'https://i.imgur.com/sbLBtXL.jpeg',
+                order: 1,
               },
               {
                 id: '2',
@@ -32,6 +33,7 @@ export const GetAllMenusSwagger = () =>
                 isNew: false,
                 isPopular: true,
                 imgUrl: 'https://i.imgur.com/sbLBtXL.jpeg',
+                order: 2,
               },
             ],
           },
@@ -46,6 +48,7 @@ export const GetAllMenusSwagger = () =>
                 isNew: false,
                 isPopular: false,
                 imgUrl: 'https://i.imgur.com/sbLBtXL.jpeg',
+                order: 1,
               },
             ],
           },

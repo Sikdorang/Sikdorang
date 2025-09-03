@@ -330,6 +330,7 @@ export class MenuService {
         isPopular: menu.popular,
         imgUrl: menu.images.length > 0 ? menu.images[0].image : undefined,
         status: menu.status,
+        order: menu.order,
       })),
     }));
   }
