@@ -25,6 +25,8 @@ export const SUCCESS_MESSAGES = {
   createCategorySuccess: '카테고리 생성에 성공했습니다.',
   updateCategorySuccess: '카테고리 수정에 성공했습니다.',
   deleteCategorySuccess: '카테고리 삭제에 성공했습니다.',
+  createMenuSuccess: '메뉴 생성에 성공했습니다.',
+  updateMenuSuccess: '메뉴 수정에 성공했습니다.',
   syncMenuDetailsSuccess: '메뉴 상세설명 저장에 성공했습니다.',
   syncMenusSuccess: '변경사항 저장에 성공했습니다.',
   OrderSaveSuccess: '순서 변경 저장에 성공했습니다.',

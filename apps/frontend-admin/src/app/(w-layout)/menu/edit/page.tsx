@@ -6,15 +6,8 @@ import {
   default as TableControlButton,
 } from '@/components/common/buttons/CtaButton';
 import SearchInput from '@/components/common/inputs/TextInput';
+import CreateMenuModal from '@/components/common/modals/CreateMenuModal';
 import EditMenuModal from '@/components/common/modals/EditMenuModal';
-import EditModal, {
-  EditModalHeader,
-  EditModalImageInput,
-  EditModalOptionInput,
-  EditModalTextInput,
-  EditModaSelectInput,
-  EditToggleSwitch,
-} from '@/components/common/modals/EditModal';
 import { TooltipModalPresenter } from '@/components/common/modals/TooltipModalPresenter';
 import {
   default as DeleteMenuModal,
@@ -27,69 +20,146 @@ import MenuGalleryCard from '@/components/pages/menuEdit/MenuGalleryCard';
 import MenuTableHeader from '@/components/pages/menuEdit/MenuTableHeader';
 import MenuTableRow from '@/components/pages/menuEdit/MenuTableRow';
 import MenuTableRowSkeleton from '@/components/pages/menuEdit/MenuTableRowSkeleton';
+import { menuFilterOptions } from '@/constants/filter';
 import { ERROR_MESSAGES } from '@/constants/messages';
 import { useEditModal } from '@/contexts/EditModalContext';
-import { useWarningModal } from '@/contexts/WarningModalContext';
 import { useManageCategory } from '@/hooks/useManageCategory';
 import { useManageMenu } from '@/hooks/useManageMenu';
-import { IMenuDetailResponse, IMenuTableItem } from '@/types/model/menu';
+import { IMenuDetailItem, IMenuTableItem } from '@/types/model/menu';
 import { convertToMenuTableItems } from '@/utilities/reshape';
 import GalleryIcon from '@public/icons/ic_grid.svg';
 import TableIcon from '@public/icons/ic_list.svg';
 import AddIcon from '@public/icons/ic_plus.svg';
 import { LexoRank } from 'lexorank';
-import Image from 'next/image';
+import { isEqual } from 'lodash';
 import { useCallback, useEffect, useMemo, useState } from 'react';
-
-const filterOptions = [
-  { id: 1, text: '전체' },
-  { id: 2, text: '판매중만 보기' },
-  { id: 3, text: '품절만 보기' },
-  { id: 4, text: '숨김만 보기' },
-  { id: 5, text: '미입력만 보기' },
-];
 
 export default function MenuEditPage() {
   const { categories, isCategoriesLoading, createCategory, fetchCategories } =
     useManageCategory();
+  const { menus, isMenusLoading, fetchMenus, updateMenus } = useManageMenu();
 
-  const {
-    menus,
-    isMenusLoading,
-    menuError,
-    fetchMenus,
-    createMenus,
-    updateMenus,
-    removeMenu,
-    getMenuDetails,
-    updateMenuDetails,
-  } = useManageMenu();
+  const [temporaryMenus, setTemporaryMenus] = useState<IMenuTableItem[]>([]);
+  useEffect(() => {
+    fetchMenus();
+    fetchCategories();
+  }, []);
+  useEffect(() => {
+    setTemporaryMenus(convertToMenuTableItems(menus));
+  }, [menus]);
 
   useEffect(() => {
     fetchCategories();
     fetchMenus();
   }, []);
 
+  const menuTableItemsDictItem = useMemo(
+    () => convertToMenuTableItems(menus),
+    [menus],
+  );
+
+  const originalDict = useMemo(
+    () =>
+      Object.fromEntries(menuTableItemsDictItem.map((m) => [m.id, m] as const)),
+    [menuTableItemsDictItem],
+  );
+  const tempDict = useMemo(
+    () => Object.fromEntries(temporaryMenus.map((m) => [m.id, m] as const)),
+    [temporaryMenus],
+  );
+  const [changedIds, setChangedIds] = useState<Set<number>>(new Set());
+  useEffect(() => {
+    const ids = new Set<number>();
+    for (const id of Object.keys(tempDict).map(Number)) {
+      const orig = originalDict[id];
+      if (!orig || !isEqual(orig, tempDict[id])) ids.add(id);
+    }
+    for (const id of Object.keys(originalDict).map(Number)) {
+      if (!tempDict[id]) ids.add(id);
+    }
+    setChangedIds(ids);
+  }, [originalDict, tempDict]);
+  const handleUpdate = (
+    id: number,
+    field: keyof IMenuTableItem,
+    value: any,
+  ) => {
+    setTemporaryMenus((prev) =>
+      prev.map((m) => (m.id === id ? { ...m, [field]: value } : m)),
+    );
+  };
+  const handleDelete = useCallback((id: number) => {
+    setTemporaryMenus((prev) => prev.filter((m) => m.id !== id));
+  }, []);
+  const handleSync = async () => {
+    if (changedIds.size === 0) return;
+
+    const requests: Array<{
+      menuId: number;
+      menu?: string;
+      price?: number;
+      categoryId?: number;
+      status?: string;
+      order?: string;
+    }> = [];
+
+    for (const id of Array.from(changedIds)) {
+      const orig = originalDict[id];
+      const curr = tempDict[id];
+      if (!curr) continue;
+
+      const payload: {
+        menuId: number;
+        status?: string;
+        menu?: string;
+        price?: number;
+        categoryId?: number;
+        order?: string;
+      } = {
+        menuId: id,
+      };
+
+      if (orig && curr.name !== orig.name) payload.menu = curr.name;
+      if (orig && curr.price !== orig.price) payload.price = curr.price!;
+      if (orig && curr.categoryId !== orig.categoryId) {
+        payload.categoryId = curr.categoryId ?? 0;
+      }
+      if (orig && curr.status !== orig.status) {
+        payload.status = curr.status;
+      }
+      if (orig && curr.order !== orig.order) payload.order = curr.order;
+
+      requests.push(payload);
+    }
+
+    try {
+      await updateMenus(requests);
+      await fetchMenus();
+    } catch (e) {
+      console.error('Sync error:', e);
+    }
+  };
+
   const [categoryError, setCategoryError] = useState('');
   const [searchValue, setSearchValue] = useState('');
   const [menuFilter, setMenuFilter] = useState(1);
-  const [selectedCategory, setSelectedCategory] = useState(0);
+  const [selectedCategory, setSelectedCategory] = useState<number>(0);
   const [isLoading, setIsLoading] = useState(true);
 
   const [viewType, setViewType] = useState<'table' | 'gallery'>('table');
 
   const { openModal, currentModal } = useEditModal();
   const [isTooltipModal, setIsTooltipModal] = useState(false);
+  const [showCreateMenuModal, setShowCreateMenuModal] = useState(false);
 
   const handleCreate = () => {
     setIsTooltipModal(false);
     openModal('createMenu');
   };
 
-  const totalMenuCount = menus.reduce(
-    (acc, category) => acc + category.items.length,
-    0,
-  );
+  const totalMenuCount =
+    menus?.reduce((acc, category) => acc + (category?.items?.length || 0), 0) ||
+    0;
 
   const [selectedMenuIds, setSelectedMenuIds] = useState<number[]>([]);
   const handleCheckbox = (menuId: number) => {
@@ -134,25 +204,8 @@ export default function MenuEditPage() {
   );
 
   useEffect(() => {
-    setMenuTableItems(convertToMenuTableItems(menus));
-  }, [menus]);
-
-  const { openModal: openDeleteMenuModal } = useWarningModal();
-  // 삭제 버튼 클릭
-  const handleDelete = (menuId: number) => {
-    openDeleteMenuModal(String(menuId));
-    // setCategories((prevCategories) => {
-    //   return prevCategories.filter((category) => {
-    //     if (category.id === categoryId) return false;
-    //     if (category.children) {
-    //       category.children = category.children.filter(
-    //         (child) => child.id !== categoryId,
-    //       );
-    //     }
-    //     return true;
-    //   });
-    // });
-  };
+    setMenuTableItems(temporaryMenus);
+  }, [temporaryMenus]);
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedMenuId, setSelectedMenuId] = useState<number | null>(null);
@@ -164,21 +217,21 @@ export default function MenuEditPage() {
     setIsModalOpen(false);
     setSelectedMenuId(null);
   }, []);
-  const handleSave = useCallback((data: Partial<IMenuDetailResponse>) => {
+  const handleSave = useCallback((data: Partial<IMenuDetailItem>) => {
     setIsModalOpen(false);
   }, []);
 
   const firstFilteredItems = useMemo(() => {
     switch (menuFilter) {
-      case 2: // 판매중
+      case 2:
         return menuTableItems.filter((item) => item.status === 'SALE');
-      case 3: // 품절
+      case 3:
         return menuTableItems.filter((item) => item.status === 'SOLDOUT');
-      case 4: // 숨김
+      case 4:
         return menuTableItems.filter((item) => item.status === 'HIDDEN');
-      case 5: // 미입력
+      case 5:
         return menuTableItems.filter((item) => !item.status);
-      default: // 전체
+      default:
         return menuTableItems;
     }
   }, [menuTableItems, menuFilter]);
@@ -188,15 +241,10 @@ export default function MenuEditPage() {
       return firstFilteredItems;
     }
 
-    const categoryName = categories.find(
-      (c) => c.id === selectedCategory,
-    )?.category;
-    if (!categoryName) {
-      return firstFilteredItems;
-    }
-
-    return firstFilteredItems.filter((item) => item.category === categoryName);
-  }, [firstFilteredItems, selectedCategory, categories]);
+    return firstFilteredItems.filter(
+      (item) => item.categoryId === selectedCategory,
+    );
+  }, [firstFilteredItems, selectedCategory]);
 
   const finalFilteredItems = useMemo(() => {
     if (!searchValue.trim()) return secondFilteredItems;
@@ -245,8 +293,8 @@ export default function MenuEditPage() {
                   }
                 />
                 {categories.map((cat) => {
-                  const menuCategory = menus.find((m) => m.id === cat.id);
-                  const count = menuCategory ? menuCategory.items.length : 0;
+                  const menuCategory = menus?.find((m) => m.id === cat.id);
+                  const count = menuCategory?.items?.length ?? 0;
 
                   return (
                     <CategoryButton
@@ -280,7 +328,7 @@ export default function MenuEditPage() {
               radius="full"
               right={
                 <span>
-                  <Image src={AddIcon} width={16} height={16} alt="plus" />
+                  <AddIcon width={16} height={16} />
                 </span>
               }
             />
@@ -303,7 +351,7 @@ export default function MenuEditPage() {
               }`}
               onClick={() => setViewType('table')}
             >
-              <Image src={TableIcon} alt="table" />
+              <TableIcon />
             </button>
             <button
               className={`rounded-md px-2 py-2 ${
@@ -311,7 +359,7 @@ export default function MenuEditPage() {
               }`}
               onClick={() => setViewType('gallery')}
             >
-              <Image src={GalleryIcon} alt="gallery" />
+              <GalleryIcon />
             </button>
           </div>
 
@@ -323,7 +371,9 @@ export default function MenuEditPage() {
                 size="small"
                 width="fit"
                 radius="xl"
-                onClick={handleCreate}
+                onClick={() => {
+                  setShowCreateMenuModal(true);
+                }}
               />
               <TableControlButton
                 text="삭제하기"
@@ -334,10 +384,12 @@ export default function MenuEditPage() {
               />
               <TableControlButton
                 text="변경사항 저장하기"
-                color="gray"
                 size="small"
                 radius="xl"
                 width="fit"
+                color={changedIds.size > 0 ? 'yellow' : 'gray'}
+                disabled={changedIds.size === 0}
+                onClick={handleSync}
               />
             </>
           ) : (
@@ -347,12 +399,14 @@ export default function MenuEditPage() {
               size="small"
               width="fit"
               radius="xl"
-              onClick={handleCreate}
+              onClick={() => {
+                setShowCreateMenuModal(true);
+              }}
             />
           )}
         </div>
         <div className="flex gap-4 pt-2">
-          {filterOptions.map((option) => (
+          {menuFilterOptions.map((option) => (
             <FilterOptionButton
               key={option.id}
               text={option.text}
@@ -384,16 +438,12 @@ export default function MenuEditPage() {
                         onEdit={handleEdit}
                         onCheck={handleCheckbox}
                         isLastRow={idx === menus.length}
-                        onUpdate={function (
-                          menuId: number,
-                          updatedData: { name?: string; price?: string },
-                        ): void {
-                          throw new Error('Function not implemented.');
-                        }}
+                        onUpdate={handleUpdate}
                       />
                     ))}
               </tbody>
             </table>
+            <div className="h-20" />
           </>
         ) : (
           <>
@@ -413,6 +463,7 @@ export default function MenuEditPage() {
                     />
                   ))}
             </div>
+            <div className="h-20" />
           </>
         )}
       </div>
@@ -422,56 +473,16 @@ export default function MenuEditPage() {
           menuId={selectedMenuId}
           isOpen={isModalOpen}
           onClose={handleCloseModal}
-          onSave={handleSave}
         />
       )}
 
-      {currentModal !== null && (
-        <EditModal>
-          {currentModal === 'createMenu' && (
-            <>
-              <EditModalHeader onSave={() => {}} buttonLabel="추가하기">
-                메뉴 추가하기
-              </EditModalHeader>
-              <EditModalTextInput
-                label="메뉴명"
-                placeholder="메뉴명을 입력해주세요."
-              />
-              <EditModalTextInput
-                label="가격"
-                placeholder="가격을 입력해주세요."
-              />
-              <EditModaSelectInput
-                label="카테고리"
-                placeholder="카테고리를 선택해주세요."
-              />
-              <EditModalImageInput
-                label="메뉴 이미지"
-                placeholder="메뉴이미지를 추가해주세요."
-              />
-              <EditModalOptionInput
-                label="메뉴 옵션"
-                placeholder="옵션을 추가해주세요."
-              />
-              <EditToggleSwitch
-                label="메뉴 강조"
-                toggleSwitchItems={[
-                  { label: '인기 메뉴로 표시', value: true },
-                  { label: '신 메뉴로 표시', value: false },
-                ]}
-              />
-              <EditToggleSwitch
-                label="판매중"
-                toggleSwitchItems={[
-                  { label: '판매중', value: true },
-                  { label: '숨김', value: false },
-                  { label: '품절', value: false },
-                ]}
-              />
-            </>
-          )}
-        </EditModal>
-      )}
+      <CreateMenuModal
+        isOpen={showCreateMenuModal}
+        onClose={() => {
+          setShowCreateMenuModal(false);
+          fetchMenus();
+        }}
+      />
 
       <DeleteMenuModal>
         <WarningModalHeader>메뉴 삭제</WarningModalHeader>

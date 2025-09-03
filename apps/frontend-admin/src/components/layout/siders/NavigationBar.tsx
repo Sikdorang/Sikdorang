@@ -1,6 +1,7 @@
 'use client';
 
 import NavigationSwitch from '@/components/common/buttons/NavigationSwitch';
+import ChevronDownIcon from '@public/icons/ic_chevron_down.svg';
 import SettingIcon from '@public/icons/ic_cogwheel.svg';
 import RecommandManagementIcon from '@public/icons/ic_flag.svg';
 import PreviewMenuIcon from '@public/icons/ic_flatware.svg';
@@ -9,7 +10,6 @@ import MenuManagementIcon from '@public/icons/ic_paper.svg';
 import TableLinkIcon from '@public/icons/ic_qr_code.svg';
 import CollapsingIcon from '@public/icons/ic_screen.svg';
 import ShopManagementIcon from '@public/icons/ic_shop.svg';
-import Image from 'next/image';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useState } from 'react';
@@ -42,7 +42,7 @@ export default function NavigationBar({
             onClick={() => setCollapsed(!collapsed)}
             className="hover:text-main-500 text-gray-400 transition-colors"
           >
-            <Image src={CollapsingIcon} width={20} height={20} alt="최소화" />
+            <CollapsingIcon width={20} height={20} />
           </button>
         </nav>
 
@@ -69,11 +69,14 @@ export default function NavigationBar({
                     : 'hover:bg-main-500/10 text-gray-100'
                 } ${collapsed ? 'justify-center' : ''}`}
               >
-                <Image
-                  src={MenuManagementIcon}
+                <MenuManagementIcon
                   width={20}
                   height={20}
-                  alt="Preview Menu"
+                  color={
+                    pathname === '/menu/edit' || pathname === '/menu/category'
+                      ? 'text-main-500'
+                      : 'text-gray-100'
+                  }
                 />
                 {!collapsed && <span>메뉴 관리</span>}
                 {!collapsed && (
@@ -83,15 +86,7 @@ export default function NavigationBar({
                     }`}
                     onClick={() => !collapsed && setMenuOpen((v) => !v)}
                   >
-                    <svg
-                      className={`ml-auto h-4 w-4 transition-transform ${menuOpen ? 'rotate-180' : ''}`}
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth={2}
-                      viewBox="0 0 24 24"
-                    >
-                      <path d="M6 9l6 6 6-6" />
-                    </svg>
+                    <ChevronDownIcon width={20} height={20} />
                   </button>
                 )}
               </Link>
@@ -130,12 +125,7 @@ export default function NavigationBar({
                   : 'hover:bg-main-500/10 text-gray-100'
               } ${collapsed ? 'justify-center' : ''}`}
             >
-              <Image
-                src={RecommandManagementIcon}
-                width={20}
-                height={20}
-                alt="Recommand Management"
-              />
+              <RecommandManagementIcon width={20} height={20} />
               {!collapsed && <span>추천 관리</span>}
             </Link>
 
@@ -147,12 +137,7 @@ export default function NavigationBar({
                   : 'hover:bg-main-500/10 text-gray-100'
               } ${collapsed ? 'justify-center' : ''}`}
             >
-              <Image
-                src={ShopManagementIcon}
-                width={20}
-                height={20}
-                alt="Shop Management"
-              />
+              <ShopManagementIcon width={20} height={20} />
               {!collapsed && <span>매장 정보 관리</span>}
             </Link>
 
@@ -164,12 +149,7 @@ export default function NavigationBar({
                   : 'hover:bg-main-500/10 text-gray-100'
               } ${collapsed ? 'justify-center' : ''}`}
             >
-              <Image
-                src={PreviewMenuIcon}
-                width={20}
-                height={20}
-                alt="Preview Menu"
-              />
+              <PreviewMenuIcon width={20} height={20} />
               {!collapsed && <span>내 메뉴판 보기</span>}
             </Link>
 
@@ -181,12 +161,7 @@ export default function NavigationBar({
                   : 'hover:bg-main-500/10 text-gray-100'
               } ${collapsed ? 'justify-center' : ''}`}
             >
-              <Image
-                src={DashboardIcon}
-                width={20}
-                height={20}
-                alt="Shop Management"
-              />
+              <DashboardIcon width={20} height={20} />
               {!collapsed && <span>대시보드</span>}
             </Link>
 
@@ -198,12 +173,7 @@ export default function NavigationBar({
                   : 'hover:bg-main-500/10 text-gray-100'
               } ${collapsed ? 'justify-center' : ''}`}
             >
-              <Image
-                src={TableLinkIcon}
-                width={20}
-                height={20}
-                alt="Table Link"
-              />
+              <TableLinkIcon width={20} height={20} />
               {!collapsed && <span>테이블 연동</span>}
             </Link>
           </nav>
@@ -217,12 +187,7 @@ export default function NavigationBar({
                   : 'hover:bg-main-500/10 text-gray-100'
               } ${collapsed ? 'justify-center' : ''}`}
             >
-              <Image
-                src={TableLinkIcon}
-                width={20}
-                height={20}
-                alt="Order Request"
-              />
+              <TableLinkIcon width={20} height={20} />
               {!collapsed && <span>주문 현황</span>}
             </Link>
 
@@ -234,7 +199,7 @@ export default function NavigationBar({
                   : 'hover:bg-main-500/10 text-gray-100'
               } ${collapsed ? 'justify-center' : ''}`}
             >
-              <Image src={DashboardIcon} width={20} height={20} alt="history" />
+              <DashboardIcon width={20} height={20} />
               {!collapsed && <span>주문 내역</span>}
             </Link>
           </nav>
@@ -251,7 +216,7 @@ export default function NavigationBar({
                 : 'hover:bg-main-500/10 text-gray-100'
             } ${collapsed ? 'justify-center' : ''}`}
           >
-            <Image src={SettingIcon} width={20} height={20} alt="Setting" />
+            <SettingIcon width={20} height={20} />
             {!collapsed && <span>설정</span>}
           </Link>
         </nav>

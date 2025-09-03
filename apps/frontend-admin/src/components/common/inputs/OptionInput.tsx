@@ -6,7 +6,6 @@ import MenuOptionElement from '@/components/pages/menuEdit/MenuOptionElement';
 import { IMenuOptionGroup } from '@/types/model/menu';
 import EmptyOptionIcon from '@public/icons/ic_dotted_plus.svg';
 import CancelIcon from '@public/icons/ic_x.svg';
-import Image from 'next/image';
 import React from 'react';
 
 interface OptionInputProps extends React.InputHTMLAttributes<HTMLInputElement> {
@@ -43,7 +42,7 @@ export default function OptionInput({
 
   const EmptyPlaceholder = () => (
     <div className="flex flex-col items-center justify-center gap-4 px-4 py-12">
-      <Image src={EmptyOptionIcon} alt="옵션 없음" width={50} height={50} />
+      <EmptyOptionIcon width={50} height={50} />
       <div className="text-mobile-body-m-semibold mb-6 text-center text-gray-700">
         옵션이 아직 없어요.
         <br />
@@ -54,7 +53,7 @@ export default function OptionInput({
 
   const ItemEmptyPlaceholder = () => (
     <div className="flex flex-col items-center justify-center gap-4 px-4 py-12">
-      <Image src={EmptyOptionIcon} alt="옵션 없음" width={50} height={50} />
+      <EmptyOptionIcon width={50} height={50} />
       <div className="text-mobile-body-m-semibold mb-6 text-center text-gray-700">
         항목이 아직 없어요.
         <br />
@@ -153,12 +152,7 @@ export default function OptionInput({
                 onClick={() => onDeleteOptionGroup?.(optionGroup.groupId)}
                 className="flex h-8 w-8 items-center justify-center rounded-full transition-colors hover:bg-gray-200"
               >
-                <Image
-                  src={CancelIcon}
-                  alt="옵션 삭제"
-                  width={16}
-                  height={16}
-                />
+                <CancelIcon width={16} height={16} />
               </button>
             </div>
 

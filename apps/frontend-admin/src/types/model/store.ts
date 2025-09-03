@@ -7,7 +7,7 @@ export interface IInfoItem {
 export interface IStoreInfo {
   id: number;
   name: string;
-  infoItems: InfoItem[];
+  infoItems: IInfoItem[];
 }
 
 export interface ISettingAction {

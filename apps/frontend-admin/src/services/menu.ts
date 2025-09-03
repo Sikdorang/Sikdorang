@@ -1,5 +1,9 @@
 import { axiosInstance } from '.';
 import { ISyncMenuRequest } from '@/types/model/menu';
+import {
+  UpdateMenuDetailsDto,
+  UpdateMenuOptionsDto,
+} from '@/types/request/menu';
 
 export const MenuAPI = {
   getAllMenus: async () => {
@@ -27,13 +31,13 @@ export const MenuAPI = {
     return res.data;
   },
 
-  updateMenuDetails: async (menuId: number) => {
-    const res = await axiosInstance.patch(`/menu/${menuId}`);
+  updateMenuDetails: async (menuId: number, payload: UpdateMenuDetailsDto) => {
+    const res = await axiosInstance.patch(`/menu/${menuId}`, payload);
     return res.data;
   },
 
-  updateMenuOptions: async (menuId: number) => {
-    const res = await axiosInstance.post(`/menu/option`);
+  updateMenuOptions: async (payload: UpdateMenuOptionsDto) => {
+    const res = await axiosInstance.post(`/menu/option`, payload);
     return res.data;
   },
 

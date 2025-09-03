@@ -51,15 +51,15 @@ const MenuCustomLabel = forwardRef<HTMLDivElement, MenuCustomLabelProps>(
 
     const variantClass =
       variant === 'orange'
-        ? `bg-orange-200 text-orange-500 border-none ${hover ? 'hover:bg-orange-200' : ''}`
+        ? `bg-orange-200 text-orange-500 border-none ${hover ? 'hover:bg-orange-300' : ''}`
         : variant === 'blue'
-          ? `bg-blue-200 text-blue-500 border-none ${hover ? 'hover:bg-blue-200' : ''}`
+          ? `bg-blue-200 text-blue-500 border-none ${hover ? 'hover:bg-blue-300' : ''}`
           : variant === 'purple'
-            ? `bg-purple-200 text-purple-500 border-none ${hover ? 'hover:bg-purple-200' : ''}`
+            ? `bg-purple-200 text-purple-500 border-none ${hover ? 'hover:bg-purple-300' : ''}`
             : variant === 'red'
-              ? `bg-red-200 text-red-500 border-none ${hover ? 'hover:bg-red-200' : ''}`
+              ? `bg-red-200 text-red-500 border-none ${hover ? 'hover:bg-red-300' : ''}`
               : variant === 'green'
-                ? `bg-green-200 text-green-500 border-none ${hover ? 'hover:bg-green-200' : ''}`
+                ? `bg-green-200 text-green-500 border-none ${hover ? 'hover:bg-green-300' : ''}`
                 : text === '카테고리 선택' && !isStatus
                   ? `bg-white text-gray-400 border-gray-300 ${hoverClass}`
                   : `bg-white text-gray-700 border-gray-300 ${hoverClass}`;

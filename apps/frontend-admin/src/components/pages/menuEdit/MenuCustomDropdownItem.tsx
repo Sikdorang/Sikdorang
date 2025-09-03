@@ -1,5 +1,4 @@
 import ChevronDownIcon from '@public/icons/ic_chevron_down.svg';
-import Image from 'next/image';
 import { forwardRef } from 'react';
 
 interface MenuCustomDropdownItemProps {
@@ -38,15 +37,7 @@ const MenuCustomDropdownItem = forwardRef<
           {text}
           {isNumbers ? '개' : ''}
         </span>
-        {SelectedItem ? (
-          <Image
-            src={ChevronDownIcon}
-            alt="드롭다운"
-            width={12}
-            height={6}
-            className="ml-2"
-          />
-        ) : undefined}
+        {SelectedItem ? <ChevronDownIcon className="ml-2" /> : undefined}
       </div>
     );
   },

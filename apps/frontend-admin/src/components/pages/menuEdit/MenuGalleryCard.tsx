@@ -2,7 +2,6 @@
 
 import MenuCustomLabel from './MenuCustomLabel';
 import CloseIcon from '@public/icons/ic_cancel.svg';
-import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 
 interface MenuGalleryCardProps {
@@ -19,7 +18,6 @@ export default function MenuGalleryCard({
   onDelete,
   item,
 }: MenuGalleryCardProps) {
-
   const router = useRouter();
 
   return (
@@ -37,7 +35,7 @@ export default function MenuGalleryCard({
             onDelete(item.id);
           }}
         >
-          <Image src={CloseIcon} alt="닫기" width={20} height={20} />
+          <CloseIcon width={20} height={20} />
         </button>
       </div>
       <div className="flex text-mobile-body-m-semibold text-gray-900 gap-2">

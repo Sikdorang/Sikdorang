@@ -158,7 +158,7 @@ export default function ImageInput({
           />
         ) : (
           <div className="text-mb-5 flex select-none flex-col items-center justify-center gap-4 text-center text-gray-700">
-            <Image src={EmptyImageIcon} alt="add" width={55} height={55} />
+            <EmptyImageIcon width={55} height={55} />
             <div>
               사진이 아직 없어요.
               <br />
@@ -269,7 +269,7 @@ function SortableItem({
   return (
     <div ref={setNodeRef} style={style} {...attributes} className={'shrink-0'}>
       <div {...listeners} className="absolute left-0 top-0 cursor-grab p-1">
-        <Image src={DraggableIcon} alt={''} width={6} height={6} />
+        <DraggableIcon width={6} height={6} />
       </div>
 
       <Image
@@ -310,7 +310,7 @@ function SortableItem({
         }}
         className="absolute right-0 top-0 flex h-4 w-4 items-center justify-center"
       >
-        <Image src={DeleteIcon} alt="delete" width={12} height={12} />
+        <DeleteIcon width={12} height={12} />
       </button>
     </div>
   );

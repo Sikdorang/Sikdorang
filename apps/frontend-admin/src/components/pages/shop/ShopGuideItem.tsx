@@ -1,5 +1,5 @@
 import GripIcon from '@public/icons/ic_dots.svg';
-import Image from 'next/image';
+import React from 'react';
 
 interface ShopGuideItemProps {
   icon?: string;
@@ -15,8 +15,8 @@ export default function ShopGuideItem({
 }: ShopGuideItemProps) {
   return (
     <div className="w-full px-6 py-4 flex gap-4 items-center">
-      <Image src={GripIcon} width={12} height={12} alt={''} />
-      {icon && <Image src={icon} width={16} height={16} alt={''} />}
+      <GripIcon />
+      {icon && React.createElement(icon)}
       <div className="flex gap-1 items-center text-mb-5">
         <div>{title}</div>
         <div className="w-1 h-1 bg-gray-300 rounded-full text-mb-6" />
