@@ -8,9 +8,10 @@ function SoundButton() {
     const audio = audioRef.current;
     if (audio) {
       audio.play();
+
     }
   };
-
+  
   return (
     <div>
       <CtaButton

@@ -21,3 +21,15 @@ export interface ISettingStates {
   realtimeOrderAlert: boolean;
   recommendEnabled: boolean;
 }
+
+export interface ISettingAction {
+  label: string;
+  onClick: () => void;
+  type: 'depth' | 'toggle' | 'none';
+}
+
+export interface ISettingStates {
+  businessOpen: boolean;
+  realtimeOrderAlert: boolean;
+  recommendEnabled: boolean;
+}

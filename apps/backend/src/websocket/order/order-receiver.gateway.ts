@@ -13,7 +13,7 @@ import { OrderSenderGateway } from './order-sender.gateway';
 
 @WebSocketGateway({
   cors: true,
-  namespace: '/',
+  namespace: '/ws',
 })
 export class OrderReceiverGateway
   implements OnGatewayConnection, OnGatewayDisconnect
