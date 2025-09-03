@@ -15,21 +15,36 @@ export const UpdateImageSwagger = () =>
       example: 1,
     }),
     ApiBody({
+      description: '수정할 이미지 정보 배열',
+      isArray: true,
       schema: {
-        type: 'object',
-        properties: {
-          image: {
-            type: 'string',
-            description: '이미지 이름',
-            example: 'stores/2/menus/1/1754785343278-837p4768pgy.png',
+        type: 'array',
+        items: {
+          type: 'object',
+          properties: {
+            image: {
+              type: 'string',
+              description: '이미지 이름',
+              example: 'stores/2/menus/1/1754785343278-837p4768pgy.png',
+            },
+            order: {
+              type: 'string',
+              description: '이미지 표시 순서',
+              example: '1',
+            },
           },
-          order: {
-            type: 'string',
-            description: '이미지 표시 순서',
-            example: '1',
-          },
+          required: ['image', 'order'],
         },
-        required: ['image', 'order'],
+        example: [
+          {
+            image: 'stores/2/menus/1/1754785343278-837p4768pgy.png',
+            order: '1',
+          },
+          {
+            image: 'stores/2/menus/1/1754785343278-837p4768pgy.png',
+            order: '2',
+          },
+        ],
       },
     }),
     ApiResponse({
