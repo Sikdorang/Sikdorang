@@ -15,4 +15,8 @@ export class OptionDetailDto {
   @IsInt()
   @Min(0)
   price?: number;
+
+  @IsString()
+  @IsOptional()
+  order?: string;
 }

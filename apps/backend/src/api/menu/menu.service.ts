@@ -194,6 +194,7 @@ export class MenuService {
                 data: {
                   optionDetail: detail.optionDetail ?? '',
                   price: detail.price ?? 0,
+                  order: detail.order ?? '',
                 },
               });
             } else {
@@ -202,6 +203,7 @@ export class MenuService {
                   menuOptionId: optionId,
                   optionDetail: detail.optionDetail ?? '',
                   price: detail.price ?? 0,
+                  order: detail.order ?? '',
                 },
               });
             }
@@ -330,6 +332,7 @@ export class MenuService {
         isPopular: menu.popular,
         imgUrl: menu.images.length > 0 ? menu.images[0].image : undefined,
         status: menu.status,
+        order: menu.order,
       })),
     }));
   }
@@ -383,5 +386,38 @@ export class MenuService {
         })),
       })),
     };
+  }
+
+  async deleteOption({ optionId }: { optionId: number }) {
+    try {
+      await this.prisma.optionDetail.deleteMany({
+        where: { menuOptionId: optionId },
+      });
+      await this.prisma.menuOption.delete({
+        where: { id: optionId },
+      });
+      return { message: '옵션 삭제 성공' };
+    } catch (error) {
+      console.error(error);
+      throw new InternalServerErrorException('옵션 삭제 중 오류 발생');
+    }
+  }
+
+  async deleteOptionDetail({
+    optionId,
+    detailId,
+  }: {
+    optionId: number;
+    detailId: number;
+  }) {
+    try {
+      await this.prisma.optionDetail.delete({
+        where: { id: detailId, menuOptionId: optionId },
+      });
+      return { message: '옵션 상세 삭제 성공' };
+    } catch (error) {
+      console.error(error);
+      throw new InternalServerErrorException('옵션 상세 삭제 중 오류 발생');
+    }
   }
 }
