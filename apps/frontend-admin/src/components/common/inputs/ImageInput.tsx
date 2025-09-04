@@ -183,18 +183,14 @@ export default function ImageInput({
           <div className="mb-3 flex items-center space-x-2 overflow-x-auto">
             {Array.isArray(images) &&
               images.map((image, index) => {
-                const image_path = CDN_URL + '/' + image.image_url;
+                const image_path = CDN_URL + '/' + image;
+                console.log(image_path);
+                console.log('debuggggg', image);
                 return (
                   <SortableItem
-                    key={image.image_url}
-                    id={image.image_url}
-                    image={
-                      image.id === 0
-                        ? (image.preview ?? '')
-                        : image.image_url
-                          ? image_path
-                          : ''
-                    }
+                    key={image_path}
+                    id={image_path}
+                    image={image_path}
                     selectedImage={
                       selectedImage?.id === 0
                         ? (selectedImage?.preview ?? '')
@@ -269,7 +265,7 @@ function SortableItem({
   return (
     <div ref={setNodeRef} style={style} {...attributes} className={'shrink-0'}>
       <div {...listeners} className="absolute left-0 top-0 cursor-grab p-1">
-        <DraggableIcon width={6} height={6} />
+        <DraggableIcon />
       </div>
 
       <Image
@@ -308,9 +304,9 @@ function SortableItem({
           e.stopPropagation();
           onDelete();
         }}
-        className="absolute right-0 top-0 flex h-4 w-4 items-center justify-center"
+        className="absolute right-1 top-1 flex items-center justify-center"
       >
-        <DeleteIcon width={12} height={12} />
+        <DeleteIcon />
       </button>
     </div>
   );

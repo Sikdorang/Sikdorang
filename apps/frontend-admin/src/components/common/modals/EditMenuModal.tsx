@@ -26,6 +26,7 @@ export default function EditMenuModal({
     getMenuDetails,
     updateMenuDetails,
     updateMenuOptions,
+    updateMenuImages,
     isDetailLoading,
   } = useManageMenu();
 
@@ -45,21 +46,40 @@ export default function EditMenuModal({
 
   const hasChanges = useMemo(() => {
     if (!original || !detail) return false;
-    const o = {
-      new: original.isNew,
-      popular: original.isPopular,
-      description: original.description,
-      status: original.status as 'SALE' | 'HIDDEN' | 'SOLDOUT',
-      optionGroups: original.optionGroups,
-    };
-    const d = {
-      new: detail.isNew,
-      popular: detail.isPopular,
-      description: detail.description,
-      status: detail.status as 'SALE' | 'HIDDEN' | 'SOLDOUT',
-      optionGroups: detail.optionGroups,
-    };
-    return !isEqual(o, d);
+
+    // 기존 필드 비교
+    const metaChanged = !isEqual(
+      {
+        new: original.isNew,
+        popular: original.isPopular,
+        description: original.description,
+        status: original.status,
+        optionGroups: original.optionGroups,
+      },
+      {
+        new: detail.isNew,
+        popular: detail.isPopular,
+        description: detail.description,
+        status: detail.status,
+        optionGroups: detail.optionGroups,
+      },
+    );
+
+    // 이미지 배열 비교 (id, order, url)
+    const imagesChanged = !isEqual(
+      original.images.map(({ id, image_url, order }) => ({
+        id,
+        image_url,
+        order,
+      })),
+      detail.images.map(({ id, image_url, order }) => ({
+        id,
+        image_url,
+        order,
+      })),
+    );
+
+    return metaChanged || imagesChanged;
   }, [detail, original]);
 
   if (!isOpen) return null;
@@ -121,7 +141,8 @@ export default function EditMenuModal({
     };
 
     await updateMenuDetails(menuId, detailPayload);
-    await updateMenuOptions(optionsPayload);
+    //await updateMenuOptions(optionsPayload);
+    await updateMenuImages(menuId, detail.images, detail.images);
     onClose();
   };
 

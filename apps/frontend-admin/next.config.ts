@@ -2,6 +2,9 @@ import type { NextConfig } from 'next';
 import path from 'path';
 
 const nextConfig: NextConfig = {
+  images: {
+    domains: ['dsel8jrwwc6h2.cloudfront.net'],
+  },
   experimental: {
     turbo: {
       rules: {

@@ -90,3 +90,12 @@ export interface MenuOption {
   id: number;
   name: string;
 }
+
+export interface PresignImageEntry {
+  key: string;
+  uploadUrl: string;
+  publicUrl: string;
+  originalName: string;
+  order: string;
+  id: number;
+}

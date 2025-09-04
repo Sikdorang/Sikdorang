@@ -29,3 +29,10 @@ export interface UpdateMenuOptionsDto {
   menuId: number;
   options: MenuOptionDto[];
 }
+
+interface UpdateMenuImageItem {
+  image: string;
+  order: string;
+}
+
+export type UpdateMenuImageDto = Array<UpdateMenuImageItem>;

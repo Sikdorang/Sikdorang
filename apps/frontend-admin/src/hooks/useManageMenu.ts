@@ -1,10 +1,14 @@
 import { ERROR_MESSAGES, SUCCESS_MESSAGES } from '@/constants/messages';
 import { handelError } from '@/services/handleErrors';
 import { MenuAPI } from '@/services/menu';
-import { ICreateMenuRequest, IMenuCategory } from '@/types/model/menu';
+import {
+  ICreateMenuRequest,
+  IMenuCategory,
+  IMenuImageItem,
+  PresignImageEntry,
+} from '@/types/model/menu';
 import {
   UpdateMenuDetailsDto,
-  UpdateMenuImageDto,
   UpdateMenuOptionsDto,
 } from '@/types/request/menu';
 import axios from 'axios';
@@ -149,13 +153,23 @@ export const useManageMenu = () => {
   const updateMenuImages = useCallback(
     async (
       menuId: number,
-      originalImages: IMenuImageItem[],
-      updatedImages: IMenuImageItem[],
+      toUpload: IMenuImageItem[],
+      uploaded: IMenuImageItem[],
     ) => {
-      const toUpload = updatedImages.filter((img) => !img.id || img.id === 0);
-      const uploaded: IMenuImageItem[] = [];
-      for (const img of toUpload) {
-        if (!img.file || !img.image_url) continue;
+      const registerPayload = toUpload.map((img) => ({
+        image: img.image_url + '.webp',
+        order: img.order,
+      }));
+
+      const presignList: PresignImageEntry[] = await MenuAPI.updateMenuImages(
+        menuId,
+        registerPayload,
+      );
+
+      for (const entry of presignList) {
+        const img = toUpload.find((i) => i.order === entry.order);
+        if (!img?.file) continue;
+
         const compressed = await imageCompression(img.file, {
           maxSizeMB: 2,
           maxWidthOrHeight: 1920,
@@ -163,31 +177,22 @@ export const useManageMenu = () => {
           fileType: 'image/webp',
           initialQuality: 0.75,
         });
-        const filename = `${img.image_url}.webp`;
-        const { url } = await MenuAPI.getPresignedUrl(menuId, filename);
-        await MenuAPI.uploadToS3(url, compressed);
-        uploaded.push({ ...img, image_url: filename });
-      }
-      // 2) 기존 + 업로드된 병합
-      const merged = (updatedImages || []).map((img) => {
-        const up = uploaded.find((u) => u.order === img.order);
-        return up || img;
-      });
-      // 3) 서버에 PATCH 호출
-      const payload: UpdateMenuImageDto = {
-        images: merged.map((i) => ({
-          id: i.id || 0,
-          image_url: i.image_url,
-          order: i.order,
-        })),
-      };
-      await MenuAPI.updateMenuDetails(menuId, payload);
-      toast.success(SUCCESS_MESSAGES.updateMenuSuccess);
-      return merged;
-    },
-    [],
-  );
 
+        await MenuAPI.uploadToS3(entry.uploadUrl, compressed);
+
+        uploaded.push({
+          ...img,
+          id: entry.id,
+          image_url: entry.publicUrl,
+          order: entry.order,
+          file: undefined,
+        });
+      }
+
+      return uploaded;
+    },
+    [menus],
+  );
   return {
     menus,
     isMenusLoading,
@@ -200,5 +205,6 @@ export const useManageMenu = () => {
     getMenuDetails,
     updateMenuDetails,
     updateMenuOptions,
+    updateMenuImages,
   };
 };
