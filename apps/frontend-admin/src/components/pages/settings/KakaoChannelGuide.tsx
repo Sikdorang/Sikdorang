@@ -53,7 +53,7 @@ export default function KakaoChannelGuideModal({
     >
       <div className="bg-yellow-400 rounded-2xl p-6 max-w-4xl w-full mx-auto relative max-h-[90vh] overflow-auto">
         <button onClick={onClose} className="absolute top-6 right-5 p-2">
-          <Image src={XIcon} className="h-4 w-4 text-white" alt={''} />
+          <XIcon className="h-4 w-4 text-white" />
         </button>
 
         <div className="text-center mb-6">
@@ -71,7 +71,7 @@ export default function KakaoChannelGuideModal({
             onClick={onPlusClick}
             className="ml-3 p-2 rounded-full bg-gray-600 hover:bg-gray-700"
           >
-            <Image src={PlusIcon} className="h-6 w-6 text-gray-700" alt={''} />
+            <PlusIcon className="text-gray-700" />
           </button>
         </div>
 

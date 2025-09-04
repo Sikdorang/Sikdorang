@@ -2,7 +2,6 @@
 
 import RecommendResultCard from '@/components/pages/recommend/RecommendResultCard';
 import RecommendTableRow from '@/components/pages/recommend/RecommendTableRow';
-import RepresentDrinkSelector from '@/components/pages/recommend/RepresentDrinkSelector';
 import { recommedTypeList } from '@/constants/recommend';
 import { useManageRecommend } from '@/hooks/useManageRecommend';
 import { IRecommendTableItem } from '@/types/model/menu';
@@ -66,10 +65,7 @@ export default function FullRecommendPage() {
         </div>
 
         <div className="flex w-full px-12 py-4 gap-16">
-          <div className="w-2/5">
-            <RepresentDrinkSelector menus={[]} />
-          </div>
-          <div className="w-3/5">
+          <div className="w-full">
             <table className="w-full table-auto border-separate border-spacing-0 overflow-hidden rounded-xl">
               <thead className="text-mb-3 text-white rounded-lg border-b border-b-gray-400 bg-gray-900">
                 <tr>
@@ -113,15 +109,11 @@ export default function FullRecommendPage() {
                         )
                       }
                       onDetailClick={() => openModal(item)}
-                      onSetClick={(menuId) => {
-                        setSelectedMenusByCategory((prev) => {
-                          const prevList = prev[item.id] ?? [];
-                          const exists = prevList.includes(menuId);
-                          const nextList = exists
-                            ? prevList.filter((id) => id !== menuId)
-                            : [...prevList, menuId];
-                          return { ...prev, [item.id]: nextList };
-                        });
+                      onSetClick={(menuIds) => {
+                        setSelectedMenusByCategory((prev) => ({
+                          ...prev,
+                          [item.id]: menuIds,
+                        }));
                       }}
                       menus={allMenuOptions}
                       selectedMenus={selectedMenusByCategory[item.id] ?? []}
@@ -132,9 +124,6 @@ export default function FullRecommendPage() {
             </table>
           </div>
         </div>
-        <button className="px-4 py-2 bg-blue-500 text-white rounded">
-          저장하기
-        </button>
       </div>
 
       {modalOpen && modalData && modalTypeData && (

@@ -15,7 +15,7 @@ interface RecommendTableRowProps {
     menuIds: number[],
   ) => void;
   onDetailClick: () => void;
-  onSetClick: (value: number) => void;
+  onSetClick: (ids: number[]) => void;
   menus: MenuOption[];
   selectedMenus: number[];
 }
@@ -36,8 +36,7 @@ export default function RecommendTableRow({
   };
 
   const handleChange = (ids: number[]) => {
-    const lastId = ids[ids.length - 1];
-    if (lastId != null) onSetClick(lastId);
+    onSetClick(ids);
   };
 
   const handleDropdownClose = () => {

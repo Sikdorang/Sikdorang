@@ -102,3 +102,51 @@ export const recommedTypeList: IRecommendTableItem[] = [
     img: DorangImage10.src,
   },
 ];
+
+export const recommedTypeListLight: IRecommendTableItem[] = [
+  {
+    id: 1,
+    name: '1. 달콤한 입문자형',
+    description:
+      '달콤한 맛을 좋아하고 도수는 낮은 게 좋은 당신, 아마도 술이 아직 낯설거나, 분위기를 즐기는 타입 같아요',
+    result:
+      '그런 당신께는 도수는 낮고, 맛은 확실한 하이볼이나 칵테일류를 추천드려요.',
+    img: DorangImage1.src,
+  },
+  {
+    id: 2,
+    name: '2. 새콤한 청량형',
+    description:
+      '달콤한 맛을 좋아하고 도수는 낮은 게 좋은 당신,아마도 술이 아직 낯설거나, 분위기를 즐기는 타입 같아요.',
+    result:
+      '그런 당신께는 도수는 낮고, 맛은 확실한 하이볼이나 칵테일류를 추천드려요.',
+    img: DorangImage2.src,
+  },
+  {
+    id: 3,
+    name: '3. 드라이 라이트형',
+    description:
+      '달콤한 맛을 좋아하고 도수는 낮은 게 좋은 당신,아마도 술이 아직 낯설거나, 분위기를 즐기는 타입 같아요.',
+    result:
+      '그런 당신께는 도수는 낮고, 맛은 확실한 하이볼이나 칵테일류를 추천드려요.',
+    img: DorangImage3.src,
+  },
+  {
+    id: 4,
+    name: '4. 묵직한 쌉쌀형',
+    description:
+      '달콤한 맛을 좋아하고 도수는 낮은 게 좋은 당신, 아마도 술이 아직 낯설거나, 분위기를 즐기는 타입 같아요',
+    result:
+      '그런 당신께는 도수는 낮고, 맛은 확실한 하이볼이나 칵테일류를 추천드려요.',
+    img: DorangImage4.src,
+  },
+  {
+    id: 5,
+    name: '5. 스위트 크리미형',
+    description:
+      '달콤한 맛을 좋아하고 도수는 낮은 게 좋은 당신, 아마도 술이 아직 낯설거나, 분위기를 즐기는 타입 같아요',
+    result:
+      '그런 당신께는 도수는 낮고, 맛은 확실한 하이볼이나 칵테일류를 추천드려요.',
+    img: DorangImage5.src,
+  },
+];
