@@ -27,5 +27,8 @@
     "prettier": "^3.6.1",
     "prettier-plugin-tailwindcss": "^0.6.13",
     "turbo": "^2.5.4"
+  },
+  "dependencies": {
+    "browser-image-compression": "^2.0.2"
   }
 }

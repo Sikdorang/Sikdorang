@@ -110,6 +110,7 @@ export default function EditMenuModal({
         minOption: group.minSelectable,
         maxOption: group.maxSelectable,
         optionRequired: group.required,
+
         optionDetails: group.items.map((item) => ({
           menuOptionId: item.optionId,
           optionDetailId: item.optionDetailId,

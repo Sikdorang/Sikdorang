@@ -31,10 +31,13 @@ export default function ThreeStepSlider({
   dislikeOptions = ['술 지정하기', '소주', '맥주', '와인', '막걸리'],
 }: ThreeStepSliderProps) {
   const dropdownRef = useRef<MenuCustomFinderDropdownHandle>(null);
+  const buttonRef = useRef<HTMLDivElement>(null);
+  const [isOpen, setIsOpen] = useState(false);
   const [dislikeOption, setDislikeOption] = useState(dislikeOptions[0]);
 
   const handleSetClick = () => {
     dropdownRef.current?.open();
+    setIsOpen((prev) => !prev);
   };
 
   const handleChange = (opts: string[]) => {
@@ -115,23 +118,38 @@ export default function ThreeStepSlider({
         <div className="text-gray-800 text-mb-1">{headerText}</div>
 
         <div className="relative">
-          <CtaButton
-            width="fit"
-            size="small"
-            text="지정하기"
-            color="white"
-            onClick={handleSetClick}
-          />
-
-          <div className="absolute z-50 w-60" style={{ top: '80%', right: 80 }}>
-            <MenuCustomFinderDropdown
-              ref={dropdownRef}
-              options={menus || []}
-              selectedOptions={selectedMenus || []}
-              onChange={(valueList) => handleChange(valueList)}
-              hideTrigger
+          <div ref={buttonRef}>
+            <CtaButton
+              width="fit"
+              size="small"
+              text="지정하기"
+              color="white"
+              onClick={handleSetClick}
             />
           </div>
+
+          {isOpen && buttonRef.current && (
+            <div
+              className="absolute z-50 w-60 bg-white rounded-xl shadow-lg"
+              style={{
+                top:
+                  buttonRef.current.getBoundingClientRect().bottom +
+                  window.scrollY +
+                  4,
+                left:
+                  buttonRef.current.getBoundingClientRect().left +
+                  window.scrollX,
+              }}
+            >
+              <MenuCustomFinderDropdown
+                ref={dropdownRef}
+                options={menus || []}
+                selectedOptions={selectedMenus || []}
+                onChange={(valueList) => handleChange(valueList)}
+                hideTrigger
+              />
+            </div>
+          )}
         </div>
       </div>
     </div>

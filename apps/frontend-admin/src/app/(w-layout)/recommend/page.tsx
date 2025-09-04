@@ -1,5 +1,6 @@
 'use client';
 
+import { RecommendationMode } from '../../../types/request/recommend';
 import CtaButton, {
   default as CategoryButton,
 } from '@/components/common/buttons/CtaButton';
@@ -8,6 +9,7 @@ import MenuCustomFinderDropdown, {
 } from '@/components/pages/menuEdit/MenuCustomFinderDropdown';
 import FeatureCard from '@/components/pages/recommend/FeatureCard';
 import { useManageCategory } from '@/hooks/useManageCategory';
+import { useManageRecommend } from '@/hooks/useManageRecommend';
 import DeleteIcon from '@public/icons/ic_x.svg';
 import LightRecommendImage from '@public/images/img_2_drinks.png';
 import FullRecommendImage from '@public/images/img_4_drinks.png';
@@ -20,18 +22,53 @@ export default function RecommendPage() {
   const router = useRouter();
   const dropdownRef = useRef<MenuCustomFinderDropdownHandle>(null);
 
-  const { categories, isCategoriesLoading, createCategory, fetchCategories } =
-    useManageCategory();
+  const { categories, fetchCategories } = useManageCategory();
+
+  const {
+    fetchRecommendationMode,
+    updateRecommendationMode,
+    updateRecommendationCategories,
+  } = useManageRecommend();
+
+  const handleNext = async () => {
+    try {
+      await updateRecommendationCategories({ categoryId: selectedCategories });
+      setShowRecommendOptions(true);
+    } catch (error) {
+      console.error('카테고리 업데이트 실패:', error);
+    }
+  };
+
+  const handleSelect = async (mode: 'SIMPLE' | 'PRECISE', path: string) => {
+    await updateRecommendationMode(mode);
+    router.push(path);
+  };
 
   useEffect(() => {
     fetchCategories();
   }, []);
 
+  useEffect(() => {
+    const init = async () => {
+      const mode: RecommendationMode | null = await fetchRecommendationMode();
+      if (mode === 'PRECISE') {
+        router.push('/recommend/full');
+        return;
+      }
+      if (mode === 'SIMPLE') {
+        router.push('/recommend/light');
+        return;
+      }
+    };
+
+    init();
+  }, []);
+
   const [showRecommendOptions, setShowRecommendOptions] = useState(false);
   const [showCategorySelection, setShowCategorySelection] = useState(false);
-  const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
+  const [selectedCategories, setSelectedCategories] = useState<number[]>([]);
 
-  const handleDropdownChange = (values: string[]) => {
+  const handleDropdownChange = (values: number[]) => {
     setSelectedCategories(values);
   };
 
@@ -70,7 +107,7 @@ export default function RecommendPage() {
   }
 
   if (showCategorySelection && !showRecommendOptions) {
-    const handleCategoryToggle = (category: string) => {
+    const handleCategoryToggle = (category: number) => {
       setSelectedCategories((prev) =>
         prev.includes(category)
           ? prev.filter((c) => c !== category)
@@ -113,7 +150,10 @@ export default function RecommendPage() {
                   >
                     <MenuCustomFinderDropdown
                       ref={dropdownRef}
-                      options={categories}
+                      options={categories.map((category) => ({
+                        id: category.id,
+                        name: category.category,
+                      }))}
                       selectedOptions={selectedCategories}
                       onChange={handleDropdownChange}
                       hideTrigger
@@ -128,14 +168,16 @@ export default function RecommendPage() {
                 selectedCategories.map((category) => (
                   <CategoryButton
                     key={category}
-                    text={category}
+                    text={
+                      categories.find((c) => c.id === category)?.category || ''
+                    }
                     color="white"
                     size="small"
                     width="fit"
                     radius="full"
                     right={
                       <span className="text-mb-5 text-gray-200">
-                        <Image src={DeleteIcon} alt="plus" />
+                        <DeleteIcon />
                       </span>
                     }
                     onClick={() => handleCategoryToggle(category)}
@@ -157,9 +199,7 @@ export default function RecommendPage() {
               <CtaButton
                 size="large"
                 text="다음으로"
-                onClick={() => {
-                  setShowRecommendOptions(true);
-                }}
+                onClick={handleNext}
                 radius="_3xl"
                 className="bg-yellow-400 hover:bg-yellow-500 text-gray-900 font-semibold"
               />
@@ -185,7 +225,7 @@ export default function RecommendPage() {
             title="10개 세밀 분류"
             subTitle="주종이 많은 매장"
             description={`10개 유형으로 취향에 맞는 술을 정교하게 추천해요. 다양한 주종을 보유한 매장에 잘 어울려요.`}
-            onClick={() => router.push('/recommend/full')}
+            onClick={() => handleSelect('PRECISE', '/recommend/full')}
           />
 
           <div className="flex gap-4 items-stretch h-full" />
@@ -195,7 +235,7 @@ export default function RecommendPage() {
             title="5개 대표 그룹"
             subTitle="주종이 적은 매장"
             description="5개 대표 유형으로 간편하고 쉬운 추천을 제공해요. 주종이 적은 매장에 적합해요."
-            onClick={() => router.push('/recommend/light')}
+            onClick={() => handleSelect('SIMPLE', '/recommend/light')}
           />
         </div>
       </div>

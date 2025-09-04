@@ -32,6 +32,7 @@ export const SUCCESS_MESSAGES = {
   OrderSaveSuccess: '순서 변경 저장에 성공했습니다.',
   deleteMenuSuccess: '메뉴 삭제에 성공했습니다.',
   updateStoreInfoSuccess: '매장 정보가 성공적으로 업데이트되었습니다.',
+  updateRecommendationModeSuccess: '추천 모드가 설정되었습니다.',
 };
 
 export const TERMS_OF_SERVICE = `제1조(목적)
