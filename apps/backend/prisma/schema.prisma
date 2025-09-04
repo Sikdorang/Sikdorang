@@ -228,8 +228,7 @@ model OrderItemOptionDetail {
 }
 
 enum TasteType {
-  SWEET
-  SOUR
+  TASTE
   BODY
   ALCOHOL_PERCENTAGE
 }
