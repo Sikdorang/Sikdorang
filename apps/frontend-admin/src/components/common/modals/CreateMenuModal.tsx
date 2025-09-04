@@ -12,7 +12,6 @@ import { IMenuDetailItem, IMenuImageItem } from '@/types/model/menu';
 import AddIcon from '@public/icons/ic_plus.svg';
 import CloseIcon from '@public/icons/ic_x.svg';
 import { LexoRank } from 'lexorank';
-import Image from 'next/image';
 import { ChangeEvent, useEffect, useState } from 'react';
 
 export interface CreateMenuModalProps {
@@ -55,8 +54,12 @@ export default function CreateMenuModal({
       if (menus.length === 0) {
         newOrder = LexoRank.middle().toString();
       } else {
-        const lastOrder = menus[menus.length - 1].order;
-        newOrder = LexoRank.parse(lastOrder).genNext().toString();
+        const lastMenu = menus[menus.length - 1];
+        if (lastMenu && lastMenu.order) {
+          newOrder = LexoRank.parse(lastMenu.order).genNext().toString();
+        } else {
+          newOrder = LexoRank.middle().toString();
+        }
       }
 
       const requestData = [
@@ -171,7 +174,7 @@ export default function CreateMenuModal({
           <div className="mb-4 flex items-center justify-between">
             <div />
             <button onClick={onClose}>
-              <Image src={CloseIcon} alt="close" width={12} height={12} />
+              <CloseIcon width={12} height={12} />
             </button>
           </div>
           <div className="mb-6 flex items-center justify-between text-2xl font-bold">
@@ -242,7 +245,7 @@ export default function CreateMenuModal({
                 width="fit"
                 right={
                   <span className="text-mobile-body-s-semibold text-gray-200">
-                    <Image src={AddIcon} alt="plus" />
+                    <AddIcon />
                   </span>
                 }
                 onClick={() => {}}

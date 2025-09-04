@@ -12,8 +12,8 @@ interface RecommendTableRowProps {
   isLastRow: boolean;
   onDetailClick: () => void;
   onSetClick: (value: string) => void;
-  categories: string[];
-  selectedOptions: string[];
+  menus: string[];
+  selectedMenus: string[];
 }
 
 export default function RecommendTableRow({

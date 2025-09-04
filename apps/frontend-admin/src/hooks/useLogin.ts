@@ -38,9 +38,18 @@ export const useLogin = () => {
       setIsLoading(false);
     }
   };
+  const logout = async () => {
+    try {
+      await AuthAPI.logout();
+    } catch (error) {
+      handelError(error);
+    }
+    router.push('/');
+  };
 
   return {
     kakaoLogin,
+    logout,
     isLoading,
     setIsLoading,
     loginError,

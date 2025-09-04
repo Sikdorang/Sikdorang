@@ -5,12 +5,15 @@ import SoundButton from '@/components/common/buttons/SoundButton';
 import ConfirmModal from '@/components/common/modals/ConfirmModal';
 import KakaoChannelGuide from '@/components/pages/settings/KakaoChannelGuide';
 import SettingTable from '@/components/pages/settings/SettingTable';
+import { useLogin } from '@/hooks/useLogin';
 import { ISettingAction, ISettingStates } from '@/types/model/store';
 import { useRouter } from 'next/navigation';
 import { useEffect, useRef, useState } from 'react';
 
 export default function SettingsPage() {
   const router = useRouter();
+  const { logout } = useLogin();
+
   const [showInquiryModal, setShowInquiryModal] = useState<boolean>(false);
   const [showLogoutModal, setShowLogoutModal] = useState<boolean>(false);
   const [showWithdrawModal, setShowWithdrawModal] = useState<boolean>(false);
@@ -133,7 +136,10 @@ export default function SettingsPage() {
       <ConfirmModal
         isOpen={showLogoutModal}
         title="로그아웃 하시겠습니까?"
-        onConfirm={() => router.push('/')}
+        onConfirm={() => {
+          logout();
+          router.push('/');
+        }}
         onCancel={() => setShowLogoutModal(false)}
       />
 

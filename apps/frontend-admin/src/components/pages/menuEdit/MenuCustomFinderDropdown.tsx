@@ -4,7 +4,6 @@ import TextInput from '../../common/inputs/TextInput';
 import MenuCustomFinderDropdownItem from './MenuCustomFinderDropdownItem';
 import CheckedIcon from '@public/icons/ic_checked_circle.svg';
 import SearchIcon from '@public/icons/ic_magnifier.svg';
-import Image from 'next/image';
 import {
   forwardRef,
   useEffect,
@@ -119,13 +118,7 @@ const MenuCustomFinderDropdown = forwardRef<
                 onChange={(e) => setSearchText(e.currentTarget.value)}
               />
               {searchText === '' && (
-                <Image
-                  src={SearchIcon}
-                  alt="검색"
-                  width={30}
-                  height={30}
-                  className="absolute top-1/2 right-7 -translate-y-1/2 pointer-events-none"
-                />
+                <SearchIcon className="absolute top-1/2 right-7 -translate-y-1/2 pointer-events-none" />
               )}
             </div>
 

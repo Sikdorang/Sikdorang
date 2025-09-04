@@ -4,6 +4,11 @@ import {
   UpdateMenuDetailsDto,
   UpdateMenuOptionsDto,
 } from '@/types/request/menu';
+import axios from 'axios';
+
+export type PresignedResponse = {
+  url: string;
+};
 
 export const MenuAPI = {
   getAllMenus: async () => {
@@ -44,5 +49,18 @@ export const MenuAPI = {
   updateMenuImages: async (menuId: number) => {
     const res = await axiosInstance.post(`/menu/${menuId}/image`);
     return res.data;
+  },
+
+  getPresignedUrl: async (menuId: number, filename: string) => {
+    const res = await axiosInstance.post<PresignedResponse>(`/s3/${menuId}`, {
+      filename,
+    });
+    return res.data;
+  },
+
+  uploadToS3: async (presignedUrl: string, file: File) => {
+    await axios.put(presignedUrl, file, {
+      headers: { 'Content-Type': file.type },
+    });
   },
 };

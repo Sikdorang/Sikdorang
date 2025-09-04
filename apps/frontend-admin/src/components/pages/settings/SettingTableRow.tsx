@@ -2,7 +2,6 @@
 
 import ToggleSwitch from '../../common/buttons/ToggleSwitch';
 import DepthIcon from '@public/icons/ic_chevron_right.svg';
-import Image from 'next/image';
 
 interface SettingTableRowProps {
   label: string;
@@ -28,7 +27,7 @@ export default function SettingTableRow({
       case 'depth':
         return (
           <div className="pr-6">
-            <Image src={DepthIcon} width={8} height={16} alt="" />
+            <DepthIcon width={8} height={16} />
           </div>
         );
       case 'toggle':

@@ -4,9 +4,11 @@ import { MenuAPI } from '@/services/menu';
 import { ICreateMenuRequest, IMenuCategory } from '@/types/model/menu';
 import {
   UpdateMenuDetailsDto,
+  UpdateMenuImageDto,
   UpdateMenuOptionsDto,
 } from '@/types/request/menu';
 import axios from 'axios';
+import imageCompression from 'browser-image-compression';
 import { useCallback, useState } from 'react';
 import { toast } from 'react-toastify';
 
@@ -143,6 +145,48 @@ export const useManageMenu = () => {
       handelError(error);
     }
   };
+
+  const updateMenuImages = useCallback(
+    async (
+      menuId: number,
+      originalImages: IMenuImageItem[],
+      updatedImages: IMenuImageItem[],
+    ) => {
+      const toUpload = updatedImages.filter((img) => !img.id || img.id === 0);
+      const uploaded: IMenuImageItem[] = [];
+      for (const img of toUpload) {
+        if (!img.file || !img.image_url) continue;
+        const compressed = await imageCompression(img.file, {
+          maxSizeMB: 2,
+          maxWidthOrHeight: 1920,
+          useWebWorker: true,
+          fileType: 'image/webp',
+          initialQuality: 0.75,
+        });
+        const filename = `${img.image_url}.webp`;
+        const { url } = await MenuAPI.getPresignedUrl(menuId, filename);
+        await MenuAPI.uploadToS3(url, compressed);
+        uploaded.push({ ...img, image_url: filename });
+      }
+      // 2) 기존 + 업로드된 병합
+      const merged = (updatedImages || []).map((img) => {
+        const up = uploaded.find((u) => u.order === img.order);
+        return up || img;
+      });
+      // 3) 서버에 PATCH 호출
+      const payload: UpdateMenuImageDto = {
+        images: merged.map((i) => ({
+          id: i.id || 0,
+          image_url: i.image_url,
+          order: i.order,
+        })),
+      };
+      await MenuAPI.updateMenuDetails(menuId, payload);
+      toast.success(SUCCESS_MESSAGES.updateMenuSuccess);
+      return merged;
+    },
+    [],
+  );
 
   return {
     menus,
