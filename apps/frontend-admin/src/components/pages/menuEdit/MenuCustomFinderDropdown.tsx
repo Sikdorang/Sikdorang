@@ -26,8 +26,8 @@ export interface MenuCustomFinderDropdownHandle {
 interface MenuCustomFinderDropdownProps {
   options: MenuOption[];
   selectedOptions: number[];
-  isStatus?: boolean;
   isNumbers?: boolean;
+  onClose?: () => void;
   onChange: (ids: number[]) => void;
   hideTrigger?: boolean;
 }
@@ -40,8 +40,8 @@ const MenuCustomFinderDropdown = forwardRef<
     {
       options,
       selectedOptions,
-      isStatus = false,
       isNumbers = false,
+      onClose,
       onChange,
       hideTrigger = false,
     },
@@ -49,7 +49,9 @@ const MenuCustomFinderDropdown = forwardRef<
   ) => {
     const [isOpen, setIsOpen] = useState(false);
     const [searchText, setSearchText] = useState('');
+
     const selectRef = useRef<HTMLDivElement>(null);
+    const selectionDirtyRef = useRef(false);
 
     useImperativeHandle(
       ref,
@@ -80,15 +82,20 @@ const MenuCustomFinderDropdown = forwardRef<
       (opt.name?.toLowerCase() ?? '').includes(searchText.toLowerCase()),
     );
 
-    // 토글: id 기준
     const toggleOption = (opt: MenuOption) => {
       const next = selectedOptions.includes(opt.id)
         ? selectedOptions.filter((id) => id !== opt.id)
         : [...selectedOptions, opt.id];
+
+      if (
+        next.length !== selectedOptions.length ||
+        next.some((id) => !selectedOptions.includes(id))
+      ) {
+        selectionDirtyRef.current = true;
+      }
       onChange(next);
     };
 
-    // 트리거에 표시할 텍스트: 선택된 name 목록
     const triggerText =
       (selectedOptions || []).length > 0
         ? options
@@ -96,6 +103,13 @@ const MenuCustomFinderDropdown = forwardRef<
             .map((opt) => opt.name)
             .join(', ')
         : '0';
+
+    useEffect(() => {
+      if (!isOpen && selectionDirtyRef.current) {
+        onClose?.();
+        selectionDirtyRef.current = false;
+      }
+    }, [isOpen, onClose]);
 
     return (
       <div className="relative" ref={selectRef}>

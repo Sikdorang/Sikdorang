@@ -2,8 +2,15 @@ import { axiosInstance } from '.';
 import { UpdateRecommendationModeDto } from '@/types/request/recommend';
 
 export const RecommendAPI = {
-  getRecommendationCategories: async () => {
+  getRecommendationMenus: async () => {
     const res = await axiosInstance.get('/recommendation/category');
+    return res.data;
+  },
+
+  getRecommendationMode: async () => {
+    const res = await axiosInstance.get(
+      '/recommendation/recommendationTypeData',
+    );
     return res.data;
   },
 
@@ -22,6 +29,31 @@ export const RecommendAPI = {
     const res = await axiosInstance.put('/recommendation/category', {
       categoryId: categoryIds.categoryId,
     });
+    return res.data;
+  },
+
+  getRecommendationTypeData: async (recommendationTypeId: number) => {
+    const res = await axiosInstance.get(
+      `/recommendation/recommendationTypeData/${recommendationTypeId}`,
+    );
+    return res.data;
+  },
+
+  getRecommendationTypeMenus: async (recommendationTypeId: number) => {
+    const res = await axiosInstance.get(
+      `/recommendation/recommendation-menu/${recommendationTypeId}`,
+    );
+    return res.data;
+  },
+
+  updateRecommendationTypeMenus: async (
+    recommendationTypeId: number,
+    menuIds: number[],
+  ) => {
+    const res = await axiosInstance.put(
+      `/recommendation/recommendation-menu/${recommendationTypeId}`,
+      { menuId: menuIds },
+    );
     return res.data;
   },
 };

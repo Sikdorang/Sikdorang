@@ -85,3 +85,8 @@ export interface ICreateMenuRequest {
   status: string;
   order: string;
 }
+
+export interface MenuOption {
+  id: number;
+  name: string;
+}

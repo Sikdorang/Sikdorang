@@ -1,5 +1,6 @@
 'use client';
 
+import { RecommendationMode } from '../../../types/request/recommend';
 import CtaButton, {
   default as CategoryButton,
 } from '@/components/common/buttons/CtaButton';
@@ -21,15 +22,17 @@ export default function RecommendPage() {
   const router = useRouter();
   const dropdownRef = useRef<MenuCustomFinderDropdownHandle>(null);
 
-  const { categories, isCategoriesLoading, createCategory, fetchCategories } =
-    useManageCategory();
+  const { categories, fetchCategories } = useManageCategory();
 
-  const { updateRecommendationMode, updateRecommendationCategories } =
-    useManageRecommend();
+  const {
+    fetchRecommendationMode,
+    updateRecommendationMode,
+    updateRecommendationCategories,
+  } = useManageRecommend();
 
   const handleNext = async () => {
     try {
-      await updateRecommendationCategories(selectedCategories);
+      await updateRecommendationCategories({ categoryId: selectedCategories });
       setShowRecommendOptions(true);
     } catch (error) {
       console.error('카테고리 업데이트 실패:', error);
@@ -43,6 +46,22 @@ export default function RecommendPage() {
 
   useEffect(() => {
     fetchCategories();
+  }, []);
+
+  useEffect(() => {
+    const init = async () => {
+      const mode: RecommendationMode | null = await fetchRecommendationMode();
+      if (mode === 'PRECISE') {
+        router.push('/recommend/full');
+        return;
+      }
+      if (mode === 'SIMPLE') {
+        router.push('/recommend/light');
+        return;
+      }
+    };
+
+    init();
   }, []);
 
   const [showRecommendOptions, setShowRecommendOptions] = useState(false);

@@ -6,23 +6,58 @@ import RepresentDrinkSelector from '@/components/pages/recommend/RepresentDrinkS
 import { recommedTypeList } from '@/constants/recommend';
 import { useManageRecommend } from '@/hooks/useManageRecommend';
 import { IRecommendTableItem } from '@/types/model/menu';
-import { useState } from 'react';
+import {
+  RecommendationMenuItem,
+  RecommendationTypeData,
+} from '@/types/request/recommend';
+import { useEffect, useState } from 'react';
 
 export default function FullRecommendPage() {
-  const {} = useManageRecommend();
+  const {
+    fetchRecommendationMenus,
+    fetchRecommendationTypeData,
+    fetchRecommendationTypeMenus,
+    updateRecommendationTypeMenus,
+    recommendationMenus,
+  } = useManageRecommend();
 
   const [modalOpen, setModalOpen] = useState(false);
   const [modalData, setModalData] = useState<IRecommendTableItem | null>(null);
+  const [modalTypeData, setModalTypeData] =
+    useState<RecommendationTypeData | null>(null);
+  const [selectedMenusByCategory, setSelectedMenusByCategory] = useState<
+    Record<number, number[]>
+  >({});
 
-  const openModal = (item: IRecommendTableItem) => {
+  const openModal = async (item: IRecommendTableItem) => {
     setModalData(item);
+    const typeData = await fetchRecommendationTypeData(item.id);
+    setModalTypeData(typeData ?? null);
     setModalOpen(true);
   };
 
   const closeModal = () => {
     setModalOpen(false);
     setModalData(null);
+    setModalTypeData(null);
   };
+
+  useEffect(() => {
+    (async () => {
+      await fetchRecommendationMenus();
+
+      for (const type of recommedTypeList) {
+        const existingItems = await fetchRecommendationTypeMenus(type.id);
+        const existingIds = existingItems?.map((i) => i.id) ?? [];
+
+        setSelectedMenusByCategory((prev) => ({
+          ...prev,
+          [type.id]: existingIds,
+        }));
+      }
+    })();
+  }, []);
+
   return (
     <div className="flex flex-col items-center justify-center">
       <div className="wrapper flex w-full flex-col items-center justify-center py-4 gap-8 border-t border-gray-100">
@@ -50,28 +85,63 @@ export default function FullRecommendPage() {
                 </tr>
               </thead>
               <tbody className="text-mb-3 rounded-t-none rounded-bl-xl rounded-br-xl border border-t-0 text-gray-700">
-                {recommedTypeList.map((item, idx) => (
-                  <RecommendTableRow
-                    key={item.id}
-                    item={item}
-                    isLastRow={idx === recommedTypeList.length - 1}
-                    onDetailClick={() => openModal(item)}
-                    onSetClick={() => {}}
-                    menus={['참이슬', '처음처럼', '진로']}
-                    selectedMenus={[]}
-                  />
-                ))}
+                {recommedTypeList.map((item, idx) => {
+                  const allMenuOptions = Array.isArray(recommendationMenus)
+                    ? recommendationMenus
+                        .reduce(
+                          (acc, cat) => acc.concat(cat.items),
+                          [] as RecommendationMenuItem[],
+                        )
+                        .map((i: { id: number; name: string }) => ({
+                          id: i.id,
+                          name: i.name,
+                        }))
+                    : [];
+
+                  return (
+                    <RecommendTableRow
+                      key={item.id}
+                      item={item}
+                      isLastRow={idx === recommedTypeList.length - 1}
+                      updateRecommendationTypeMenus={(
+                        recommendationTypeId: number,
+                        menuIds: number[],
+                      ) =>
+                        updateRecommendationTypeMenus(
+                          recommendationTypeId,
+                          menuIds,
+                        )
+                      }
+                      onDetailClick={() => openModal(item)}
+                      onSetClick={(menuId) => {
+                        setSelectedMenusByCategory((prev) => {
+                          const prevList = prev[item.id] ?? [];
+                          const exists = prevList.includes(menuId);
+                          const nextList = exists
+                            ? prevList.filter((id) => id !== menuId)
+                            : [...prevList, menuId];
+                          return { ...prev, [item.id]: nextList };
+                        });
+                      }}
+                      menus={allMenuOptions}
+                      selectedMenus={selectedMenusByCategory[item.id] ?? []}
+                    />
+                  );
+                })}
               </tbody>
             </table>
           </div>
         </div>
+        <button className="px-4 py-2 bg-blue-500 text-white rounded">
+          저장하기
+        </button>
       </div>
 
-      {modalOpen && modalData && (
+      {modalOpen && modalData && modalTypeData && (
         <RecommendResultCard
-          title={'이런 타입이에요 !'}
-          description={modalData.description}
-          result={(modalData as any).result || ''}
+          title={modalTypeData.type}
+          description={modalTypeData.customerDescription}
+          result={modalTypeData.adminDescription}
           image={<img src={modalData.img} alt={modalData.name} />}
           onClose={closeModal}
         />

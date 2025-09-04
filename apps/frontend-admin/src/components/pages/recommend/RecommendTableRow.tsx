@@ -4,21 +4,26 @@ import CtaButton from '../../common/buttons/CtaButton';
 import MenuCustomFinderDropdown, {
   MenuCustomFinderDropdownHandle,
 } from '../menuEdit/MenuCustomFinderDropdown';
-import { IRecommendTableItem } from '@/types/model/menu';
+import { IRecommendTableItem, MenuOption } from '@/types/model/menu';
 import { useRef } from 'react';
 
 interface RecommendTableRowProps {
   item: IRecommendTableItem;
   isLastRow: boolean;
+  updateRecommendationTypeMenus?: (
+    recommendationTypeId: number,
+    menuIds: number[],
+  ) => void;
   onDetailClick: () => void;
-  onSetClick: (value: string) => void;
-  menus: string[];
-  selectedMenus: string[];
+  onSetClick: (value: number) => void;
+  menus: MenuOption[];
+  selectedMenus: number[];
 }
 
 export default function RecommendTableRow({
   item,
   isLastRow,
+  updateRecommendationTypeMenus,
   onDetailClick,
   onSetClick,
   menus,
@@ -30,8 +35,13 @@ export default function RecommendTableRow({
     dropdownRef.current?.open();
   };
 
-  const handleChange = (opts: string[]) => {
-    onSetClick(opts[opts.length - 1]);
+  const handleChange = (ids: number[]) => {
+    const lastId = ids[ids.length - 1];
+    if (lastId != null) onSetClick(lastId);
+  };
+
+  const handleDropdownClose = () => {
+    updateRecommendationTypeMenus?.(item.id, selectedMenus);
   };
 
   return (
@@ -68,9 +78,10 @@ export default function RecommendTableRow({
         <div className="absolute z-50 w-60" style={{ top: '80%', right: 80 }}>
           <MenuCustomFinderDropdown
             ref={dropdownRef}
-            options={menus || []}
+            options={menus}
             selectedOptions={selectedMenus}
             onChange={handleChange}
+            onClose={handleDropdownClose}
             hideTrigger
           />
         </div>
