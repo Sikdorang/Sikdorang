@@ -11,21 +11,23 @@ export function PutRecommendationCategorySwagger() {
         '- 새로 추가되거나, 기존에 존재하지만 누락된 항목은 삭제됩니다.',
     }),
     ApiBody({
-      description: 'categoryId가 포함된 객체 배열',
+      description: '추천 카테고리 ID 배열',
       schema: {
-        type: 'array',
-        items: {
-          type: 'object',
-          properties: {
-            categoryId: {
+        type: 'object',
+        properties: {
+          categoryId: {
+            type: 'array',
+            items: {
               type: 'integer',
-              example: 1,
-              description: '카테고리 ID',
             },
+            example: [3, 4, 5],
+            description: '추천할 카테고리 ID 목록',
           },
-          required: [],
         },
-        example: [{ categoryId: 1 }, { categoryId: 3 }, { categoryId: 5 }],
+        required: ['categoryId'],
+        example: {
+          categoryId: [3, 4, 5],
+        },
       },
     }),
     ApiResponse({

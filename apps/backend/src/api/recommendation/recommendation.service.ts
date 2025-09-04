@@ -21,29 +21,34 @@ export class RecommendationService {
                 where: {
                   status: 'SALE',
                 },
-                select: {
-                  id: true,
-                  menu: true,
-                  price: true,
-                  description: true,
+                include: {
+                  images: {
+                    where: { deleted: false },
+                    orderBy: { order: 'asc' },
+                  },
                 },
+                orderBy: { order: 'asc' },
               },
             },
           },
         },
       });
 
-    // 카테고리 이름을 키로 하고 메뉴 배열을 값으로 하는 객체로 변환
-    const result = recommendationCategories.reduce(
-      (acc, recCategory) => {
-        const categoryName = recCategory.category.category;
-        acc[categoryName] = recCategory.category.menus;
-        return acc;
-      },
-      {} as Record<string, any[]>,
-    );
-
-    return result;
+    // 카테고리별로 묶어서 반환
+    return recommendationCategories.map((recCategory) => ({
+      categoryId: recCategory.category.id,
+      category: recCategory.category.category,
+      items: recCategory.category.menus.map((menu) => ({
+        id: menu.id,
+        name: menu.menu,
+        price: menu.price,
+        isNew: menu.new,
+        isPopular: menu.popular,
+        imgUrl: menu.images.length > 0 ? menu.images[0].image : undefined,
+        status: menu.status,
+        order: menu.order,
+      })),
+    }));
   }
 
   async putRecommendationCategory({
