@@ -50,7 +50,7 @@ export default function ShopGuide({
             {label}
           </div>
           <TooltipModalPresenter className="items-center justify-center">
-            <InfoIcon width={20} height={20} />
+            <InfoIcon />
           </TooltipModalPresenter>
         </div>
         <button

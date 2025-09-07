@@ -17,7 +17,7 @@ export interface OptionDetailDto {
 }
 
 export interface MenuOptionDto {
-  menuId: number;
+  optionId?: number;
   option: string;
   minOption: number;
   maxOption: number;

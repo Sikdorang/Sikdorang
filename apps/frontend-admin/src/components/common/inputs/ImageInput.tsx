@@ -40,6 +40,13 @@ export default function ImageInput({
   const sensors = useSensors(useSensor(PointerSensor));
   const CDN_URL = process.env.NEXT_PUBLIC_CDN_BASE_URL;
 
+  const getImageUrl = (image: IMenuImageItem) => {
+    if (image.preview) {
+      return image.preview;
+    }
+    return `${CDN_URL}/${image}`;
+  };
+
   const handleDragEnd = (event: DragEndEvent) => {
     const { active, over } = event;
     if (active.id !== over?.id && over) {
@@ -65,11 +72,13 @@ export default function ImageInput({
   const [selectedImage, setSelectedImage] = useState<IMenuImageItem | null>(
     (images || [])[0] || null,
   );
+
   useEffect(() => {
     if (images.length > 0 && !selectedImage) {
       setSelectedImage(images[0]);
     }
   }, [images, selectedImage]);
+
   const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(event.target.files || []);
     setImages((prevImages: IMenuImageItem[] = []) => {
@@ -82,8 +91,13 @@ export default function ImageInput({
       let currentRank: LexoRank;
 
       if (validImages.length > 0) {
-        const lastOrder = validImages[validImages.length - 1].order;
-        currentRank = LexoRank.parse(lastOrder);
+        const lastImage = validImages[validImages.length - 1];
+        const lastOrder = lastImage?.order || LexoRank.middle().toString();
+        try {
+          currentRank = LexoRank.parse(lastOrder);
+        } catch (error) {
+          currentRank = LexoRank.middle();
+        }
       } else {
         currentRank = LexoRank.middle().genPrev();
       }
@@ -99,6 +113,7 @@ export default function ImageInput({
           file,
         });
       });
+      console.log('debug uploadedImages: ', uploadedImages);
 
       const updatedImages = [...validImages, ...uploadedImages];
       return updatedImages;
@@ -108,7 +123,6 @@ export default function ImageInput({
   const handleDeleteImage = (index: number) => {
     const updatedImages = images.filter((_, i) => i !== index);
     setImages(updatedImages);
-
     if (selectedImage === images[index]) {
       setSelectedImage(updatedImages[0] || null);
     }
@@ -146,13 +160,7 @@ export default function ImageInput({
       <div className="mb-4 flex h-64 w-full items-center justify-center rounded-xl bg-gray-100">
         {selectedImage ? (
           <img
-            src={
-              selectedImage.id === 0
-                ? (selectedImage.preview ?? '')
-                : selectedImage.image_url
-                  ? CDN_URL + '/' + selectedImage.image_url
-                  : ''
-            }
+            src={getImageUrl(selectedImage) ?? undefined}
             alt="선택된 이미지"
             className="h-full w-full rounded-md object-contain"
           />
@@ -183,18 +191,18 @@ export default function ImageInput({
           <div className="mb-3 flex items-center space-x-2 overflow-x-auto">
             {Array.isArray(images) &&
               images.map((image, index) => {
-                const image_path = CDN_URL + '/' + image;
-                console.log(image_path);
-                console.log('debuggggg', image);
+                const url = getImageUrl(image);
+                if (!url) return null;
+                // console.log('debug url: ', url);
+                // console.log('debug image.image_url: ', image.image_url);
+                // console.log('debug image.order: ', image.order);
                 return (
                   <SortableItem
-                    key={image_path}
-                    id={image_path}
-                    image={image_path}
+                    key={url}
+                    id={url}
+                    image={url}
                     selectedImage={
-                      selectedImage?.id === 0
-                        ? (selectedImage?.preview ?? '')
-                        : (image_path ?? '')
+                      selectedImage ? getImageUrl(selectedImage)! : null
                     }
                     onSelect={() => setSelectedImage(image)}
                     onDelete={() => handleDeleteImage(index)}

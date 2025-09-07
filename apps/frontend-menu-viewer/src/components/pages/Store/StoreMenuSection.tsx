@@ -12,7 +12,6 @@ export default function StoreMenuSection() {
   const navigate = useNavigate();
   const { data } = useFetchMenusQuery();
   const { items, getTotalPrice, getSelectedItemCount } = useCartStore();
-
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const groupRefs = useRef<Record<string, HTMLElement | null>>({});
   const tabRefs = useRef<Record<string, HTMLElement | null>>({});

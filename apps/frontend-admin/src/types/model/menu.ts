@@ -37,7 +37,7 @@ export interface IRecommendTableItem {
 }
 
 export interface IMenuImageItem {
-  id: number;
+  id?: number;
   image_url: string;
   url?: string;
   order: string;
@@ -45,20 +45,20 @@ export interface IMenuImageItem {
   preview?: string;
 }
 
-export interface IMenuOptionItem {
-  optionId: number;
-  optionDetailId: number;
-  name: string;
+export interface IOptionDetailsItem {
+  menuOptionId?: number;
+  optionDetailId?: number;
+  optionDetail: string;
   price: number;
 }
 
 export interface IMenuOptionGroup {
-  groupId: string;
-  title: string;
-  required: boolean;
-  minSelectable: number;
-  maxSelectable: number;
-  items: IMenuOptionItem[];
+  optionId?: number;
+  option: string;
+  optionRequired: boolean;
+  minOption: number;
+  maxOption: number;
+  optionDetails: IOptionDetailsItem[];
 }
 
 export interface IMenuDetailItem {

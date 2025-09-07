@@ -1,3 +1,11 @@
+export interface OpeningHour {
+  day: 'MON' | 'TUE' | 'WED' | 'THU' | 'FRI' | 'SAT' | 'SUN';
+  startHour: number;
+  startMin: number;
+  endHour: number;
+  endMin: number;
+  open: boolean;
+}
 export interface UpdateStoreRequest {
   store?: string;
   wifiId?: string;
@@ -5,9 +13,9 @@ export interface UpdateStoreRequest {
   phoneNumber?: string;
   naverPlace?: string;
   corkagePossible?: boolean;
-  corkageFee?: string;
+  corkagePrice?: number;
   toilet?: string;
-  time?: Array<{}>;
+  time?: OpeningHour[];
 }
 
 export type UpdateStoreNameRequest = Pick<UpdateStoreRequest, 'store'>;

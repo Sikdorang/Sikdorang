@@ -12,22 +12,22 @@ interface OptionInputProps extends React.InputHTMLAttributes<HTMLInputElement> {
   options?: IMenuOptionGroup[];
   onOptionsChange?: (options: IMenuOptionGroup[]) => void;
   onDelete?: () => void;
-  onAddOption: (groupId: string) => void;
+  onAddOption: (groupId: number) => void;
   optionName?: string;
-  onOptionTitleChange?: (groupId: string, newTitle: string) => void;
+  onOptionTitleChange?: (groupId: number, newTitle: string) => void;
   onItemNameChange?: (
-    groupId: string,
-    optionId: string,
+    groupId: number,
+    optionId: number,
     newName: string,
   ) => void;
   onItemPriceChange?: (
-    groupId: string,
-    optionId: string,
+    groupId: number,
+    optionId: number,
     newPrice: number,
   ) => void;
-  onDeleteItem?: (groupId: string, optionId: string) => void;
-  onMaxSelectableChange?: (groupId: string, max: number) => void;
-  onRequiredToggle?: (groupId: string, required: boolean) => void;
+  onDeleteItem?: (groupId: number, optionId: number) => void;
+  onMaxSelectableChange?: (groupId: number, max: number) => void;
+  onRequiredToggle?: (groupId: number, required: boolean) => void;
 }
 
 export default function OptionInput({
@@ -62,26 +62,28 @@ export default function OptionInput({
     </div>
   );
 
-  const onDeleteOptionGroup = (groupId: string) => {
+  const onDeleteOptionGroup = (optionId: number) => {
     if (!onOptionsChange) return;
     const updatedOptions =
-      options?.filter((group) => group.groupId !== groupId) ?? [];
+      options?.filter((group) => group.optionId !== optionId) ?? [];
     onOptionsChange(updatedOptions);
   };
 
   // 하위 항목 이름 변경
   const handleItemNameChange = (
-    groupId: string,
-    optionId: string,
+    groupId: number,
+    optionId: number,
     newName: string,
   ) => {
     if (!onOptionsChange) return;
     const updated = options.map((g) =>
-      g.groupId === groupId
+      g.optionId === groupId
         ? {
             ...g,
-            items: g.items.map((item) =>
-              item.optionId === optionId ? { ...item, name: newName } : item,
+            optionDetails: g.optionDetails.map((item) =>
+              item.optionDetailId === optionId
+                ? { ...item, name: newName }
+                : item,
             ),
           }
         : g,
@@ -91,17 +93,19 @@ export default function OptionInput({
 
   // 하위 항목 가격 변경
   const handleItemPriceChange = (
-    groupId: string,
-    optionId: string,
+    groupId: number,
+    optionId: number,
     newPrice: number,
   ) => {
     if (!onOptionsChange) return;
     const updated = options.map((g) =>
-      g.groupId === groupId
+      g.optionId === groupId
         ? {
             ...g,
-            items: g.items.map((item) =>
-              item.optionId === optionId ? { ...item, price: newPrice } : item,
+            optionDetails: g.optionDetails.map((item) =>
+              item.optionDetailId === optionId
+                ? { ...item, price: newPrice }
+                : item,
             ),
           }
         : g,
@@ -110,13 +114,15 @@ export default function OptionInput({
   };
 
   // 하위 항목 삭제
-  const handleDeleteItem = (groupId: string, optionId: string) => {
+  const handleDeleteItem = (groupId: number, optionId: number) => {
     if (!onOptionsChange) return;
     const updated = options.map((g) =>
-      g.groupId === groupId
+      g.optionId === optionId
         ? {
             ...g,
-            items: g.items.filter((item) => item.optionId !== optionId),
+            optionDetails: g.optionDetails.filter(
+              (item) => item.optionDetailId !== optionId,
+            ),
           }
         : g,
     );
@@ -124,19 +130,19 @@ export default function OptionInput({
   };
 
   // **최대 선택 개수 변경 핸들러**
-  const handleMaxSelectableChange = (groupId: string, max: number) => {
+  const handleMaxSelectableChange = (groupId: number, max: number) => {
     if (!onOptionsChange) return;
     const updated = options.map((g) =>
-      g.groupId === groupId ? { ...g, maxSelectable: max } : g,
+      g.optionId === groupId ? { ...g, maxSelectable: max } : g,
     );
     onOptionsChange(updated);
   };
 
   // **필수 토글 핸들러**
-  const handleRequiredToggle = (groupId: string, required: boolean) => {
+  const handleRequiredToggle = (groupId: number, required: boolean) => {
     if (!onOptionsChange) return;
     const updated = options.map((g) =>
-      g.groupId === groupId ? { ...g, required } : g,
+      g.optionId === groupId ? { ...g, required } : g,
     );
     onOptionsChange(updated);
   };
@@ -145,11 +151,11 @@ export default function OptionInput({
     <div className="flex w-full flex-col gap-4 rounded-2xl bg-gray-100 p-8">
       {hasOptions ? (
         options.map((optionGroup, groupIndex) => (
-          <div key={optionGroup.groupId} className="mb-6">
+          <div key={optionGroup.optionId} className="mb-6">
             <div className="flex">
               <span className="grow"></span>
               <button
-                onClick={() => onDeleteOptionGroup?.(optionGroup.groupId)}
+                onClick={() => onDeleteOptionGroup?.(optionGroup.optionId)}
                 className="flex h-8 w-8 items-center justify-center rounded-full transition-colors hover:bg-gray-200"
               >
                 <CancelIcon width={16} height={16} />
@@ -159,9 +165,9 @@ export default function OptionInput({
             <TextInput
               label="옵션 제목"
               placeholder="옵션 제목을 입력해주세요."
-              value={optionGroup.title}
+              value={optionGroup.option}
               onChange={(e) =>
-                onOptionTitleChange?.(optionGroup.groupId, e.target.value)
+                onOptionTitleChange?.(optionGroup.optionId, e.target.value)
               }
               maxLength={20}
             />
@@ -173,34 +179,38 @@ export default function OptionInput({
                 size="small"
                 color="white"
                 width="fit"
-                onClick={() => onAddOption?.(optionGroup.groupId)}
+                onClick={() => onAddOption?.(optionGroup.optionId)}
               />
             </div>
 
             <div className="flex flex-col items-center justify-center gap-4">
-              {optionGroup.items && optionGroup.items.length > 0 ? (
-                optionGroup.items.map((item) => (
+              {optionGroup.optionDetails &&
+              optionGroup.optionDetails.length > 0 ? (
+                optionGroup.optionDetails.map((item) => (
                   <MenuOptionElement
-                    key={item.optionId}
-                    optionId={item.optionId}
-                    name={item.name}
+                    key={item.optionDetailId}
+                    optionId={item.optionDetailId}
+                    name={item.optionDetail}
                     price={item.price}
                     onNameChange={(newName) =>
                       handleItemNameChange(
-                        optionGroup.groupId,
-                        item.optionId,
+                        optionGroup.optionId,
+                        item.optionDetailId,
                         newName,
                       )
                     }
                     onPriceChange={(newPrice) =>
                       handleItemPriceChange(
-                        optionGroup.groupId,
-                        item.optionId,
+                        optionGroup.optionId,
+                        item.optionDetailId,
                         newPrice,
                       )
                     }
                     onDelete={() =>
-                      handleDeleteItem(optionGroup.groupId, item.optionId)
+                      handleDeleteItem(
+                        optionGroup.optionId,
+                        item.optionDetailId,
+                      )
                     }
                   />
                 ))
@@ -227,17 +237,17 @@ export default function OptionInput({
                       '9',
                       '10',
                     ]}
-                    selectedOption={optionGroup.maxSelectable.toString()}
+                    selectedOption={optionGroup.maxOption.toString()}
                     onChange={(value) =>
                       handleMaxSelectableChange(
-                        optionGroup.groupId,
+                        optionGroup.optionId,
                         parseInt(value),
                       )
                     }
                     isNumbers={true}
                   />
                 </div>
-                {optionGroup.required ? (
+                {optionGroup.optionRequired ? (
                   <div className="flex justify-center items-center gap-2 text-sm text-gray-600 hover:text-gray-800">
                     <div>옵션 선택 최소 제한</div>
                     <MenuCustomDropdown
@@ -253,10 +263,10 @@ export default function OptionInput({
                         '9',
                         '10',
                       ]}
-                      selectedOption={optionGroup.minSelectable.toString()}
+                      selectedOption={optionGroup.minOption.toString()}
                       onChange={(value) =>
                         handleMaxSelectableChange(
-                          optionGroup.groupId,
+                          optionGroup.optionId,
                           parseInt(value),
                         )
                       }
@@ -265,9 +275,9 @@ export default function OptionInput({
                   </div>
                 ) : undefined}
                 <ToggleSwitch
-                  isOn={optionGroup.required}
+                  isOn={optionGroup.optionRequired}
                   onToggle={(isReq) =>
-                    handleRequiredToggle(optionGroup.groupId, isReq)
+                    handleRequiredToggle(optionGroup.optionId, isReq)
                   }
                   label="주문시 옵션 필수 선택"
                 />

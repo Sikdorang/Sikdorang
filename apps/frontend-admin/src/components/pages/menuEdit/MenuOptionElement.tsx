@@ -6,7 +6,7 @@ import { HTMLAttributes, PropsWithChildren } from 'react';
 interface MenuOptionElementProps
   extends HTMLAttributes<HTMLDivElement>,
     PropsWithChildren {
-  optionId: string;
+  optionId: number;
   name: string;
   price: number;
   onNameChange?: (newName: string) => void;

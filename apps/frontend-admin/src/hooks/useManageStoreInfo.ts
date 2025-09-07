@@ -17,6 +17,7 @@ export const useManageStoreInfo = () => {
     setStoreError(null);
     try {
       const response = await StoreInfoAPI.getStoreInfos();
+      console.log('API 응답:', response);
       setStoreInfos(response);
     } catch (error) {
       if (axios.isAxiosError(error) && error.response?.status === 401) {

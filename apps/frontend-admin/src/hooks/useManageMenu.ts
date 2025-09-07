@@ -74,9 +74,7 @@ export const useManageMenu = () => {
   ) => {
     setIsMenusLoading(true);
     try {
-      // 서버에 변경된 필드만 담긴 syncData 전송
       const updatedMenus = await MenuAPI.updateMenus(syncData);
-      // 기존 메뉴 배열에 server 반환값을 반영
       setMenus((prev) =>
         prev.map((menu) => updatedMenus.find((u) => u.id === menu.id) ?? menu),
       );
@@ -89,7 +87,6 @@ export const useManageMenu = () => {
         } else if (status === 401) {
           setMenuError(ERROR_MESSAGES.authenticationError);
         } else {
-          // 기타 에러 핸들링
           console.error(error);
         }
       }
@@ -153,24 +150,42 @@ export const useManageMenu = () => {
   const updateMenuImages = useCallback(
     async (
       menuId: number,
-      toUpload: IMenuImageItem[],
-      uploaded: IMenuImageItem[],
-    ) => {
-      const registerPayload = toUpload.map((img) => ({
-        image: img.image_url + '.webp',
-        order: img.order,
-      }));
+      newImages: IMenuImageItem[],
+      existingImages: IMenuImageItem[],
+    ): Promise<IMenuImageItem[]> => {
+      if (newImages.length === 0) {
+        return existingImages;
+      }
+
+      const allImages = [...existingImages, ...newImages];
+
+      const registerPayload = allImages.map((img) => {
+        const imageName = img.image_url.endsWith('.webp')
+          ? img.image_url
+          : img.image_url + '.webp';
+
+        return {
+          image: imageName,
+          order: img.order,
+        };
+      });
 
       const presignList: PresignImageEntry[] = await MenuAPI.updateMenuImages(
         menuId,
         registerPayload,
       );
 
+      const uploadedResults: IMenuImageItem[] = [];
       for (const entry of presignList) {
-        const img = toUpload.find((i) => i.order === entry.order);
-        if (!img?.file) continue;
+        const imgItem = newImages.find(
+          (i) => i.image_url + '.webp' === entry.originalName,
+        );
 
-        const compressed = await imageCompression(img.file, {
+        if (!imgItem?.file) {
+          continue;
+        }
+
+        const compressed = await imageCompression(imgItem.file, {
           maxSizeMB: 2,
           maxWidthOrHeight: 1920,
           useWebWorker: true,
@@ -180,19 +195,21 @@ export const useManageMenu = () => {
 
         await MenuAPI.uploadToS3(entry.uploadUrl, compressed);
 
-        uploaded.push({
-          ...img,
+        uploadedResults.push({
+          ...imgItem,
           id: entry.id,
-          image_url: entry.publicUrl,
+          image_url: entry.key,
           order: entry.order,
           file: undefined,
+          preview: undefined,
         });
       }
 
-      return uploaded;
+      return [...existingImages, ...uploadedResults];
     },
     [menus],
   );
+
   return {
     menus,
     isMenusLoading,

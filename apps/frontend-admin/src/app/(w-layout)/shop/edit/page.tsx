@@ -5,7 +5,7 @@ import TextInput from '@/components/common/inputs/TextInput';
 import BusinessHours from '@/components/pages/shop/BusinessHours';
 import Corkage from '@/components/pages/shop/Corkage';
 import { useManageStoreInfo } from '@/hooks/useManageStoreInfo';
-import { UpdateStoreRequest } from '@/types/model/payload';
+import { OpeningHour, UpdateStoreRequest } from '@/types/model/payload';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 
 export default function EditShopPage() {
@@ -79,6 +79,18 @@ export default function EditShopPage() {
     updateInfoItem('wifi', `ID ${e.target.value} / PW ${wifiPw}`);
   };
 
+  const handleCorkageChange = (possible: boolean, price: number) => {
+    updateInfoItem('corkagePossible', possible.toString());
+    updateInfoItem('corkagePrice', price.toString());
+  };
+
+  const getCorkagePossible = () => getInfoValue('corkagePossible') === 'true';
+  const getCorkagePrice = () => Number(getInfoValue('corkagePrice') || '0');
+
+  const handleBusinessHoursChange = (hours: OpeningHour[]) => {
+    updateInfoItem('openHour', JSON.stringify(hours));
+  };
+
   const handleWifiPwChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setWifiPw(e.target.value);
     updateInfoItem('wifi', `ID ${wifiId} / PW ${e.target.value}`);
@@ -88,30 +100,37 @@ export default function EditShopPage() {
     if (!shouldShowSaveButton) return;
 
     const body: Partial<UpdateStoreRequest> = {};
+
     changedFields.forEach(({ key, newValue }) => {
-      if (key === 'store') {
-        body.store = newValue;
-      } else if (key === 'wifi') {
-        if (typeof newValue === 'string' && newValue.includes(' / ')) {
-          const [id, pw] = newValue.split(' / ');
-          body.wifiId = id.replace('ID ', '').trim();
-          body.wifiPassword = pw.replace('PW ', '').trim();
-        }
-      } else if (key === 'corkage') {
-        body.corkagePossible = newValue.includes('가능');
-        body.corkageFee = !newValue.includes('유료');
-      } else if (key === 'phoneNumber') {
-        body.phoneNumber = newValue;
-      } else if (key === 'naverPlace') {
-        body.naverPlace = newValue;
-      } else if (key === 'toilet') {
-        body.toilet = newValue;
-      } else if (key === 'openHour') {
-        body.time = [
-          {
-            /* parse as needed from newValue */
-          },
-        ];
+      switch (key) {
+        case 'store':
+          body.store = newValue;
+          break;
+        case 'wifi':
+          if (typeof newValue === 'string' && newValue.includes(' / ')) {
+            const [id, pw] = newValue.split(' / ');
+            body.wifiId = id.replace('ID ', '').trim();
+            body.wifiPassword = pw.replace('PW ', '').trim();
+          }
+          break;
+        case 'corkagePossible':
+          body.corkagePossible = newValue === 'true';
+          break;
+        case 'corkagePrice':
+          body.corkagePrice = Number(newValue);
+          break;
+        case 'phoneNumber':
+          body.phoneNumber = newValue;
+          break;
+        case 'naverPlace':
+          body.naverPlace = newValue;
+          break;
+        case 'toilet':
+          body.toilet = newValue;
+          break;
+        case 'openHour':
+          body.time = JSON.parse(newValue as string) as OpeningHour[];
+          break;
       }
     });
 
@@ -135,13 +154,16 @@ export default function EditShopPage() {
         <BusinessHours
           label="영업 시간"
           value={getInfoValue('openHour')}
-          onChange={(v) => updateInfoItem('openHour', v)}
+          onChange={handleBusinessHoursChange}
         />
 
         <Corkage
           label="콜키지"
-          value={getInfoValue('corkage')}
-          onChange={(v) => updateInfoItem('corkage', v)}
+          value={getInfoValue('corkage')} // 조회 시 "가능 1000" 또는 "불가" 형태
+          onChange={(possible, price) => (
+            updateInfoItem('corkagePossible', possible.toString()),
+            updateInfoItem('corkagePrice', price.toString())
+          )}
         />
 
         <TextInput
