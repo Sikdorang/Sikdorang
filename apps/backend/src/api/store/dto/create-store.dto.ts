@@ -84,4 +84,13 @@ export class CreateStoreDto {
   @ValidateNested({ each: true })
   @Type(() => StoreHourDto)
   time?: StoreHourDto[];
+
+  @ApiPropertyOptional({
+    description: '영업시간 여부',
+    type: Boolean,
+    example: true,
+  })
+  @IsOptional()
+  @IsBoolean()
+  isBusinessTimeSame?: boolean;
 }

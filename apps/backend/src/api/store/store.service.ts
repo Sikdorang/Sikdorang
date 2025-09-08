@@ -85,6 +85,10 @@ export class StoreService {
       const infoItems = [
         { key: 'openHour', value: openHourValue, order: infoOrder?.hoursOrder },
         {
+          key: 'isBusinessTimeSame',
+          value: store?.isBusinessTimeSame ? '동일' : '다름',
+        },
+        {
           key: 'wifi',
           value:
             store?.wifiId && store?.wifiPassword
