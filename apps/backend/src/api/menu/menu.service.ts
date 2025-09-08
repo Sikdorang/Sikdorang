@@ -373,7 +373,10 @@ export class MenuService {
       isNew: menu.new,
       isPopular: menu.popular,
       status: menu.status,
-      images: menu.images.map((img) => img.image),
+      images: menu.images.map((img) => ({
+        image: img.image,
+        order: img.order,
+      })),
       optionGroups: menu.menuOptions.map((opt) => ({
         groupId: opt.id.toString(),
         title: opt.option,
