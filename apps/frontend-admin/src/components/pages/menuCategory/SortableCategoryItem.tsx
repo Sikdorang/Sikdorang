@@ -18,7 +18,7 @@ interface SortableCategoryItemProps {
 interface CategoryItem {
   id: number;
   name: string;
-  order?: number;
+  order: string;
   parentId?: number | null;
   children?: CategoryItem[];
   isExpanded?: boolean;

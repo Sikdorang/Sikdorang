@@ -1,156 +1,195 @@
 'use client';
 
-import OrderCategory from '../../../components/common/buttons/CtaButton';
-import OrderListItem from '../../../components/pages/order/OrderListItem';
+import OrderCategory from '@/components/common/buttons/CtaButton';
+import MenuCustomDropdown from '@/components/pages/menuEdit/MenuCustomDropdown';
+import OrderBill from '@/components/pages/order/OrderBill';
+import OrderListItem from '@/components/pages/order/OrderListItem';
+import { useMenuOrder } from '@/hooks/useMenuOrder';
 import { useRouter } from 'next/navigation';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 export default function OrderPage() {
   const router = useRouter();
-
+  const [viewMode, setViewMode] = useState<'table' | 'order'>('order');
+  const options = [
+    { label: '주문 별로 보기', value: 'order' },
+    { label: '테이블 별로 보기', value: 'table' },
+  ];
   const [selectedCategory, setSelectedCategory] = useState<
     '전체주문' | '완료주문' | '삭제주문'
   >('전체주문');
 
-  const [tableOrdersData, setTableOrdersData] = useState([
+  const { menuOrder, fetchMenuOrder, setMenuOrder } = useMenuOrder();
+
+  const debugOrders = [
     {
-      tableNumber: 1,
-      items: [
-        {
-          id: 1,
-          name: '소주',
-          quantity: 1,
-          isSelected: true,
-          options: ['메모맛'],
-        },
-        { id: 2, name: '맥주', quantity: 2, isSelected: false },
-        { id: 3, name: '박은석', quantity: 1, isSelected: false },
-        { id: 4, name: '한승연', quantity: 1, isSelected: false },
-        { id: 5, name: '이상현', quantity: 1, isSelected: false },
-      ],
-    },
-    {
-      tableNumber: 2,
-      items: [
-        { id: 6, name: '맥주', quantity: 3, isSelected: true },
-        {
-          id: 7,
-          name: '치킨',
-          quantity: 1,
-          isSelected: true,
-          options: ['양념', '순살'],
-        },
-        { id: 8, name: '마갈리', quantity: 2, isSelected: false },
-        {
-          id: 9,
-          name: '피자',
-          quantity: 1,
-          isSelected: false,
-          options: ['페퍼로니'],
-        },
-      ],
-    },
-    {
-      tableNumber: 3,
-      items: [
-        { id: 10, name: '삼겹살', quantity: 2, isSelected: false },
-        {
-          id: 11,
-          name: '소주',
-          quantity: 4,
-          isSelected: true,
-          options: ['참이슬'],
-        },
-        { id: 12, name: '김치찌개', quantity: 1, isSelected: false },
-        { id: 13, name: '공기밥', quantity: 3, isSelected: false },
-        { id: 14, name: '맛있는 마갈리', quantity: 1, isSelected: true },
-        { id: 15, name: '콜라', quantity: 2, isSelected: false },
-      ],
-    },
-    {
-      tableNumber: 4,
-      items: [
-        {
-          id: 16,
-          name: '파스타',
-          quantity: 1,
-          isSelected: true,
-          options: ['크림', '알리오올리오'],
-        },
-        {
-          id: 17,
-          name: '와인',
-          quantity: 1,
-          isSelected: false,
-          options: ['레드'],
-        },
-        { id: 18, name: '샐러드', quantity: 1, isSelected: false },
-      ],
-    },
-    {
+      orderId: 12,
+      createdAt: '2025-08-12T03:25:10.000Z',
       tableNumber: 5,
+      storeId: 2,
+      totalPrice: 48000,
       items: [
-        { id: 19, name: '우동', quantity: 2, isSelected: false },
         {
-          id: 20,
-          name: '튀김',
-          quantity: 1,
-          isSelected: true,
-          options: ['새우', '야채'],
+          orderItemId: 101,
+          menuId: 5,
+          menuName: '참소라 무침',
+          quantity: 2,
+          unitPrice: 25000,
+          optionExtraPerUnit: 500,
+          lineTotal: 51000,
+          selectedOptions: [
+            {
+              menuOptionId: 12,
+              menuOptionName: '맵기 옵션',
+              optionDetails: [
+                { optionDetailId: 101, name: '기본맛', price: 0 },
+                { optionDetailId: 102, name: '보통맛', price: 500 },
+              ],
+            },
+          ],
         },
-        { id: 21, name: '맛없는 마갈리', quantity: 1, isSelected: false },
-        { id: 22, name: '이유진', quantity: 1, isSelected: true },
-        { id: 23, name: '이정민', quantity: 1, isSelected: false },
+        {
+          orderItemId: 101,
+          menuId: 5,
+          menuName: '참소라 무침',
+          quantity: 2,
+          unitPrice: 25000,
+          optionExtraPerUnit: 500,
+          lineTotal: 51000,
+          selectedOptions: [
+            {
+              menuOptionId: 12,
+              menuOptionName: '맵기 옵션',
+              optionDetails: [
+                { optionDetailId: 101, name: '기본맛', price: 0 },
+                { optionDetailId: 102, name: '보통맛', price: 500 },
+              ],
+            },
+          ],
+        },
       ],
     },
     {
-      tableNumber: 6,
+      orderId: 13,
+      createdAt: '2025-08-13T05:14:22.000Z',
+      tableNumber: 2,
+      storeId: 2,
+      totalPrice: 30000,
       items: [
-        { id: 19, name: '우동', quantity: 2, isSelected: false },
         {
-          id: 20,
-          name: '튀김',
+          orderItemId: 102,
+          menuId: 3,
+          menuName: '치킨',
           quantity: 1,
-          isSelected: true,
-          options: ['새우', '야채'],
+          unitPrice: 30000,
+          optionExtraPerUnit: 0,
+          lineTotal: 30000,
+          selectedOptions: [],
         },
-        { id: 21, name: '맛없는 마갈리', quantity: 1, isSelected: false },
-        { id: 22, name: '이유진', quantity: 1, isSelected: true },
-        { id: 23, name: '이정민', quantity: 1, isSelected: false },
       ],
     },
     {
-      tableNumber: 7,
+      orderId: 14,
+      createdAt: '2025-08-13T05:14:22.000Z',
+      tableNumber: 2,
+      storeId: 2,
+      totalPrice: 30000,
       items: [
-        { id: 19, name: '우동', quantity: 2, isSelected: false },
         {
-          id: 20,
-          name: '튀김',
+          orderItemId: 102,
+          menuId: 3,
+          menuName: '치킨',
           quantity: 1,
-          isSelected: true,
-          options: ['새우', '야채'],
+          unitPrice: 30000,
+          optionExtraPerUnit: 0,
+          lineTotal: 30000,
+          selectedOptions: [],
         },
-        { id: 21, name: '맛없는 마갈리', quantity: 1, isSelected: false },
-        { id: 22, name: '이유진', quantity: 1, isSelected: true },
-        { id: 23, name: '이정민', quantity: 1, isSelected: false },
       ],
     },
-  ]);
+    {
+      orderId: 15,
+      createdAt: '2025-08-13T05:14:22.000Z',
+      tableNumber: 2,
+      storeId: 2,
+      totalPrice: 30000,
+      items: [
+        {
+          orderItemId: 102,
+          menuId: 3,
+          menuName: '치킨',
+          quantity: 1,
+          unitPrice: 30000,
+          optionExtraPerUnit: 0,
+          lineTotal: 30000,
+          selectedOptions: [],
+        },
+      ],
+    },
+    {
+      orderId: 16,
+      createdAt: '2025-08-13T05:14:22.000Z',
+      tableNumber: 2,
+      storeId: 2,
+      totalPrice: 30000,
+      items: [
+        {
+          orderItemId: 102,
+          menuId: 3,
+          menuName: '치킨',
+          quantity: 1,
+          unitPrice: 30000,
+          optionExtraPerUnit: 0,
+          lineTotal: 30000,
+          selectedOptions: [],
+        },
+      ],
+    },
+    {
+      orderId: 17,
+      createdAt: '2025-08-13T05:14:22.000Z',
+      tableNumber: 2,
+      storeId: 2,
+      totalPrice: 30000,
+      items: [
+        {
+          orderItemId: 102,
+          menuId: 3,
+          menuName: '치킨',
+          quantity: 1,
+          unitPrice: 30000,
+          optionExtraPerUnit: 0,
+          lineTotal: 30000,
+          selectedOptions: [],
+        },
+      ],
+    },
+  ];
+
+  useEffect(() => {
+    setMenuOrder(debugOrders);
+  }, []);
+
+  // useEffect(() => {
+  //   fetchMenuOrder();
+  // }, [fetchMenuOrder]);
 
   const [selectedOrderIds, setSelectedOrderIds] = useState<number[]>([]);
 
-  // 각 테이블의 선택 ID 배열 업데이트
   const handleSelectionChange = (tableNumber: number, ids: number[]) => {
     setSelectedOrderIds((prev) => {
-      // 같은 테이블의 이전 ID 제거
       const filtered = prev.filter((id) => {
-        const table = tableOrdersData.find(
-          (t) => t.tableNumber === tableNumber,
-        );
-        return table ? !table.items.some((item) => item.id === id) : true;
+        const table = menuOrder.find((t) => t.tableNumber === tableNumber);
+        return table
+          ? !table.items.some((item) => item.orderItemId === id)
+          : true;
       });
       return [...filtered, ...ids];
     });
+  };
+
+  const handleComplete = (orderId: number) => {
+    setMenuOrder((prev) => prev.filter((o) => o.orderId !== orderId));
   };
 
   return (
@@ -159,43 +198,83 @@ export default function OrderPage() {
       style={{ height: 'calc(100vh - 90px)' }}
     >
       <div className="wrapper flex w-full flex-col items-center justify-center pb-4 gap-8">
-        <div className="flex gap-4 w-full">
-          <OrderCategory
-            width="fit"
-            radius="full"
-            text="전체주문"
-            color={selectedCategory === '전체주문' ? 'black' : 'white'}
-            onClick={() => setSelectedCategory('전체주문')}
+        <div className="flex w-full">
+          <div className="flex grow gap-4">
+            <OrderCategory
+              width="fit"
+              radius="full"
+              text="전체주문"
+              color={selectedCategory === '전체주문' ? 'black' : 'white'}
+              onClick={() => setSelectedCategory('전체주문')}
+            />
+            <OrderCategory
+              width="fit"
+              radius="full"
+              text="완료주문"
+              color={selectedCategory === '완료주문' ? 'black' : 'white'}
+              onClick={() => setSelectedCategory('완료주문')}
+            />
+            <OrderCategory
+              width="fit"
+              radius="full"
+              text="삭제주문"
+              color={selectedCategory === '삭제주문' ? 'black' : 'white'}
+              onClick={() => setSelectedCategory('삭제주문')}
+            />
+          </div>
+          <MenuCustomDropdown
+            options={options.map((o) => o.label)}
+            selectedOption={
+              options.find((o) => o.value === viewMode)?.label || ''
+            }
+            onChange={(label) => {
+              const found = options.find((o) => o.label === label);
+              if (found) setViewMode(found.value as 'table' | 'order');
+            }}
           />
-          <OrderCategory
-            width="fit"
-            radius="full"
-            text="완료주문"
-            color={selectedCategory === '완료주문' ? 'black' : 'white'}
-            onClick={() => setSelectedCategory('완료주문')}
-          />
-          <OrderCategory
-            width="fit"
-            radius="full"
-            text="삭제주문"
-            color={selectedCategory === '삭제주문' ? 'black' : 'white'}
-            onClick={() => setSelectedCategory('삭제주문')}
-          />
+        </div>
+
+        <div className="flex w-full items-center justify-between px-4">
+          <div className="text-lg font-semibold text-gray-800">
+            현재 주문{' '}
+            {viewMode === 'order'
+              ? (menuOrder || []).length
+              : (menuOrder || []).reduce(
+                  (acc, table) => acc + table.items.length,
+                  0,
+                )}
+          </div>
         </div>
       </div>
 
-      <div className="max-w-[1200px] flex w-full py-4 gap-8 bg-gray-300 flex-1 overflow-x-auto overflow-y-hidden rounded-md">
-        <div className="flex gap-4 p-4 px-8">
-          {tableOrdersData.map((tableData) => (
-            <OrderListItem
-              key={tableData.tableNumber}
-              tableNumber={tableData.tableNumber}
-              items={tableData.items}
-              onSelectionChange={handleSelectionChange}
-            />
-          ))}
+      {viewMode === 'table' ? (
+        <div className="max-w-[1200px] flex w-full py-4 gap-8 bg-gray-300 flex-1 overflow-x-auto overflow-y-hidden rounded-md shadow-2xl">
+          <div className="flex gap-4 p-4 px-8">
+            {(menuOrder || []).map((tableData) => (
+              <OrderListItem
+                key={tableData.tableNumber}
+                tableNumber={tableData.tableNumber}
+                items={tableData.items}
+                onSelectionChange={handleSelectionChange}
+              />
+            ))}
+          </div>
         </div>
-      </div>
+      ) : (
+        <div className="max-w-[1200px] flex-1 w-full py-4 gap-8 mb-2 bg-gray-300 overflow-x-auto rounded-md shadow-2xl">
+          <div className="flex gap-4 px-4" style={{ minWidth: 'max-content' }}>
+            {(menuOrder || []).map((order) => (
+              <div key={order.orderId} className="flex-shrink-0 w-[300px]">
+                <OrderBill
+                  order={order}
+                  onComplete={handleComplete}
+                  onReject={handleComplete}
+                />
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
     </div>
   );
 }

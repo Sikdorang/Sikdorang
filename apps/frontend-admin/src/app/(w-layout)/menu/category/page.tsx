@@ -9,6 +9,12 @@ import SortableCategoryItem from '@/components/pages/menuCategory/SortableCatego
 import { useManageCategory } from '@/hooks/useManageCategory';
 import { useManageMenu } from '@/hooks/useManageMenu';
 import {
+  flattenAll,
+  flattenRender,
+  itemKey,
+  rebuildHierarchy,
+} from '@/utilities/ordering';
+import {
   closestCenter,
   DndContext,
   DragEndEvent,
@@ -25,63 +31,17 @@ import {
   sortableKeyboardCoordinates,
   verticalListSortingStrategy,
 } from '@dnd-kit/sortable';
+import { LexoRank } from 'lexorank';
 import { useEffect, useId, useState } from 'react';
 
 interface CategoryItem {
   id: number;
   name: string;
+  order: string;
   parentId?: number;
   isExpanded?: boolean;
   children: CategoryItem[];
 }
-
-function flattenAll(
-  items: CategoryItem[],
-  depth = 0,
-): (CategoryItem & { depth: number })[] {
-  return items.flatMap((item) => [
-    { ...item, depth },
-    ...flattenAll(item.children, depth + 1),
-  ]);
-}
-
-function flattenRender(
-  items: CategoryItem[],
-  depth = 0,
-): (CategoryItem & { depth: number })[] {
-  return items.flatMap((item) => {
-    const row = { ...item, depth };
-    if (item.isExpanded) {
-      return [row, ...flattenRender(item.children, depth + 1)];
-    }
-    return [row];
-  });
-}
-
-function rebuildHierarchy(
-  flat: (CategoryItem & { depth: number })[],
-): CategoryItem[] {
-  const map = new Map<string, CategoryItem & { depth: number }>();
-  flat.forEach((item) => {
-    map.set(itemKey(item), { ...item, children: [] });
-  });
-  const roots: CategoryItem[] = [];
-  flat.forEach((item) => {
-    const key = itemKey(item);
-    const node = map.get(key)!;
-    if (item.parentId != null) {
-      map.get(`cat-${item.parentId}`)!.children.push(node);
-    } else {
-      roots.push(node);
-    }
-  });
-  return roots;
-}
-
-const itemKey = (item: CategoryItem) =>
-  item.parentId != null
-    ? `cat-${item.parentId}-item-${item.id}`
-    : `cat-${item.id}`;
 
 export default function MenuCategoryPage() {
   const dndId = useId();
@@ -104,7 +64,13 @@ export default function MenuCategoryPage() {
     placeholder: '',
     isCat: false,
   });
-  const [inputValue, setInputValue] = useState('');
+
+  const [updatedCategoryOrders, setUpdatedCategoryOrders] = useState<
+    { categoryId: number; order: string }[]
+  >([]);
+  const [updatedMenuOrders, setUpdatedMenuOrders] = useState<
+    { menuId: number; order: string }[]
+  >([]);
 
   const [categories, setCategories] = useState<CategoryItem[]>([]);
   const [activeId, setActiveId] = useState<string | null>(null);
@@ -128,12 +94,12 @@ export default function MenuCategoryPage() {
     const mapped: CategoryItem[] = menus.map((cat, idx) => ({
       id: cat.id,
       name: cat.category,
-      order: idx + 1,
+      order: cat.order,
       isExpanded: false,
       children: (cat.items ?? []).map((item, i) => ({
         id: item.id,
         name: item.name,
-        order: i + 1,
+        order: item.order,
         parentId: cat.id,
         children: [],
       })),
@@ -150,21 +116,78 @@ export default function MenuCategoryPage() {
 
   const handleDragStart = (e: DragStartEvent) =>
     setActiveId(e.active.id as string);
+
   const handleDragEnd = (e: DragEndEvent) => {
     if (!e.over || e.active.id === e.over.id) {
       setActiveId(null);
       return;
     }
-    const flat = flattenAll(categories);
-    const oldIdx = flat.findIndex((i) => itemKey(i) === e.active.id);
-    const newIdx = flat.findIndex((i) => itemKey(i) === e.over.id);
-    if (oldIdx < 0 || newIdx < 0 || e.over == null) {
+    const flatAll = flattenAll(categories);
+    const oldIdx = flatAll.findIndex((i) => itemKey(i) === e.active.id);
+    const newIdx = flatAll.findIndex((i) => itemKey(i) === e.over.id);
+    if (oldIdx < 0 || newIdx < 0) {
       setActiveId(null);
       return;
     }
-    const moved = arrayMove(flat, oldIdx, newIdx);
-    setCategories(rebuildHierarchy(moved));
+
+    const movedFlat = arrayMove(flatAll, oldIdx, newIdx);
+    const newTree = rebuildHierarchy(movedFlat);
+    setCategories(newTree);
     setActiveId(null);
+
+    const categoryOrderUpdates: { categoryId: number; order: string }[] = [];
+    const menuOrderUpdates: { menuId: number; order: string }[] = [];
+
+    newTree.forEach((cat, idx) => {
+      const prev = newTree[idx - 1];
+      const next = newTree[idx + 1];
+      let newOrderRank: LexoRank;
+
+      if (prev && next) {
+        const prevRank = LexoRank.parse(prev.order);
+        const nextRank = LexoRank.parse(next.order);
+        newOrderRank = prevRank.between(nextRank);
+      } else if (prev) {
+        newOrderRank = LexoRank.parse(prev.order).genNext();
+      } else if (next) {
+        newOrderRank = LexoRank.parse(next.order).genPrev();
+      } else {
+        newOrderRank = LexoRank.min();
+      }
+
+      const newOrder = newOrderRank.toString();
+      categoryOrderUpdates.push({ categoryId: cat.id, order: newOrder });
+      cat.order = newOrder;
+
+      cat.children.forEach((menu, jdx) => {
+        const siblings = cat.children;
+        const p = siblings[jdx - 1];
+        const n = siblings[jdx + 1];
+        let menuRank: LexoRank;
+
+        if (p && n) {
+          const pRank = LexoRank.parse(p.order);
+          const nRank = LexoRank.parse(n.order);
+          menuRank = pRank.between(nRank);
+        } else if (p) {
+          menuRank = LexoRank.parse(p.order).genNext();
+        } else if (n) {
+          menuRank = LexoRank.parse(n.order).genPrev();
+        } else {
+          menuRank = LexoRank.min();
+        }
+
+        const menuOrder = menuRank.toString();
+        menuOrderUpdates.push({ menuId: menu.id, order: menuOrder });
+        menu.order = menuOrder;
+      });
+    });
+
+    console.log('debug categoryOrderUpdates: ', categoryOrderUpdates);
+    console.log('debug menuOrderUpdates: ', menuOrderUpdates);
+
+    setUpdatedCategoryOrders(categoryOrderUpdates);
+    setUpdatedMenuOrders(menuOrderUpdates);
   };
 
   const toggle = (id: number) =>

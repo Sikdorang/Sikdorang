@@ -2,15 +2,18 @@
 
 import MenuCustomLabel from './MenuCustomLabel';
 import CloseIcon from '@public/icons/ic_cancel.svg';
+import emptyImage from '@public/images/img_empty_image.png';
 import { useRouter } from 'next/navigation';
 
 interface MenuGalleryCardProps {
   onDelete: (menuId: number) => void;
   item: {
     id: number;
-    tags: string[];
     name: string;
-    price: string;
+    price: number;
+    isNew: boolean;
+    isPopular: boolean;
+    imgUrl?: string;
   };
 }
 
@@ -19,6 +22,7 @@ export default function MenuGalleryCard({
   item,
 }: MenuGalleryCardProps) {
   const router = useRouter();
+  const CDN_URL = process.env.NEXT_PUBLIC_CDN_BASE_URL;
 
   return (
     <div
@@ -27,6 +31,11 @@ export default function MenuGalleryCard({
       onClick={() => router.push(`/menu/edit/${item.id}`)}
     >
       <div className="relative h-[300px] w-full aspect-square rounded-2xl bg-gray-100">
+        <img
+          src={item.imgUrl ? `${CDN_URL}/${item.imgUrl}` : emptyImage.src}
+          alt={item.name}
+          className="w-full h-full object-cover rounded-2xl"
+        />
         <button
           className="absolute right-2 top-2 rounded-full p-1 hover:bg-gray-200"
           aria-label="닫기"
@@ -39,9 +48,8 @@ export default function MenuGalleryCard({
         </button>
       </div>
       <div className="flex text-mobile-body-m-semibold text-gray-900 gap-2">
-        {item.tags.map((item) => (
-          <MenuCustomLabel text={item} isTag={true} />
-        ))}
+        {item.isPopular && <MenuCustomLabel text="인기" isTag={true} />}
+        {item.isNew && <MenuCustomLabel text="신메뉴" isTag={true} />}
       </div>
       <div className="pl-1 text-mobile-body-s-regular text-gray-900">
         {item.name}

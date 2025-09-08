@@ -1,4 +1,8 @@
-import { IMenuCategory, IMenuTableItem } from '@/types/model/menu';
+import {
+  IMenuCardItem,
+  IMenuCategory,
+  IMenuTableItem,
+} from '@/types/model/menu';
 
 export const convertToMenuTableItems = (
   data: IMenuCategory[],
@@ -31,3 +35,21 @@ export const convertToMenuTableItems = (
 
   return menuTableItems;
 };
+
+export function convertToMenuCardItems(
+  categories: IMenuCategory[],
+): IMenuCardItem[] {
+  return categories.flatMap((cat) =>
+    cat.items.map((item) => ({
+      id: item.id,
+      name: item.name,
+      price: item.price,
+      isNew: item.isNew,
+      isPopular: item.isPopular,
+      imgUrl: item.imgUrl,
+      categoryId: cat.id,
+      status: item.status,
+      order: item.order,
+    })),
+  );
+}

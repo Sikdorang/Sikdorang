@@ -3,7 +3,6 @@ import CheckedIcon from '@public/icons/ic_checked_box.svg';
 import ToastCheckIcon from '@public/icons/ic_circle_check.svg';
 import UncheckedIcon from '@public/icons/ic_empty_box.svg';
 import TrashIcon from '@public/icons/ic_trashcan.svg';
-import Image from 'next/image';
 import { useEffect, useState } from 'react';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -31,7 +30,7 @@ export default function OrderListItem({
   const showToast = () => {
     toast('주문을 수락했어요', {
       containerId,
-      icon: <Image src={ToastCheckIcon} alt={''} />,
+      icon: <ToastCheckIcon />,
       autoClose: 2000,
       type: 'default',
     });
@@ -74,7 +73,7 @@ export default function OrderListItem({
         <h2 className="text-mh-1">테이블 {tableNumber}번</h2>
 
         <button className="p-2 bg-pink-100 rounded-lg hover:bg-pink-200 transition-colors">
-          <Image src={TrashIcon} alt="" />
+          <TrashIcon />
         </button>
       </div>
 
@@ -98,13 +97,7 @@ export default function OrderListItem({
                   onClick={() => toggleItem(item.id)}
                   className="mr-2 focus:outline-none"
                 >
-                  <Image
-                    src={item.isSelected ? CheckedIcon : UncheckedIcon}
-                    alt={item.isSelected ? 'checked' : 'unchecked'}
-                    width={20}
-                    height={20}
-                    className="w-5 h-5"
-                  />
+                  {item.isSelected ? <CheckedIcon /> : <UncheckedIcon />}
                 </button>
                 <span className="text-mb-4 text-gray-800">{item.name}</span>
                 <div className="flex-1" />

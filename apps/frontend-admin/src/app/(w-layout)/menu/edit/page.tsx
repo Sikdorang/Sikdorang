@@ -24,8 +24,15 @@ import { menuFilterOptions } from '@/constants/filter';
 import { ERROR_MESSAGES } from '@/constants/messages';
 import { useManageCategory } from '@/hooks/useManageCategory';
 import { useManageMenu } from '@/hooks/useManageMenu';
-import { IMenuDetailItem, IMenuTableItem } from '@/types/model/menu';
-import { convertToMenuTableItems } from '@/utilities/reshape';
+import {
+  IMenuCardItem,
+  IMenuDetailItem,
+  IMenuTableItem,
+} from '@/types/model/menu';
+import {
+  convertToMenuCardItems,
+  convertToMenuTableItems,
+} from '@/utilities/reshape';
 import GalleryIcon from '@public/icons/ic_grid.svg';
 import TableIcon from '@public/icons/ic_list.svg';
 import AddIcon from '@public/icons/ic_plus.svg';
@@ -39,6 +46,9 @@ export default function MenuEditPage() {
   const { menus, isMenusLoading, fetchMenus, updateMenus, removeMenu } =
     useManageMenu();
 
+  const [temporaryCardMenus, setTemporaryCardMenus] = useState<IMenuCardItem[]>(
+    [],
+  );
   const [temporaryMenus, setTemporaryMenus] = useState<IMenuTableItem[]>([]);
   useEffect(() => {
     fetchMenus();
@@ -46,6 +56,7 @@ export default function MenuEditPage() {
   }, []);
   useEffect(() => {
     setTemporaryMenus(convertToMenuTableItems(menus));
+    setTemporaryCardMenus(convertToMenuCardItems(menus));
   }, [menus]);
 
   useEffect(() => {
@@ -127,7 +138,7 @@ export default function MenuEditPage() {
       if (orig && curr.status !== orig.status) {
         payload.status = curr.status;
       }
-      if (orig && curr.order !== orig.order) payload.order = curr.order;
+      // if (orig && curr.order !== orig.order) payload.order = curr.order;
 
       requests.push(payload);
     }
@@ -144,7 +155,6 @@ export default function MenuEditPage() {
   const [searchValue, setSearchValue] = useState('');
   const [menuFilter, setMenuFilter] = useState(1);
   const [selectedCategory, setSelectedCategory] = useState<number>(0);
-  const [isLoading, setIsLoading] = useState(true);
 
   const [viewType, setViewType] = useState<'table' | 'gallery'>('table');
 
@@ -194,10 +204,17 @@ export default function MenuEditPage() {
   const [menuTableItems, setMenuTableItems] = useState<IMenuTableItem[]>(() =>
     convertToMenuTableItems(menus),
   );
+  const [cardItems, setCardItems] = useState<IMenuCardItem[]>(() =>
+    convertToMenuCardItems(menus),
+  );
 
   useEffect(() => {
     setMenuTableItems(temporaryMenus);
   }, [temporaryMenus]);
+
+  useEffect(() => {
+    setCardItems(temporaryCardMenus);
+  }, [temporaryCardMenus]);
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedMenuId, setSelectedMenuId] = useState<number | null>(null);
@@ -246,18 +263,50 @@ export default function MenuEditPage() {
     );
   }, [secondFilteredItems, searchValue]);
 
+  const firstCardItems = useMemo(() => {
+    switch (menuFilter) {
+      case 2:
+        return cardItems.filter((item) => item.status === 'SALE');
+      case 3:
+        return cardItems.filter((item) => item.status === 'SOLDOUT');
+      case 4:
+        return cardItems.filter((item) => item.status === 'HIDDEN');
+      case 5:
+        return cardItems.filter((item) => !item.status);
+      default:
+        return cardItems;
+    }
+  }, [cardItems, menuFilter]);
+
+  const secondCardItems = useMemo(() => {
+    if (selectedCategory === 0) return firstCardItems;
+    return firstCardItems.filter(
+      (item) => item.categoryId === selectedCategory,
+    );
+  }, [firstCardItems, selectedCategory]);
+
+  const finalCardItems = useMemo(() => {
+    if (!searchValue.trim()) return secondCardItems;
+    const lower = searchValue.toLowerCase();
+    return secondCardItems.filter((item) =>
+      item.name.toLowerCase().includes(lower),
+    );
+  }, [secondCardItems, searchValue]);
+
   return (
     <div className="flex flex-col items-center justify-center">
       <div className="wrapper flex w-full flex-col items-center justify-center py-4">
-        <SearchInput
-          label="메뉴 편집"
-          value={searchValue}
-          onChange={(e) => setSearchValue(e.target.value)}
-          onClear={() => setSearchValue('')}
-          placeholder="찾으시는 메뉴가 있으신가요?"
-          maxLength={50}
-          disabled={false}
-        />
+        <div className="w-full mb-2">
+          <SearchInput
+            label="메뉴 편집"
+            value={searchValue}
+            onChange={(e) => setSearchValue(e.target.value)}
+            onClear={() => setSearchValue('')}
+            placeholder="찾으시는 메뉴가 있으신가요?"
+            maxLength={50}
+            disabled={false}
+          />
+        </div>
 
         <div className="flex w-full gap-2">
           <div className="grow-1 flex gap-2">
@@ -449,17 +498,21 @@ export default function MenuEditPage() {
         ) : (
           <>
             <div className="grid grid-cols-3 gap-4">
-              {isLoading
-                ? menus.map((_, idx) => <MenuGalleryCardSkeleton key={idx} />)
-                : menus.map((item) => (
+              {isMenusLoading
+                ? Array.from({ length: 9 }).map((_, idx) => (
+                    <MenuGalleryCardSkeleton key={idx} />
+                  ))
+                : finalCardItems.map((menu) => (
                     <MenuGalleryCard
-                      key={item.id}
+                      key={menu.id}
                       onDelete={handleDelete}
                       item={{
-                        id: 0,
-                        tags: ['인기', '신메뉴'],
-                        name: '아아',
-                        price: '100',
+                        id: menu.id,
+                        name: menu.name,
+                        price: menu.price,
+                        isNew: menu.isNew,
+                        isPopular: menu.isPopular,
+                        imgUrl: menu.imgUrl,
                       }}
                     />
                   ))}

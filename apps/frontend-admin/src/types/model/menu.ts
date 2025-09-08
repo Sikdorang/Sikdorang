@@ -5,17 +5,14 @@ export interface IMenuItem {
   isNew: boolean;
   isPopular: boolean;
   status: string;
+  order: string;
   imgUrl?: string;
 }
 
 export interface IMenuCategory {
   id: number;
   category: string;
-  items: IMenuItem[];
-}
-export interface IMenuCategory {
-  id: number;
-  category: string;
+  order: string;
   items: IMenuItem[];
 }
 
@@ -26,6 +23,18 @@ export interface IMenuTableItem {
   categoryId: number;
   checked: boolean;
   status: string;
+}
+
+export interface IMenuCardItem {
+  id: number;
+  name: string;
+  price: number;
+  isNew: boolean;
+  isPopular: boolean;
+  imgUrl?: string;
+  categoryId: number;
+  status: string;
+  order: string;
 }
 
 export interface IRecommendTableItem {
