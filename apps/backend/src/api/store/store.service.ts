@@ -112,7 +112,7 @@ export class StoreService {
             store?.corkagePossible === true
               ? store?.corkagePrice === 0
                 ? '가능 (무료)'
-                : `가능 %{store?.corkageFree}`
+                : `가능 (${store?.corkagePrice}원)`
               : '불가능',
           order: infoOrder?.corkageOrder,
         },

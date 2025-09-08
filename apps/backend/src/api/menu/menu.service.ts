@@ -163,7 +163,7 @@ export class MenuService {
       for (const option of options) {
         let optionId: number;
 
-        if (option.optionId) {
+        if (option.optionId && option.optionId !== 0) {
           await this.prisma.menuOption.update({
             where: { id: option.optionId },
             data: {
@@ -188,7 +188,7 @@ export class MenuService {
         }
         if (option.optionDetails && option.optionDetails.length > 0) {
           for (const detail of option.optionDetails) {
-            if (detail.optionDetailId) {
+            if (detail.optionDetailId && detail.optionDetailId !== 0) {
               await this.prisma.optionDetail.update({
                 where: { id: detail.optionDetailId },
                 data: {
