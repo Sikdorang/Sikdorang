@@ -21,7 +21,7 @@ interface IMenuListItem extends IBaseMenu {
 
 interface IMenuDetail extends IBaseMenu {
   description?: string;
-  imgUrls: string[];
+  images: string[];
   optionGroups: ISelectableOptionGroup[];
 }
 
@@ -59,7 +59,7 @@ interface IStoreInfoItem {
 }
 
 interface IStoreInfo {
-  id: string;
+  id: number;
   name: string;
   infoItems: IStoreInfoItem[];
 }

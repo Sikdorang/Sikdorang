@@ -1,5 +1,8 @@
-import { Fragment } from 'react';
 import MenuItem from './MenuItem';
+import emptyImage from '@/assets/images/img_empty_images.webp';
+import { Fragment } from 'react';
+
+const CDN_URL = import.meta.env.VITE_CDN_URL;
 
 interface Props {
   items: IMenuListItem[];
@@ -16,7 +19,7 @@ export default function MenuItemList({ items }: Props) {
             price={price}
             isNew={isNew}
             isPopular={isPopular}
-            imgUrl={imgUrl}
+            imgUrl={imgUrl ? `${CDN_URL}/${imgUrl}` : emptyImage}
           />
           {idx < items.length - 1 && <hr className="text-gray-100 md:hidden" />}
         </Fragment>

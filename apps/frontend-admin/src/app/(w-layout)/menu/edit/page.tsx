@@ -22,7 +22,6 @@ import MenuTableRow from '@/components/pages/menuEdit/MenuTableRow';
 import MenuTableRowSkeleton from '@/components/pages/menuEdit/MenuTableRowSkeleton';
 import { menuFilterOptions } from '@/constants/filter';
 import { ERROR_MESSAGES } from '@/constants/messages';
-import { useEditModal } from '@/contexts/EditModalContext';
 import { useManageCategory } from '@/hooks/useManageCategory';
 import { useManageMenu } from '@/hooks/useManageMenu';
 import { IMenuDetailItem, IMenuTableItem } from '@/types/model/menu';
@@ -37,7 +36,8 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 export default function MenuEditPage() {
   const { categories, isCategoriesLoading, createCategory, fetchCategories } =
     useManageCategory();
-  const { menus, isMenusLoading, fetchMenus, updateMenus } = useManageMenu();
+  const { menus, isMenusLoading, fetchMenus, updateMenus, removeMenu } =
+    useManageMenu();
 
   const [temporaryMenus, setTemporaryMenus] = useState<IMenuTableItem[]>([]);
   useEffect(() => {
@@ -148,14 +148,7 @@ export default function MenuEditPage() {
 
   const [viewType, setViewType] = useState<'table' | 'gallery'>('table');
 
-  const { openModal, currentModal } = useEditModal();
-  const [isTooltipModal, setIsTooltipModal] = useState(false);
   const [showCreateMenuModal, setShowCreateMenuModal] = useState(false);
-
-  const handleCreate = () => {
-    setIsTooltipModal(false);
-    openModal('createMenu');
-  };
 
   const totalMenuCount =
     menus?.reduce((acc, category) => acc + (category?.items?.length || 0), 0) ||
@@ -163,12 +156,11 @@ export default function MenuEditPage() {
 
   const [selectedMenuIds, setSelectedMenuIds] = useState<number[]>([]);
   const handleCheckbox = (menuId: number) => {
-    setSelectedMenuIds((prev) => {
-      if (prev.includes(menuId)) {
-        return prev.filter((id) => id !== menuId);
-      }
-      return [...prev, menuId];
-    });
+    setSelectedMenuIds((prev) =>
+      prev.includes(menuId)
+        ? prev.filter((id) => id !== menuId)
+        : [...prev, menuId],
+    );
   };
 
   const handleCreateCategory = async (inputText: string) => {
@@ -377,10 +369,18 @@ export default function MenuEditPage() {
               />
               <TableControlButton
                 text="삭제하기"
-                color="gray"
+                color={selectedMenuIds.length > 0 ? 'red' : 'gray'}
                 size="small"
                 radius="xl"
+                disabled={selectedMenuIds.length === 0}
                 width="fit"
+                onClick={async () => {
+                  for (const id of selectedMenuIds) {
+                    await removeMenu(id);
+                  }
+                  await fetchMenus();
+                  setSelectedMenuIds([]);
+                }}
               />
               <TableControlButton
                 text="변경사항 저장하기"
@@ -439,6 +439,7 @@ export default function MenuEditPage() {
                         onCheck={handleCheckbox}
                         isLastRow={idx === menus.length}
                         onUpdate={handleUpdate}
+                        checked={selectedMenuIds.includes(item.id)}
                       />
                     ))}
               </tbody>

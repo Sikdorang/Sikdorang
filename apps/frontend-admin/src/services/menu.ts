@@ -2,6 +2,7 @@ import { axiosInstance } from '.';
 import { ISyncMenuRequest } from '@/types/model/menu';
 import {
   UpdateMenuDetailsDto,
+  UpdateMenuImageDto,
   UpdateMenuOptionsDto,
 } from '@/types/request/menu';
 import axios from 'axios';
@@ -46,8 +47,8 @@ export const MenuAPI = {
     return res.data;
   },
 
-  updateMenuImages: async (menuId: number) => {
-    const res = await axiosInstance.post(`/menu/${menuId}/image`);
+  updateMenuImages: async (menuId: number, payload: UpdateMenuImageDto) => {
+    const res = await axiosInstance.post(`/menu/${menuId}/image`, payload);
     return res.data;
   },
 

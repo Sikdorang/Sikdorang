@@ -2,11 +2,14 @@ import WeekTimeRange from './WeekTimeRange';
 import WeekdaySelector from './WeekdaySelector';
 import CtaButton from '@/components/common/buttons/CtaButton';
 import MenuCustomDropdown from '@/components/pages/menuEdit/MenuCustomDropdown';
+import { OpeningHour } from '@/types/model/payload';
 import { useState } from 'react';
 
 interface BusinessHoursProps {
   label?: string;
   labelClassName?: string;
+  value: string;
+  onChange: (hours: OpeningHour[]) => void;
 }
 
 export default function BusinessHours({

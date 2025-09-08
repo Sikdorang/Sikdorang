@@ -26,6 +26,7 @@ export default function EditMenuModal({
     getMenuDetails,
     updateMenuDetails,
     updateMenuOptions,
+    updateMenuImages,
     isDetailLoading,
   } = useManageMenu();
 
@@ -45,21 +46,39 @@ export default function EditMenuModal({
 
   const hasChanges = useMemo(() => {
     if (!original || !detail) return false;
-    const o = {
-      new: original.isNew,
-      popular: original.isPopular,
-      description: original.description,
-      status: original.status as 'SALE' | 'HIDDEN' | 'SOLDOUT',
-      optionGroups: original.optionGroups,
-    };
-    const d = {
-      new: detail.isNew,
-      popular: detail.isPopular,
-      description: detail.description,
-      status: detail.status as 'SALE' | 'HIDDEN' | 'SOLDOUT',
-      optionGroups: detail.optionGroups,
-    };
-    return !isEqual(o, d);
+
+    const metaChanged = !isEqual(
+      {
+        new: original.isNew,
+        popular: original.isPopular,
+        description: original.description,
+        status: original.status,
+        optionGroups: original.optionGroups,
+      },
+      {
+        new: detail.isNew,
+        popular: detail.isPopular,
+        description: detail.description,
+        status: detail.status,
+        optionGroups: detail.optionGroups,
+      },
+    );
+
+    // 이미지 배열 비교 (id, order, url)
+    const imagesChanged = !isEqual(
+      original.images.map(({ id, image_url, order }) => ({
+        id,
+        image_url,
+        order,
+      })),
+      detail.images.map(({ id, image_url, order }) => ({
+        id,
+        image_url,
+        order,
+      })),
+    );
+
+    return metaChanged || imagesChanged;
   }, [detail, original]);
 
   if (!isOpen) return null;
@@ -95,6 +114,20 @@ export default function EditMenuModal({
   const handleSave = async () => {
     if (!detail) return;
 
+    const normalizedImages: IMenuImageItem[] = detail.images.map((img) => {
+      if (typeof img === 'string') {
+        return {
+          image_url: img,
+          order: '0',
+          file: undefined,
+          preview: undefined,
+        };
+      }
+      return img;
+    });
+    const existingImages = normalizedImages.filter((img) => !img.file);
+    const newImages = detail.images.filter((img) => img.file);
+
     const detailPayload: UpdateMenuDetailsDto = {
       new: detail.isNew,
       popular: detail.isPopular,
@@ -105,23 +138,23 @@ export default function EditMenuModal({
     const optionsPayload = {
       menuId,
       options: detail.optionGroups.map((group) => ({
-        menuId,
-        option: group.title,
-        minOption: group.minSelectable,
-        maxOption: group.maxSelectable,
-        optionRequired: group.required,
-
-        optionDetails: group.items.map((item) => ({
-          menuOptionId: item.optionId,
-          optionDetailId: item.optionDetailId,
-          optionDetail: item.name,
+        optionId: group.optionId || undefined,
+        option: group.option,
+        minOption: group.minOption,
+        maxOption: group.maxOption,
+        optionRequired: group.optionRequired,
+        optionDetails: group.optionDetails.map((item) => ({
+          menuOptionId: group.optionId || undefined,
+          optionDetailId: item.optionDetailId || undefined,
+          optionDetail: item.optionDetail,
           price: item.price,
         })),
       })),
     };
 
     await updateMenuDetails(menuId, detailPayload);
-    await updateMenuOptions(optionsPayload);
+    //await updateMenuOptions(optionsPayload);
+    await updateMenuImages(menuId, newImages, existingImages);
     onClose();
   };
 
@@ -175,6 +208,8 @@ export default function EditMenuModal({
             ) => {
               setDetail((prev) => {
                 if (!prev) return prev;
+                console.log('debug prev: ', prev);
+                console.log('debug updater: ', updater);
                 return {
                   ...prev,
                   images:
@@ -206,12 +241,12 @@ export default function EditMenuModal({
                 const newGroups = [
                   ...detail.optionGroups,
                   {
-                    groupId: Date.now().toString(),
-                    title: '',
-                    required: false,
-                    minSelectable: 0,
-                    maxSelectable: 1,
-                    items: [],
+                    optionId: undefined,
+                    option: '',
+                    optionRequired: false,
+                    minOption: 0,
+                    maxOption: 1,
+                    optionDetails: [],
                   },
                 ];
                 handleChangeOptions(newGroups);
@@ -221,24 +256,25 @@ export default function EditMenuModal({
           <OptionInput
             options={detail.optionGroups}
             onOptionsChange={handleChangeOptions}
-            onOptionTitleChange={(groupId: string, newTitle: string) => {
+            onOptionTitleChange={(groupId: number, newTitle: string) => {
               const updatedGroups = detail.optionGroups.map((group) =>
-                group.groupId === groupId
-                  ? { ...group, title: newTitle }
+                group.optionId === groupId
+                  ? { ...group, option: newTitle }
                   : group,
               );
               handleChangeOptions(updatedGroups);
             }}
             onAddOption={(groupId) => {
               const updated = detail.optionGroups.map((group) =>
-                group.groupId === groupId
+                group.optionId === groupId
                   ? {
                       ...group,
-                      items: [
-                        ...group.items,
+                      optionDetails: [
+                        ...group.optionDetails,
                         {
-                          optionId: Date.now().toString(),
-                          name: '',
+                          menuOptionId: Date.now(),
+                          optionDetailId: Date.now(),
+                          optionDetail: '',
                           price: 0,
                         },
                       ],

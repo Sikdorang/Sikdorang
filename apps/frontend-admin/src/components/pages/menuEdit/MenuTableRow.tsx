@@ -13,6 +13,7 @@ import { useEffect, useState } from 'react';
 interface MenuTableRowProps {
   item: IMenuTableItem;
   categories: ICategoryItem[];
+  checked: boolean;
   onEdit: (menuId: number) => void;
   onCheck: (menuId: number) => void;
   onUpdate: (menuId: number, field: keyof IMenuTableItem, value: any) => void;
@@ -22,6 +23,7 @@ interface MenuTableRowProps {
 export default function MenuTableRow({
   item,
   categories,
+  checked,
   onEdit,
   onCheck,
   onUpdate,
@@ -82,7 +84,7 @@ export default function MenuTableRow({
         }`}
         onClick={() => onCheck(item.id)}
       >
-        {item.checked ? (
+        {checked ? (
           <CheckedIcon width={24} height={24} />
         ) : (
           <UncheckedIcon width={24} height={24} />

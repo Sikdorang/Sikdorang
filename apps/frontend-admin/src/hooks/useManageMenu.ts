@@ -1,7 +1,12 @@
 import { ERROR_MESSAGES, SUCCESS_MESSAGES } from '@/constants/messages';
 import { handelError } from '@/services/handleErrors';
 import { MenuAPI } from '@/services/menu';
-import { ICreateMenuRequest, IMenuCategory } from '@/types/model/menu';
+import {
+  ICreateMenuRequest,
+  IMenuCategory,
+  IMenuImageItem,
+  PresignImageEntry,
+} from '@/types/model/menu';
 import {
   UpdateMenuDetailsDto,
   UpdateMenuImageDto,
@@ -70,9 +75,7 @@ export const useManageMenu = () => {
   ) => {
     setIsMenusLoading(true);
     try {
-      // 서버에 변경된 필드만 담긴 syncData 전송
       const updatedMenus = await MenuAPI.updateMenus(syncData);
-      // 기존 메뉴 배열에 server 반환값을 반영
       setMenus((prev) =>
         prev.map((menu) => updatedMenus.find((u) => u.id === menu.id) ?? menu),
       );
@@ -85,7 +88,6 @@ export const useManageMenu = () => {
         } else if (status === 401) {
           setMenuError(ERROR_MESSAGES.authenticationError);
         } else {
-          // 기타 에러 핸들링
           console.error(error);
         }
       }
@@ -149,43 +151,64 @@ export const useManageMenu = () => {
   const updateMenuImages = useCallback(
     async (
       menuId: number,
-      originalImages: IMenuImageItem[],
-      updatedImages: IMenuImageItem[],
-    ) => {
-      const toUpload = updatedImages.filter((img) => !img.id || img.id === 0);
-      const uploaded: IMenuImageItem[] = [];
-      for (const img of toUpload) {
-        if (!img.file || !img.image_url) continue;
-        const compressed = await imageCompression(img.file, {
+      newImages: IMenuImageItem[],
+      existingImages: IMenuImageItem[],
+    ): Promise<IMenuImageItem[]> => {
+      if (newImages.length === 0) {
+        return existingImages;
+      }
+
+      const allImages = [...existingImages, ...newImages];
+
+      const registerPayload = allImages.map((img) => {
+        const imageName = img.image_url.endsWith('.webp')
+          ? img.image_url
+          : img.image_url + '.webp';
+
+        return {
+          image: imageName,
+          order: img.order,
+        };
+      });
+
+      const presignList: PresignImageEntry[] = await MenuAPI.updateMenuImages(
+        menuId,
+        registerPayload,
+      );
+
+      const uploadedResults: IMenuImageItem[] = [];
+      for (const entry of presignList) {
+        const imgItem = newImages.find(
+          (i) => i.image_url + '.webp' === entry.originalName,
+        );
+
+        if (!imgItem?.file) {
+          continue;
+        }
+
+        const compressed = await imageCompression(imgItem.file, {
           maxSizeMB: 2,
           maxWidthOrHeight: 1920,
           useWebWorker: true,
           fileType: 'image/webp',
           initialQuality: 0.75,
         });
-        const filename = `${img.image_url}.webp`;
-        const { url } = await MenuAPI.getPresignedUrl(menuId, filename);
-        await MenuAPI.uploadToS3(url, compressed);
-        uploaded.push({ ...img, image_url: filename });
+
+        await MenuAPI.uploadToS3(entry.uploadUrl, compressed);
+
+        uploadedResults.push({
+          ...imgItem,
+          id: entry.id,
+          image_url: entry.key,
+          order: entry.order,
+          file: undefined,
+          preview: undefined,
+        });
       }
-      // 2) 기존 + 업로드된 병합
-      const merged = (updatedImages || []).map((img) => {
-        const up = uploaded.find((u) => u.order === img.order);
-        return up || img;
-      });
-      // 3) 서버에 PATCH 호출
-      const payload: UpdateMenuImageDto = {
-        images: merged.map((i) => ({
-          id: i.id || 0,
-          image_url: i.image_url,
-          order: i.order,
-        })),
-      };
-      await MenuAPI.updateMenuDetails(menuId, payload);
-      toast.success(SUCCESS_MESSAGES.updateMenuSuccess);
-      return merged;
+
+      return [...existingImages, ...uploadedResults];
     },
-    [],
+    [menus],
   );
 
   return {
@@ -200,5 +223,6 @@ export const useManageMenu = () => {
     getMenuDetails,
     updateMenuDetails,
     updateMenuOptions,
+    updateMenuImages,
   };
 };

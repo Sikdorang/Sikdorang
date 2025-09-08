@@ -6,7 +6,7 @@ export const MenuDetailsData: Record<string, IMenuDetail> = {
     price: 25000,
     isNew: true,
     isPopular: true,
-    imgUrls: [
+    images: [
       'https://i.imgur.com/sbLBtXL.jpeg',
       'https://i.imgur.com/sbLBtXL.jpeg',
     ],
