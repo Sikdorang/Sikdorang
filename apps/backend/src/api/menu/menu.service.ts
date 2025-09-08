@@ -324,6 +324,7 @@ export class MenuService {
     return categories.map((category) => ({
       id: category.id,
       category: category.category,
+      order: category.order,
       items: category.menus.map((menu) => ({
         id: menu.id,
         name: menu.menu,
