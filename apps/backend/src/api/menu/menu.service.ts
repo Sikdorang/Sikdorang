@@ -163,7 +163,7 @@ export class MenuService {
       for (const option of options) {
         let optionId: number;
 
-        if (option.optionId) {
+        if (option.optionId && option.optionId !== 0) {
           await this.prisma.menuOption.update({
             where: { id: option.optionId },
             data: {
@@ -188,7 +188,7 @@ export class MenuService {
         }
         if (option.optionDetails && option.optionDetails.length > 0) {
           for (const detail of option.optionDetails) {
-            if (detail.optionDetailId) {
+            if (detail.optionDetailId && detail.optionDetailId !== 0) {
               await this.prisma.optionDetail.update({
                 where: { id: detail.optionDetailId },
                 data: {
@@ -324,6 +324,7 @@ export class MenuService {
     return categories.map((category) => ({
       id: category.id,
       category: category.category,
+      order: category.order,
       items: category.menus.map((menu) => ({
         id: menu.id,
         name: menu.menu,
@@ -372,7 +373,10 @@ export class MenuService {
       isNew: menu.new,
       isPopular: menu.popular,
       status: menu.status,
-      images: menu.images.map((img) => img.image),
+      images: menu.images.map((img) => ({
+        image: img.image,
+        order: img.order,
+      })),
       optionGroups: menu.menuOptions.map((opt) => ({
         groupId: opt.id.toString(),
         title: opt.option,

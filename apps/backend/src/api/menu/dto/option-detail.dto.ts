@@ -1,8 +1,8 @@
 import { IsInt, IsOptional, IsString, Min } from 'class-validator';
 
 export class OptionDetailDto {
-  @IsInt()
   @IsOptional()
+  @IsInt()
   menuOptionId?: number;
 
   @IsOptional()

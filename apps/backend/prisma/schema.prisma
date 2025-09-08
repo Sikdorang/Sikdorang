@@ -134,6 +134,7 @@ model Store {
   userId             Int
   createdAt          DateTime            @default(now())
   recommendationMode RecommendationMode? @unique
+  isBusinessTimeSame    Boolean?
 
   orders                   Order[]
   recommendationMenus      RecommendationMenu[]
