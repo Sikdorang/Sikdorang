@@ -4,8 +4,11 @@ import '@/styles/global.css';
 import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: 'Sikdorang Admin',
-  description: 'Sikdorang Admin',
+  title: '식도랑 관리자',
+  description: '식도랑 관리자',
+  icons: {
+    icon: '/favicon.svg',
+  },
 };
 
 export default function RootLayout({
