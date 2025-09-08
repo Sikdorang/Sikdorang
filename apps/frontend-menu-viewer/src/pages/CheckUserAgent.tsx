@@ -1,7 +1,6 @@
 import BaseResponsiveLayout from '@/components/common/BaseResponsiveLayout';
 import LoadingView from '@/components/common/LoadingView';
 import { ROUTES } from '@/constants/routes';
-import { getStoreId } from '@/utilities/getStoreId';
 import { getDeviceType } from '@/utilities/parseUserAgent';
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router';
@@ -13,9 +12,7 @@ export default function CheckUserAgent() {
     const redirectBasedOnDevice = () => {
       const deviceType = getDeviceType();
       const targetRoute =
-        deviceType === 'mobile'
-          ? ROUTES.STORES.DETAIL(getStoreId())
-          : ROUTES.LOGIN;
+        deviceType === 'mobile' ? ROUTES.STORES.DETAIL('12') : ROUTES.LOGIN;
       navigate(targetRoute);
     };
 

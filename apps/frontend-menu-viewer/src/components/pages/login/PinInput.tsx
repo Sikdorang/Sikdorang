@@ -1,17 +1,18 @@
 import ErrorSvg from '@/assets/icons/ic_error_red.svg?react';
 import { ROUTES } from '@/constants/routes';
-import { getStoreId } from '@/utilities/getStoreId';
+import { useLogin } from '@/hooks/useLogin';
 import { getDeviceType } from '@/utilities/parseUserAgent';
 import { showCustomToast } from '@/utilities/showToast';
 import { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router';
 
 export default function PinInput() {
-  const answer = '12345';
   const navigate = useNavigate();
   const [values, setValues] = useState(Array(5).fill(''));
+  const { login, getStoreIdByPin } = useLogin();
   const [activeIndex, setActiveIndex] = useState(0);
   const [isError, setIsError] = useState(false);
+  const [hasAttemptedLogin, setHasAttemptedLogin] = useState(false);
   const inputsRef = useRef<(HTMLInputElement | null)[]>([]);
 
   useEffect(() => {
@@ -24,18 +25,26 @@ export default function PinInput() {
 
   useEffect(() => {
     const joined = values.join('');
-    if (joined.length === 5) {
-      if (joined === answer) {
-        setIsError(false);
-        showCustomToast({ icon: 'check', message: '로그인에 성공했어요.' });
-        navigate(ROUTES.STORES.DETAIL(getStoreId()));
-      } else {
-        setIsError(true);
-      }
-    } else {
-      setIsError(false);
+
+    if (joined.length === 5 && !hasAttemptedLogin) {
+      login(joined).then((success) => {
+        setHasAttemptedLogin(true);
+        if (success) {
+          getStoreIdByPin().then((storeId) => {
+            navigate(ROUTES.STORES.DETAIL(storeId.toString()));
+          });
+        } else {
+          showCustomToast({ icon: 'error', message: '잘못된 핀번호입니다.' });
+          setIsError(true);
+        }
+      });
     }
-  }, [values, answer, navigate]);
+
+    if (joined.length !== 5) {
+      setIsError(false);
+      setHasAttemptedLogin(false);
+    }
+  }, [values, login, navigate, getStoreIdByPin, hasAttemptedLogin]);
 
   useEffect(() => {
     if (activeIndex >= 0) {
@@ -47,7 +56,7 @@ export default function PinInput() {
   }, [activeIndex]);
 
   const handleChange = (index: number, value: string) => {
-    if (!/^\d?$/.test(value)) return; // pin 번호 정책 확인 필요
+    if (!/^\d?$/.test(value)) return;
 
     const newValues = [...values];
     newValues[index] = value;

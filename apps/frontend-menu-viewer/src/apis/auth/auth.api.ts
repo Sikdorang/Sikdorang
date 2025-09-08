@@ -1,9 +1,9 @@
+import axiosInstance from '..';
 import { API_BASE_URL } from '../api';
-import axios from 'axios';
 
 export const authAPI = {
   verifyPin: async (pinNumber: string) => {
-    const response = await axios.post(
+    const response = await axiosInstance.post(
       `${API_BASE_URL}/user-tablet-auth/verify-pin`,
       { pinNumber },
     );
@@ -11,7 +11,7 @@ export const authAPI = {
   },
 
   logout: async () => {
-    const response = await axios.post(
+    const response = await axiosInstance.post(
       `${API_BASE_URL}/user-tablet-auth/logout`,
     );
     return response.data;

@@ -7,7 +7,7 @@ export async function getAccessTokenFromLocalStorage(): Promise<string | null> {
 }
 
 const axiosInstance = axios.create({
-  baseURL: process.env.NEXT_PUBLIC_API_BASE_URL,
+  baseURL: import.meta.env.VITE_API_URL,
   withCredentials: true,
 });
 
@@ -16,7 +16,7 @@ const attachAccessToken = (
   token: string,
 ) => {
   config.headers = config.headers ?? {};
-  config.headers[KEYS.MOBILE_AUTH_HEADER_KEY] = `Bearer ${token}`;
+  config.headers[KEYS.TABLET_AUTH_HEADER_KEY] = `Bearer ${token}`;
   return config;
 };
 
@@ -30,7 +30,12 @@ axiosInstance.interceptors.request.use(
 
 axiosInstance.interceptors.response.use(
   (response) => response,
-  (error) => Promise.reject(error),
+  (error) => {
+    if (error.response?.status === 401 && typeof window !== 'undefined') {
+      // window.location.replace('/');
+    }
+    return Promise.reject(error);
+  },
 );
 
 export default axiosInstance;

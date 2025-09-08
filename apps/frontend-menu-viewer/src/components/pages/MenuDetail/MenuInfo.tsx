@@ -13,7 +13,7 @@ export default function MenuInfo({ menu, quantity, setQuantity }: Props) {
   return (
     <div className="wrapper">
       <div className="mb-3 mt-6">
-        <Carousel imgUrls={menu.imgUrls} />
+        <Carousel imgUrls={menu.images} />
       </div>
       {(menu.isNew || menu.isPopular) && (
         <div className="mb-2 flex items-center gap-1">
