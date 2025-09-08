@@ -9,6 +9,7 @@ import {
 } from '@/types/model/menu';
 import {
   UpdateMenuDetailsDto,
+  UpdateMenuImageDto,
   UpdateMenuOptionsDto,
 } from '@/types/request/menu';
 import axios from 'axios';
